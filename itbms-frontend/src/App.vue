@@ -6,7 +6,7 @@ import Navbar from './components/Navbar.vue';
 </script>
 
 <template>
-  <!-- Hello wolrd -->
+  <!-- Hello wolrd 555 -->
   <Navbar />
   <RouterView />
 </template>

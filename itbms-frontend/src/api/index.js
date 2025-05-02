@@ -10,3 +10,4 @@ export const fetchSaleItemById = async (id) => {
     if (!res.ok) throw new Error("Sale item not found")
     return await res.json()
   }
+  

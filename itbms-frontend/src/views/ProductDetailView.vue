@@ -68,16 +68,16 @@ onMounted(() => {
           <!-- Product Info -->
           <div class="flex-1 min-w-[300px]">
             <div class="mb-6 pb-4 border-b border-gray-200">
-              <h2 class="Itbms-model text-2xl font-bold text-gray-900 mb-2">{{item.model }}</h2>
+              <h2 class="itbms-model text-2xl font-bold text-gray-900 mb-2">{{item.model }}</h2>
               <div class="flex items-center gap-2">
-                <span class="Itbms-brand bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-sm">{{item.brand || 'No Brand'}}</span>
+                <span class="itbms-brand bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-sm">{{item.brand || 'No Brand'}}</span>
               </div>
             </div>
             
             <div class="mb-8">
               <div class="flex items-center gap-2 mb-4">
-                <span class="Itbms-price text-3xl font-bold text-gray-900">{{formatNumber(item.price || 0)}}</span>
-                <span class="Itbms-price-unit text-gray-600">Baht</span>
+                <span class="itbms-price text-3xl font-bold text-gray-900">{{formatNumber(item.price || 0)}}</span>
+                <span class="itbms-price-unit text-gray-600">Baht</span>
               </div>
               
 
@@ -89,8 +89,8 @@ onMounted(() => {
                 </span>
                 <span class="text-gray-500">|</span>
                 <div class="text-gray-600">
-                    <span class="Itbms-quantity	">{{item.quantity ||0}} units available</span>
-                    <span class="Itbms-quantity-unit"> units available</span>
+                    <span class="itbms-quantity	">{{item.quantity ||0}} units available</span>
+                    <span class="itbms-quantity-unit"> units available</span>
                     <span >  available</span>
                 </div>
                 
@@ -101,7 +101,7 @@ onMounted(() => {
             
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
               <h3 class="font-medium text-gray-800 mb-2">Description</h3>
-              <p class="Itbms-description text-gray-600">{{item.description }}</p>
+              <p class="itbms-description text-gray-600">{{item.description }}</p>
             </div>
             
             <div class="space-y-4">
@@ -109,14 +109,14 @@ onMounted(() => {
                 <div class="flex items-center gap-2 min-w-[140px]">
                   <span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-200"></span>
                   <span class="text-gray-600">Color:</span>
-                  <span class="Itbms-color font-medium">{{item.color || 'No Color'}}</span>
+                  <span class="itbms-color font-medium">{{item.color || 'No Color'}}</span>
                 </div>
                 
                 <div class="flex items-center gap-2 min-w-[140px]">
                   <span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-200"></span>
                   <span class="text-gray-600">RAM:</span>
-                  <span class="Itbms-ramGb font-medium">{{item.ramGb || 0}} </span>
-                  <span class="Itbms-ramGb-unit font-medium"> GB</span>
+                  <span class="itbms-ramGb font-medium">{{item.ramGb || 0}} </span>
+                  <span class="itbms-ramGb-unit font-medium"> GB</span>
 
                 </div>
               </div>
@@ -125,16 +125,16 @@ onMounted(() => {
                 <div class="flex items-center gap-2 min-w-[140px]">
                   <span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-200"></span>
                   <span class="text-gray-600">Storage:</span>
-                  <span class="Itbms-storageGb font-medium">{{item.storageGb || 0}} </span>
-                  <span class="Itbms-storageGb-unit font-medium"> GB</span>
+                  <span class="itbms-storageGb font-medium">{{item.storageGb || 0}} </span>
+                  <span class="itbms-storageGb-unit font-medium"> GB</span>
 
                 </div>
                 
                 <div class="flex items-center gap-2 min-w-[140px]">
                   <span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-200"></span>
                   <span class="text-gray-600">Screen:</span>
-                  <span class="Itbms-screenSizeInch	font-medium">{{item.screenSizeInch || 0}} </span>
-                  <span class="Itbms-screenSizeInch-unit font-medium"> Inch</span>
+                  <span class="itbms-screenSizeInch	font-medium">{{item.screenSizeInch || 0}} </span>
+                  <span class="itbms-screenSizeInch-unit font-medium"> Inch</span>
 
                 </div>
               </div>

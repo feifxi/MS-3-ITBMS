@@ -15,6 +15,7 @@ public class SaleItemListDto {
     private Integer id;
     private String model;
     private BigDecimal price;
+    private Integer ramGb;
     private Integer storageGb;
     private String color;
     @JsonIgnore

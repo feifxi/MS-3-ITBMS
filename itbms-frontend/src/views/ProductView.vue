@@ -45,7 +45,7 @@ const filterItems = computed(() => {
   </div>
 
   <div v-if="loading" class="text-center text-blue-500 text-lg animate-pulse">Loading...</div>
-  <div v-if="items.length === 0" class="text-center text-gray-500 text-lg">No sale item.</div>
+  <div v-else-if="items.length === 0" class="text-center text-gray-500 text-lg">No sale item.</div>
   <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
     <CardProduct
       v-for="item in filterItems"

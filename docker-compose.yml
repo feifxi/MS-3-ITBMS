@@ -2,26 +2,26 @@ services:
   fe:
     container_name: itbms-fe-container
     build:
-      context: ./frontend
+      context: ./itbms-frontend
       dockerfile: dockerfile
     ports:
       - "80:80"
     environment:
       - NODE_ENV=production
     networks:
-      - itbms_network
+      - itbms-network
     depends_on:
       - be
 
   be:
     container_name: itbms-be-container
     build:
-      context: ./backend
+      context: ./itbms-backend
       dockerfile: dockerfile
     ports:
       - "8080:8080"
     networks:
-      - itbms_network
+      - itbms-network
     depends_on:
       db:
         condition: service_healthy
@@ -36,10 +36,10 @@ services:
       LANG: C.UTF-8
       TZ: Asia/Bangkok
     networks:
-      - itbms_network
+      - itbms-network
     volumes:
-      - itbms_data:/var/lib/mysql
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - itbms-data:/var/lib/mysql
+      - ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -47,7 +47,7 @@ services:
       retries: 3
 
 networks:
-  itbms_network:
+  itbms-network:
 
 volumes:
-  itbms_data:
+  itbms-data:

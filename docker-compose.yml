@@ -1,0 +1,53 @@
+services:
+  fe:
+    container_name: itbms-fe-container
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - itbms_network
+    depends_on:
+      - be
+
+  be:
+    container_name: itbms-be-container
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - itbms_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: itbms-db-container
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_general_ci
+      LANG: C.UTF-8
+      TZ: Asia/Bangkok
+    networks:
+      - itbms_network
+    volumes:
+      - itbms_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  itbms_network:
+
+volumes:
+  itbms_data:

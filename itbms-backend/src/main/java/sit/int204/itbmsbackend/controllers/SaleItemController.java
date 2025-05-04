@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/sale-items")
-@CrossOrigin(origins = "${app.cors.allowedOrigins}")
+// @CrossOrigin(origins = "${app.cors.allowedOrigins}")
 public class SaleItemController {
     private final SaleItemService saleItemService;
     private final ModelMapper modelMapper;

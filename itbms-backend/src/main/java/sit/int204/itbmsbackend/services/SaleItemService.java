@@ -22,10 +22,9 @@ public class SaleItemService {
         return saleItemRepository.findAll();
     }
 
-
     public SaleItem findById(Integer id) {
         return saleItemRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Sale Item not found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
         );
     }
 
@@ -35,14 +34,14 @@ public class SaleItemService {
 
     public SaleItem updateSaleItem(SaleItem saleItem) {
         if (!saleItemRepository.existsById(saleItem.getId())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sale Item not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "SaleItem not found for this id :: " + saleItem.getId());
         }
         return saleItemRepository.save(saleItem);
     }
 
     public String removeSaleItem(Integer id) {
         if (!saleItemRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sale Item not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "SaleItem not found for this id :: " + id);
         }
         saleItemRepository.deleteById(id);
         return "SaleItem remove Successfully";

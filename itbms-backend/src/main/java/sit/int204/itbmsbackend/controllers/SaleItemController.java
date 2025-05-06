@@ -1,14 +1,15 @@
 package sit.int204.itbmsbackend.controllers;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sit.int204.itbmsbackend.dtos.MessageResponse;
+import sit.int204.itbmsbackend.dtos.PageDTO;
+import sit.int204.itbmsbackend.dtos.saleItem.CreateSaleItemDto;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemDetailDto;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemListDto;
-import sit.int204.itbmsbackend.entities.SaleItem;
+import sit.int204.itbmsbackend.dtos.saleItem.UpdateSaleItemDto;
 import sit.int204.itbmsbackend.services.SaleItemService;
-import sit.int204.itbmsbackend.utils.ListMapper;
 
 import java.util.List;
 
@@ -16,43 +17,46 @@ import java.util.List;
 @RequestMapping("/v1/sale-items")
 public class SaleItemController {
     private final SaleItemService saleItemService;
-    private final ModelMapper modelMapper;
-    private final ListMapper listMapper;
 
     @Autowired
-    public SaleItemController(SaleItemService saleItemService, ModelMapper modelMapper, ListMapper listMapper) {
-        this.saleItemService = saleItemService;
-        this.modelMapper = modelMapper;
-        this.listMapper = listMapper;
-    }
+    public SaleItemController(SaleItemService saleItemService) {
+        this.saleItemService = saleItemService;}
 
     @GetMapping
-    public ResponseEntity<List<SaleItemListDto>> getAllSaleItems() {
-        List<SaleItem> customers = saleItemService.findAll();
-        return ResponseEntity.ok().body(
-                listMapper.mapList(customers, SaleItemListDto.class, modelMapper)
-        );
+    public ResponseEntity<List<SaleItemListDto>> getAllSaleItems(
+            @RequestParam(defaultValue = "") String brand,
+            @RequestParam(defaultValue = "asc") String sort
+    ) {
+        return ResponseEntity.ok(saleItemService.findAll(brand, sort));
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<PageDTO<SaleItemListDto>> getCustomerPages(
+            @RequestParam(defaultValue = "1") Integer pageNo,
+            @RequestParam(defaultValue = "5") Integer pageSize)
+    {
+        return ResponseEntity.ok(saleItemService.findAll(pageNo, pageSize));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SaleItemDetailDto> getSaleItemById(@PathVariable Integer id) {
-        SaleItem saleItem = saleItemService.findById(id);
-        return ResponseEntity.ok(modelMapper.map(saleItem, SaleItemDetailDto.class));
+        return ResponseEntity.ok(saleItemService.findById(id));
     }
 
     @PostMapping
-    public SaleItem addSaleItem(@RequestBody SaleItem saleItem) {
-        return saleItemService.addSaleItem(saleItem);
+    public ResponseEntity<SaleItemDetailDto> addSaleItem(@RequestBody CreateSaleItemDto saleItem) {
+        return ResponseEntity.ok(saleItemService.addSaleItem(saleItem));
     }
 
     @PutMapping("/{id}")
-    public SaleItem updateProduct(@PathVariable Integer id, @RequestBody SaleItem saleItem) {
+    public ResponseEntity<SaleItemDetailDto> updateProduct(@PathVariable Integer id, @RequestBody UpdateSaleItemDto saleItem) {
         saleItem.setId(id);
-        return saleItemService.updateSaleItem(saleItem);
+        return ResponseEntity.ok(saleItemService.updateSaleItem(saleItem));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable Integer id) {
-        return saleItemService.removeSaleItem(id);
+    public ResponseEntity<MessageResponse> deleteProduct(@PathVariable Integer id) {
+        saleItemService.removeSaleItem(id);
+        return ResponseEntity.ok(new MessageResponse("Product deleted successfully"));
     }
 }

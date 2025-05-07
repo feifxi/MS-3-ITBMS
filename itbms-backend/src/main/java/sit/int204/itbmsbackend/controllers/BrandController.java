@@ -1,16 +1,47 @@
 package sit.int204.itbmsbackend.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import sit.int204.itbmsbackend.entities.Brand;
+import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.services.BrandService;
+import sit.int204.itbmsbackend.utils.ListMapper;
+import sit.int204.itbmsbackend.dtos.Brand.BrandDetailDto;
+import sit.int204.itbmsbackend.dtos.Brand.BrandDto;
+
+
+
+import java.util.List;
 
 @RestController
+@RequestMapping
 public class BrandController {
     private final BrandService brandService;
+    private final ModelMapper modelMapper;
+    private final ListMapper listMapper;
+    private final BrandRepository brandRepository;
+
     @Autowired
-    public BrandController(BrandService brandService) {
+    public BrandController(BrandService brandService, ModelMapper modelMapper, ListMapper listMapper, BrandRepository brandRepository) {
         this.brandService = brandService;
+        this.modelMapper = modelMapper;
+        this.listMapper = listMapper;
+        this.brandRepository = brandRepository;
+    }
+    @GetMapping
+    public ResponseEntity<List<BrandDto>> getAllBrands() {
+        List<Brand> brands = brandService.getAllBrands();
+        return ResponseEntity.ok().body(
+                listMapper.mapList(brands, BrandDto.class, modelMapper)
+        );
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BrandDetailDto> getBrandById(@PathVariable Integer id) {
+        Brand brand = brandService.getBrandById(id);
+        return ResponseEntity.ok(modelMapper.map(brand, BrandDetailDto.class));
+    }
 
 }

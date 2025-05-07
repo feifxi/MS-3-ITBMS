@@ -16,7 +16,7 @@ import sit.int204.itbmsbackend.dtos.Brand.BrandDto;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/v1/brands")
 public class BrandController {
     private final BrandService brandService;
     private final ModelMapper modelMapper;

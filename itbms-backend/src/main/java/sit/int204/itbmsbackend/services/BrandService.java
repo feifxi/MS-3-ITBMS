@@ -1,5 +1,6 @@
 package sit.int204.itbmsbackend.services;
 
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,6 +80,27 @@ public class BrandService {
         brand = brandRepository.save(brand);
 
         return modelMapper.map(brand, BrandDetailDto.class);
+    }
+    @Transactional
+    public void deleteBrand(Integer id) {
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ไม่สามารถลบได้: ไม่พบแบรนด์ที่มี ID = " + id));
+        brandRepository.delete(brand); // JPA จะลบ SaleItem ที่เกี่ยวข้องให้ด้วย
+//        if (!Boolean.TRUE.equals(brand.getIsActive())) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brand is already inactive.");
+//        }
+//        // Soft delete Brand
+//        brand.setIsActive(false);
+//        brand.setUpdatedOn(ZonedDateTime.now(ZoneId.of("Asia/Bangkok")));
+//        brandRepository.save(brand);
+//
+//        // Soft delete SaleItems under the brand
+//        List<SaleItem> saleItems = saleItemRepository.findByBrandId(brand.getId());
+//        for (SaleItem item : saleItems) {
+//            item.setIsActive(false);
+//            item.setUpdatedOn(ZonedDateTime.now(ZoneId.of("Asia/Bangkok")).toInstant());
+//        }
+//        saleItemRepository.saveAll(saleItems);
     }
 
 

@@ -54,6 +54,11 @@ public class BrandController {
     public BrandDetailDto createBrand(@Valid @RequestBody CreateBrandDto dto) {
         return brandService.createBrand(dto);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBrand(@PathVariable Integer id) {
+        brandService.deleteBrand(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

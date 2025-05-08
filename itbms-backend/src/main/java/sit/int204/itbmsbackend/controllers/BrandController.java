@@ -1,9 +1,11 @@
 package sit.int204.itbmsbackend.controllers;
 
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import sit.int204.itbmsbackend.dtos.Brand.CreateBrandDto;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.services.BrandService;
@@ -48,5 +50,10 @@ public class BrandController {
         brand.setId(id);
         return brandService.updateBrand(brand);
     }
+    @PostMapping
+    public BrandDetailDto createBrand(@Valid @RequestBody CreateBrandDto dto) {
+        return brandService.createBrand(dto);
+    }
+
 
 }

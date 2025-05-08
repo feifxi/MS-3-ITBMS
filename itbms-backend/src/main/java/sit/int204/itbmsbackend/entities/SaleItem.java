@@ -1,5 +1,6 @@
 package sit.int204.itbmsbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,8 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "sale_items")
+
+
 public class SaleItem {
     @Id
     @Column(name = "id", nullable = false)
@@ -22,6 +25,7 @@ public class SaleItem {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "brand_id", nullable = false)
+    @JsonIgnore
     private Brand brand;
 
     @Lob

@@ -20,6 +20,7 @@ import sit.int204.itbmsbackend.utils.ListMapper;
 import java.util.List;
 
 @Service
+
 public class SaleItemService {
     private final SaleItemRepository saleItemRepository;
     private final BrandService brandService;

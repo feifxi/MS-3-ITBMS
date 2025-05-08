@@ -61,7 +61,7 @@ public class SaleItem {
     private Instant updatedOn;
 
 
-    @Column(name = "is_active")
-    private Boolean isActive = true;
+//    @Column(name = "is_active")
+//    private Boolean isActive = true;
 
 }

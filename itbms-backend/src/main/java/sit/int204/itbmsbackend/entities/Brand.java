@@ -18,6 +18,7 @@ import java.util.Set;
 @Table(name = "brands")
 public class Brand {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -34,12 +35,11 @@ public class Brand {
     private String countryOfOrigin;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_on")
-    private Instant createdOn;
+    @Column(name = "created_on", updatable = false)
+    private ZonedDateTime createdOn;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_on")
-
     private LocalDateTime updatedOn;
 
     @OneToMany(mappedBy = "brand")

@@ -51,13 +51,9 @@ public class BrandService {
 
     public BrandDetailDto createBrand(CreateBrandDto dto) {
         String brandName = dto.getName();
-
-        // ตัดช่องว่างหน้า-หลัง
         String trimmedName = brandName.trim();
-
-        // ตรวจสอบว่าชื่อเริ่มด้วยช่องว่าง
         if (!brandName.isEmpty() && Character.isWhitespace(brandName.charAt(0))) {
-            throw new IllegalArgumentException("ชื่อแบรนด์ห้ามขึ้นต้นด้วยช่องว่าง");
+            throw new IllegalArgumentException("Brand name must not start with a space");
         }
 
         // ตรวจสอบชื่อซ้ำ โดยไม่สนใจตัวพิมพ์เล็ก/ใหญ่ และเว้นวรรค
@@ -66,11 +62,8 @@ public class BrandService {
                 .anyMatch(b -> b.getName().trim().equalsIgnoreCase(trimmedName));
 
         if (duplicateExists) {
-            throw new IllegalArgumentException("ชื่อแบรนด์นี้มีอยู่แล้วในระบบ");
+            throw new IllegalArgumentException("This brand name already exists in the system.");
         }
-
-
-        // สร้าง brand
         Brand brand = modelMapper.map(dto, Brand.class);
         brand.setName(trimmedName); // ใช้ชื่อที่ตัดเว้นวรรคแล้ว
         brand.setIsActive(true);
@@ -84,7 +77,7 @@ public class BrandService {
     @Transactional
     public void deleteBrand(Integer id) {
         Brand brand = brandRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ไม่สามารถลบได้: ไม่พบแบรนด์ที่มี ID = " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cannot delete: No brand found with ID = " + id));
         brandRepository.delete(brand); // JPA จะลบ SaleItem ที่เกี่ยวข้องให้ด้วย
 //        if (!Boolean.TRUE.equals(brand.getIsActive())) {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brand is already inactive.");

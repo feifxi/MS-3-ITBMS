@@ -43,5 +43,10 @@ public class BrandController {
         Brand brand = brandService.getBrandById(id);
         return ResponseEntity.ok(modelMapper.map(brand, BrandDetailDto.class));
     }
+    @PutMapping("/{id}")
+    public Brand updateBrand(@PathVariable Integer id, @RequestBody Brand brand) {
+        brand.setId(id);
+        return brandService.updateBrand(brand);
+    }
 
 }

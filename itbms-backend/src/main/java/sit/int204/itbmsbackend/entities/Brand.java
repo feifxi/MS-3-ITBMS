@@ -1,11 +1,14 @@
 package sit.int204.itbmsbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -36,7 +39,8 @@ public class Brand {
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_on")
-    private Instant updatedOn;
+
+    private LocalDateTime updatedOn;
 
     @OneToMany(mappedBy = "brand")
     private Set<SaleItem> saleItems = new LinkedHashSet<>();

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -53,24 +55,19 @@ public class SaleItem {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_on", insertable = false, updatable = false)
+//    @ColumnDefault("CURRENT_TIMESTAMP")
+//    @Column(name = "created_on", insertable = false, updatable = false)
+//    private Instant createdOn;
+//
+//    @ColumnDefault("CURRENT_TIMESTAMP")
+//    @Column(name = "updated_on", insertable = false)
+//    private Instant updatedOn;
+
+    @CreationTimestamp
+    @Column(name = "createdOn", nullable = false, updatable = false, columnDefinition = "DATETIME")
     private Instant createdOn;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_on", insertable = false)
+    @UpdateTimestamp
+    @Column(name = "updatedOn", nullable = false, columnDefinition = "DATETIME")
     private Instant updatedOn;
-
-
-    @PrePersist
-    protected void onCreate() {
-        Instant now = Instant.now();
-        this.createdOn = now;
-        this.updatedOn = now;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedOn = Instant.now();
-    }
 }

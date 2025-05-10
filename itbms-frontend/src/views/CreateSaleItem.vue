@@ -20,7 +20,7 @@ const saleItem = reactive({
     brand: {
         id: 0,
         name: ''
-    }
+    },
 })
 const brands = ref([])
 const isDataValid = ref(false)

@@ -7,12 +7,14 @@ import ItemNotFound from '../components/ItemNotFound.vue';
 import mockPhone from '@/assets/image/mockPhone.webp'
 import { MoveLeft } from 'lucide-vue-next';
 import BreadCrumb from '@/components/BreadCrumb.vue';
+import Button from '@/components/Button.vue';
 
 const route = useRoute()
 const router = useRouter()
 const item = ref(null)
 const isLoading = ref(true)
 const isNotFound = ref(false)
+const isDeleting = ref(false)
 
 const fetchItem = async () => {
   isLoading.value = true
@@ -32,6 +34,10 @@ const fetchItem = async () => {
 
 const goBack = () => {
   router.push('/sale-items')
+}
+
+const handleDeleteSaleItem = () => {
+  console.log('Remove')
 }
 
 
@@ -54,15 +60,14 @@ onMounted(() => {
         <!-- Error Message Box -->
         <ItemNotFound v-if="isNotFound" @goBack="goBack" />
 
-        <div v-else-if="isLoading" class="text-center text-blue-500 animate-pulse text-3xl font-bold">Loading...</div>
+        <section v-else-if="isLoading" class="text-center text-blue-500 animate-pulse text-3xl font-bold">Loading...</section>
 
-        <div v-else class="itbms-row flex flex-wrap gap-12 bg-white rounded-lg shadow-lg p-6">
+        <section v-else class="itbms-row flex flex-wrap gap-12 bg-white rounded-lg shadow-lg p-6">
           <!-- Product Images -->
           <div class="flex-1 min-w-[300px]">
             <div class="mb-6 text-center overflow-hidden rounded-lg shadow-md">
-              <img
-                :src="item.image || mockPhone"
-                alt="product" class="w-full h-auto hover:scale-105 transition-transform duration-300" />
+              <img :src="item.image || mockPhone" alt="product"
+                class="w-full h-auto hover:scale-105 transition-transform duration-300" />
             </div>
           </div>
 
@@ -129,13 +134,25 @@ onMounted(() => {
                 <div class="flex items-center gap-2 min-w-[140px]">
                   <span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-200"></span>
                   <span class="text-gray-600">Screen:</span>
-                  <span class="itbms-screenSizeInch	font-medium">{{ item.screenSizeInch || '-'  }} </span>
+                  <span class="itbms-screenSizeInch	font-medium">{{ item.screenSizeInch || '-' }} </span>
                   <span class="itbms-screenSizeInch-unit font-medium">Inches</span>
                 </div>
               </div>
             </div>
+
+            <div class="flex gap-3 items-center mt-10">
+              <RouterLink :to="`/sale-items/${item.id}/edit`">
+                <Button variant="secondary">
+                  Edit
+                </Button>
+              </RouterLink>
+
+              <Button variant="destructive" :onclick="handleDeleteSaleItem" :disabled="isDeleting">
+                {{ isDeleting ? 'Loading...' : 'Delete' }}
+              </Button>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   </main>

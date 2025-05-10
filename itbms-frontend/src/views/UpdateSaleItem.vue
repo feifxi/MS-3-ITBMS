@@ -29,7 +29,8 @@ const isDataValid = ref(false)
 const isLoading = ref(false)
 const isSubmitting = ref(false)
 const statusMessageStore = useStatusMessageStore()
-let modelName = ''
+let modelName 
+let saleItemResponseModel
 
 const requiredField = [
     "model",
@@ -49,6 +50,7 @@ const fetchSaleItem = async () => {
     saleItem.value.brand = { ...brands.value.find((brand)=> brand.name === saleItem.value.brandName) }
     delete saleItem.value.brandName
     modelName = saleItem.value.model
+    saleItemResponseModel = JSON.stringify(saleItem.value)
     isLoading.value = false
 }
 
@@ -69,7 +71,8 @@ const validateData = () => {
     for (const field in saleItem.value) {
         if (
             (requiredField.includes(field) && !saleItem.value[field]) || 
-            (typeof saleItem.value[field] === 'number' && saleItem.value[field] <= 0)
+            (typeof saleItem.value[field] === 'number' && saleItem.value[field] <= 0) ||
+            (JSON.stringify(saleItem.value) === saleItemResponseModel)
         ) {
             isDataValid.value = false
         }

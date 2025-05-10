@@ -97,7 +97,7 @@ const trimmedData = (e) => {
 }
 
 const goBackHome = () => {
-    router.push('/sale-items')
+    router.push('/sale-items/' + id)
 }
 
 onMounted(async () => {

@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import sit.int204.itbmsbackend.dtos.Brand.BrandDetailDto;
-import sit.int204.itbmsbackend.dtos.Brand.CreateBrandDto;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.repositories.SaleItemRepository;
 import sit.int204.itbmsbackend.utils.ListMapper;
+import sit.int204.itbmsbackend.dtos.brand.BrandDetailDto;
+import sit.int204.itbmsbackend.dtos.brand.CreateBrandDto;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

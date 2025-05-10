@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.dtos.PageDTO;
-import sit.int204.itbmsbackend.dtos.saleItem.CreateSaleItemDto;
-import sit.int204.itbmsbackend.dtos.saleItem.SaleItemDetailDto;
-import sit.int204.itbmsbackend.dtos.saleItem.SaleItemListDto;
-import sit.int204.itbmsbackend.dtos.saleItem.UpdateSaleItemDto;
+import sit.int204.itbmsbackend.dtos.saleItem.*;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.entities.SaleItem;
 import sit.int204.itbmsbackend.repositories.SaleItemRepository;
@@ -35,44 +32,44 @@ public class SaleItemService {
         this.listMapper = listMapper;
     }
 
-    public List<SaleItemListDto> findAll(String brand, String sort) {
+    public List<ListSaleItemRes> findAll(String brand, String sort) {
         // Implement Sort and Filtering later
 
         List <SaleItem> saleItems = saleItemRepository.findAll();
-        return listMapper.mapList(saleItems, SaleItemListDto.class, modelMapper);
+        return listMapper.mapList(saleItems, ListSaleItemRes.class, modelMapper);
     }
 
-    public PageDTO<SaleItemListDto> findAll(Integer page, Integer size) {
+    public PageDTO<ListSaleItemRes> findAll(Integer page, Integer size) {
         Page<SaleItem> saleItemPages = saleItemRepository.findAll(PageRequest.of(page, size));
-        return listMapper.toPageDTO(saleItemPages, SaleItemListDto.class, modelMapper);
+        return listMapper.toPageDTO(saleItemPages, ListSaleItemRes.class, modelMapper);
     }
 
-    public SaleItemDetailDto findById(Integer id) {
+    public DetailSaleItemRes findById(Integer id) {
         SaleItem saleItem =  saleItemRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
         );
-        return modelMapper.map(saleItem, SaleItemDetailDto.class);
+        return modelMapper.map(saleItem, DetailSaleItemRes.class);
     }
 
-    public SaleItemDetailDto addSaleItem(CreateSaleItemDto saleItemDto) {
-        // Mock Brand - waiting for brand service >:CCC
-        Brand mockBrand = new Brand();
-        mockBrand.setId(saleItemDto.getBrandId());
-        saleItemDto.setBrand(mockBrand);
+    public CreateUpdateSaleItemRes addSaleItem(CreateSaleItemReq saleItemDto) {
+        Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
+        saleItemDto.setBrand(brand);
         SaleItem newSaleItem = saleItemRepository.save(
                 modelMapper.map(saleItemDto, SaleItem.class)
         );
-        return modelMapper.map(newSaleItem, SaleItemDetailDto.class);
+        return modelMapper.map(newSaleItem, CreateUpdateSaleItemRes.class);
     }
 
-    public SaleItemDetailDto updateSaleItem(UpdateSaleItemDto saleItemDto) {
+    public CreateUpdateSaleItemRes updateSaleItem(UpdateSaleItemReq saleItemDto) {
         if (!saleItemRepository.existsById(saleItemDto.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "SaleItem not found for this id :: " + saleItemDto.getId());
         }
+        Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
+        saleItemDto.setBrand(brand);
         SaleItem updatedSaleItem = saleItemRepository.save(
                 modelMapper.map(saleItemDto, SaleItem.class)
         );
-        return modelMapper.map(updatedSaleItem, SaleItemDetailDto.class);
+        return modelMapper.map(updatedSaleItem, CreateUpdateSaleItemRes.class);
     }
 
     public void removeSaleItem(Integer id) {

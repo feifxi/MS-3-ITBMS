@@ -6,6 +6,7 @@ import { formatNumber } from '@/libs/utils';
 import ItemNotFound from '../components/ItemNotFound.vue';
 import mockPhone from '@/assets/image/mockPhone.webp'
 import { MoveLeft } from 'lucide-vue-next';
+import BreadCrumb from '@/components/BreadCrumb.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -41,10 +42,11 @@ onMounted(() => {
 
 
 <template>
-  <main class="flex items-start max-lg:flex-col">
-    <button @click="goBack" class="rounded-md cursor-pointer p-4">
-      <MoveLeft class="size-15" />
-    </button>
+  <main class="px-16 py-8">
+    <BreadCrumb v-if="item" :links="[
+      { to: '/sale-items', label: 'Home' },
+      { to: '#', label: `${item.model}` },
+    ]" />
 
     <div class="max-w-6xl mx-auto font-sans text-gray-800">
       <!-- Main Content -->

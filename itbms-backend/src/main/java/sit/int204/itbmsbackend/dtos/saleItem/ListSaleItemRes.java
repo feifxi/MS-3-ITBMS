@@ -11,16 +11,18 @@ import java.math.BigDecimal;
 @Data
 @Getter
 @Setter
-public class CreateSaleItemDto {
+public class ListSaleItemRes {
+    private Integer id;
     private String model;
-    private String description;
     private BigDecimal price;
     private Integer ramGb;
-    private BigDecimal screenSizeInch;
     private Integer storageGb;
     private String color;
-    private Integer quantity;
-    private Integer brandId;
     @JsonIgnore
     private Brand brand;
+
+    public String getBrandName() {
+        return brand.getName();
+    }
 }
+

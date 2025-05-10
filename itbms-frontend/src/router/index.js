@@ -1,25 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import ProductView from '../views/ProductView.vue' // ✅ เพิ่ม
-import ProductDetailView from '../views/ProductDetailView.vue' // ✅ เพิ่ม
+import SaleItemView from '../views/SaleItemView.vue' // ✅ เพิ่ม
+import SaleItemDetailView from '../views/SaleItemDetailView.vue' // ✅ เพิ่ม
+import CreateSaleItem from '@/views/CreateSaleItem.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'Home',
       component: HomeView,
     },
     {
       path: '/sale-items',
-      name: 'Product',
-      component: ProductView,
+      name: 'SaleItem',
+      component: SaleItemView,
     },
     {
       path: '/sale-items/:id',
-      name: 'ProductDetail',
-      component: ProductDetailView,
+      name: 'SaleItemDetail',
+      component: SaleItemDetailView,
+    },
+    {
+      path: '/sale-items/add',
+      name: 'AddSaleItem',
+      component: CreateSaleItem,
     },
   ],
 })

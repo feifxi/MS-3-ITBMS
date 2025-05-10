@@ -11,7 +11,8 @@ import java.math.BigDecimal;
 @Data
 @Getter
 @Setter
-public class UpdateSaleItemDto {
+public class UpdateSaleItemReq {
+    @JsonIgnore
     private Integer id;
     private String model;
     private String description;
@@ -21,7 +22,18 @@ public class UpdateSaleItemDto {
     private Integer storageGb;
     private String color;
     private Integer quantity;
-    private Integer brandId;
-    @JsonIgnore
     private Brand brand;
+
+    public void setModel(String model) {
+        this.model = model.trim();
+    }
+    public void setDescription(String description) {
+        this.description = description.trim();
+    }
+    public void setColor(String color) {
+        this.color = color.trim();
+    }
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity < 0 ? 0 : quantity;
+    }
 }

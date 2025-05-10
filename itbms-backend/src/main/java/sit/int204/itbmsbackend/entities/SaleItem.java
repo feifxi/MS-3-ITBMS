@@ -17,6 +17,7 @@ import java.time.Instant;
 
 public class SaleItem {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -53,15 +54,23 @@ public class SaleItem {
     private Integer quantity;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_on")
+    @Column(name = "created_on", insertable = false, updatable = false)
     private Instant createdOn;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_on")
+    @Column(name = "updated_on", insertable = false)
     private Instant updatedOn;
 
 
-//    @Column(name = "is_active")
-//    private Boolean isActive = true;
+    @PrePersist
+    protected void onCreate() {
+        Instant now = Instant.now();
+        this.createdOn = now;
+        this.updatedOn = now;
+    }
 
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedOn = Instant.now();
+    }
 }

@@ -1,15 +1,20 @@
 <script setup>
-import { ShoppingCart, User } from 'lucide-vue-next';
+import { Menu, ShoppingCart, User } from 'lucide-vue-next';
 import { RouterLink, RouterView } from 'vue-router'
+
 </script>
 
 <template>
   <header class="bg-black text-white flex justify-between items-center px-16 py-4">
     <div class="flex items-center gap-8">
       <RouterLink to="/" class="text-2xl font-bold">ITBMS</RouterLink>
-    </div>
+    </div>  
 
-    <nav class="flex items-center gap-6">
+    <nav class="flex items-center gap-6 max-sm:hidden">
+      <RouterLink to="/sale-items/add">
+        <button class="border-2 rounded p-2 cursor-pointer hover:bg-white hover:text-black hover:border-white font-bold  duration-300">Add Sale Item</button>
+      </RouterLink>
+
       <button class="relative hover:text-gray-300">
         <ShoppingCart />
       </button>
@@ -18,6 +23,8 @@ import { RouterLink, RouterView } from 'vue-router'
         <User />
       </button>
     </nav>
+
+    <Menu class="sm:hidden"></Menu>
   </header>
 </template>
 

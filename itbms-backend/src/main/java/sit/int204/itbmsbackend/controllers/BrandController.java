@@ -5,13 +5,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int204.itbmsbackend.dtos.Brand.CreateBrandDto;
+import sit.int204.itbmsbackend.dtos.brand.CreateBrandDto;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.services.BrandService;
 import sit.int204.itbmsbackend.utils.ListMapper;
-import sit.int204.itbmsbackend.dtos.Brand.BrandDetailDto;
-import sit.int204.itbmsbackend.dtos.Brand.BrandDto;
+import sit.int204.itbmsbackend.dtos.brand.BrandDetailDto;
+import sit.int204.itbmsbackend.dtos.brand.BrandDto;
 
 
 

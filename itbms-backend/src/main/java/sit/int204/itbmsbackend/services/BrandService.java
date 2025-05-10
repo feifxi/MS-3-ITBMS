@@ -10,7 +10,8 @@ import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.repositories.SaleItemRepository;
 import sit.int204.itbmsbackend.utils.ListMapper;
-import sit.int204.itbmsbackend.dtos.brand.BrandDetailDto;
+import sit.int204.itbmsbackend.dtos.Brand.BrandDetailDto;
+import sit.int204.itbmsbackend.dtos.Brand.BrandDto;
 import sit.int204.itbmsbackend.dtos.brand.CreateBrandDto;
 
 import java.time.LocalDateTime;
@@ -31,22 +32,36 @@ public class BrandService {
         this.listMapper = listMapper;
         this.saleItemRepository = saleItemRepository;
     }
-    public List<Brand> getAllBrands(){return brandRepository.findAll();}
+    //public List<Brand> getAllBrands(){return brandRepository.findAll();}
     public  Brand getBrandById(Integer id)
     {return brandRepository.findById(id).orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Brand Item not found")
     );}
-    public Brand updateBrand(Brand brand) {
-        Brand existing = brandRepository.findById(brand.getId())
+
+    public List<BrandDto> getAllBrandDtos() {
+        List<Brand> brands = brandRepository.findAll();
+        return listMapper.mapList(brands, BrandDto.class, modelMapper);
+    }
+
+    public BrandDetailDto getBrandByIdDto(Integer id) {
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Brand not found"));
+        return modelMapper.map(brand, BrandDetailDto.class);
+    }
+
+
+    public BrandDetailDto updateBrand(BrandDetailDto brandDto) {
+        Brand existing = brandRepository.findById(brandDto.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Brand Item not found"));
 
-        existing.setName(brand.getName());
-        existing.setWebsiteUrl(brand.getWebsiteUrl());
-        existing.setIsActive(brand.getIsActive());
-        existing.setCountryOfOrigin(brand.getCountryOfOrigin());
+        existing.setName(brandDto.getName());
+        existing.setWebsiteUrl(brandDto.getWebsiteUrl());
+        existing.setIsActive(brandDto.getIsActive());
+        existing.setCountryOfOrigin(brandDto.getCountryOfOrigin());
         existing.setUpdatedOn(LocalDateTime.now());
 
-        return brandRepository.save(existing);
+        Brand saved = brandRepository.save(existing);
+        return modelMapper.map(saved, BrandDetailDto.class);
     }
 
     public BrandDetailDto createBrand(CreateBrandDto dto) {

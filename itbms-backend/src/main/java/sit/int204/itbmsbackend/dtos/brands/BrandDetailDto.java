@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.dtos.brand;
+package sit.int204.itbmsbackend.dtos.brands;
 
 import lombok.Data;
 import lombok.Getter;

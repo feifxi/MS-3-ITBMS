@@ -52,13 +52,12 @@ const validateData = () => {
     isDataValid.value = true
     // Validate Require field
     for (const field in saleItem) {
-        if (requiredField.includes(field) && !saleItem[field]) {
+        if (
+            (requiredField.includes(field) && !saleItem[field]) || 
+            (typeof saleItem[field] === 'number' && saleItem[field] <= 0)
+        ) {
             isDataValid.value = false
         }
-    }
-    // Constraint validate
-    if (saleItem.price < 1) {
-        isDataValid.value = false
     }
 }
 
@@ -126,7 +125,7 @@ watch(saleItem, () => {
                     <form @submit="submitForm" class="flex flex-col gap-3">
                         <div class="flex flex-col gap-1">
                             <label>Brand</label>
-                            <select class="input" v-model="saleItem.brand.id">
+                            <select class="itbms-brand input" v-model="saleItem.brand.id">
                                 <option v-for="brand of brands" :value="brand.id">
                                     {{ brand.name }}
                                 </option>
@@ -138,7 +137,7 @@ watch(saleItem, () => {
                                 <span class="text-red-500 text-xl">*</span>
                                 Model
                             </label>
-                            <input name="model" type="text" class="input" placeholder="Model..."
+                            <input name="model" type="text" class="itbms-model input" placeholder="Model..."
                                 v-model="saleItem.model" @focusout="trimmedData">
                         </div>
 
@@ -147,7 +146,7 @@ watch(saleItem, () => {
                                 <span class="text-red-500 text-xl">*</span>
                                 Price
                             </label>
-                            <input name="price" type="number" class="input" placeholder="Price..."
+                            <input name="price" type="number" class="itbms-price input" placeholder="Price..."
                                 v-model="saleItem.price">
                         </div>
 
@@ -156,31 +155,31 @@ watch(saleItem, () => {
                                 <span class="text-red-500 text-xl">*</span>
                                 Description
                             </label>
-                            <textarea name="description" class="input" placeholder="Description..."
+                            <textarea name="description" class="itbms-description input" placeholder="Description..."
                                 v-model="saleItem.description" @focusout="trimmedData"></textarea>
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Ram (GM)</label>
-                            <input name="ramGb" type="number" class="input" placeholder="Ram..."
+                            <input name="ramGb" type="number" class="itbms-ramGb input" placeholder="Ram..."
                                 v-model="saleItem.ramGb">
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Screen Size (Inches)</label>
-                            <input name="screenSizeInch" type="number" class="input" placeholder="Screen Size..."
+                            <input name="screenSizeInch" type="number" class="itbms-screenSizeInch input" placeholder="Screen Size..."
                                 v-model="saleItem.screenSizeInch">
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Storage (GB)</label>
-                            <input name="storageGb" type="number" class="input" placeholder="Storage..."
+                            <input name="storageGb" type="number" class="itbms-storageGb input" placeholder="Storage..."
                                 v-model="saleItem.storageGb">
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Color</label>
-                            <input name="color" type="text" class="input" placeholder="Color..."
+                            <input name="color" type="text" class="itbms-color input" placeholder="Color..."
                                 v-model="saleItem.color" @focusout="trimmedData">
                         </div>
 
@@ -189,17 +188,17 @@ watch(saleItem, () => {
                                 <span class="text-red-500 text-xl">*</span>
                                 Quantity
                             </label>
-                            <input name="quantity" type="number" class="input" placeholder="Quantity..."
+                            <input name="quantity" type="number" class="itbms-quantity input" placeholder="Quantity..."
                                 v-model="saleItem.quantity">
                         </div>
 
                         <div class="flex gap-3 items-center mt-5">
-                            <Button variant="primary" :onclick="submitForm" :disabled="isSubmitting || !isDataValid"
-                                type="submit">
+                            <Button variant="primary" :onclick="submitForm" :disabled="isSubmitting || !isDataValid" 
+                                class-name="itbms-save-button" type="submit">
                                 {{ isSubmitting ? 'Loading...' : 'Save' }}
                             </Button>
 
-                            <Button variant="secondary" :onclick="goBackHome" type="button">
+                            <Button variant="secondary" :onclick="goBackHome" type="button" class-name="itbms-cancel-button">
                                 Cancel
                             </Button>
                         </div>

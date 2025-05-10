@@ -11,7 +11,7 @@ import { RouterLink, RouterView } from 'vue-router'
     </div>  
 
     <nav class="flex items-center gap-6 max-sm:hidden">
-      <RouterLink to="/sale-items/add">
+      <RouterLink to="/sale-items/add" class="itbms-sale-item-add">
         <button class="border-2 rounded p-2 cursor-pointer hover:bg-white hover:text-black hover:border-white font-bold  duration-300">Add Sale Item</button>
       </RouterLink>
 

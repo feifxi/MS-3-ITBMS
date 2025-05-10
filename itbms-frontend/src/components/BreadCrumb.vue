@@ -15,7 +15,10 @@ defineProps({
             <div v-if="index === links.length-1" class="">
                 {{ link.label }}
             </div>
-            <RouterLink v-else :to="link.to" class="text-blue-600">
+            <RouterLink v-else :to="link.to" class="text-blue-600" :class="{
+                'itbms-home-button': index === 0,
+                'itbms-back-button': index === 1,
+            }">
                 {{ link.label }}
             </RouterLink>
             <ChevronRight v-if="index !== links.length-1" />

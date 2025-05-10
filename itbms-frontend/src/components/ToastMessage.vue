@@ -10,7 +10,7 @@ const statusMessageStore = useStatusMessageStore()
     }]">
       <CircleCheckBig  v-if="statusMessageStore.isSuccess" class="size-8 text-green-500" />
       <CircleX v-else class="size-8 text-red-500" />
-      <p>{{ statusMessageStore.statusMessage }}</p>
+      <p class="itbms-message">{{ statusMessageStore.statusMessage }}</p>
     </div>
 </template>
 

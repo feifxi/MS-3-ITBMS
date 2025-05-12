@@ -1,3 +1,6 @@
+SET GLOBAL time_zone = '+00:00';
+SET time_zone = '+00:00';
+
 CREATE SCHEMA IF NOT EXISTS `ms3_itbms_db` DEFAULT CHARACTER SET utf8 ;
 USE `ms3_itbms_db` ;
 

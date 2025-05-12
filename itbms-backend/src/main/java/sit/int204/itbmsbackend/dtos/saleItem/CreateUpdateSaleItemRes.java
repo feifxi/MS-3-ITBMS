@@ -8,6 +8,7 @@ import sit.int204.itbmsbackend.entities.Brand;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Data
 @Getter
@@ -29,5 +30,4 @@ public class CreateUpdateSaleItemRes {
     }
     private Instant createdOn;
     private Instant updatedOn;
-
 }

@@ -2,14 +2,16 @@ package sit.int204.itbmsbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -63,11 +65,33 @@ public class SaleItem {
 //    @Column(name = "updated_on", insertable = false)
 //    private Instant updatedOn;
 
+//    @CreationTimestamp
+//    @Column(name = "createdOn", insertable = false, updatable = false, nullable = false)
+//    private Instant createdOn;
+//
+//    @UpdateTimestamp
+//    @Column(name = "updatedOn", insertable = false, nullable = false)
+//    private Instant updatedOn;
+
+//    @Column(name = "created_on", insertable = false, updatable = false, nullable = false)
+//    private Instant createdOn;
+//
+//    @Column(name = "updated_on", insertable = false, nullable = false)
+//    private Instant updatedOn;
+
+//    @CreatedDate
+//    @Column(name = "created_on", nullable = false, updatable = false)
+//    private LocalDateTime createdOn;
+//
+//    @LastModifiedDate
+//    @Column(name = "updated_on")
+//    private LocalDateTime updatedOn;
+
     @CreationTimestamp
-    @Column(name = "createdOn", nullable = false, updatable = false, columnDefinition = "DATETIME")
+    @Column(name = "createdOn", updatable = false, nullable = false)
     private Instant createdOn;
 
     @UpdateTimestamp
-    @Column(name = "updatedOn", nullable = false, columnDefinition = "DATETIME")
+    @Column(name = "updatedOn", nullable = false)
     private Instant updatedOn;
 }

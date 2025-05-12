@@ -1,0 +1,1121 @@
+{
+	"info": {
+		"_postman_id": "8f260726-416b-4d04-811b-db7742bbd100",
+		"name": "Sprint-02",
+		"description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Tests\" tab**\n\nTests help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/b5f280a7-4b09-48ec-857f-0a7ed99d7ef8/U2NyZWVuc2hvdCAyMDIzLTAzLTI3IGF0IDkuNDcuMjggUE0ucG5n\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) in \"Tests\" to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6637675"
+	},
+	"item": [
+		{
+			"name": "PBI-3-ADD-SALE-ITEM",
+			"item": [
+				{
+					"name": "ADD-SALE-ITEM-NORMAL-RANDOM-CASE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const item = pm.response.json(),",
+									"base_item = SELECTED_ITEM;",
+									"",
+									"base_quantity = base_item.quantity;",
+									"if (base_item.quantity == null || base_item.quantity < 0 || base_item.quantity == undefined) {",
+									"    base_quantity = 1;",
+									"}",
+									"base_color = base_item.color;",
+									"if (base_item.color == undefined || base_item.color==null || base_item.color.trim() == \"\") {",
+									"    base_color = null;",
+									"} else {",
+									"    base_color = base_item.color.trim();",
+									"}",
+									"",
+									"pm.test(\"The Expected Status code is 201 ** (\"+ round+\") **\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"The Expected Response is an Object\", function () {",
+									"    pm.expect(item).to.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"The expected sale item detail attribute's name\", function () {",
+									"    pm.expect(Object.keys(item).length).to.be.at.least(12);",
+									"    pm.expect(item).to.have.property('id');",
+									"    pm.expect(item).to.have.property('brandName');",
+									"    pm.expect(item).to.have.property('color');",
+									"    pm.expect(item).to.have.property('description');",
+									"    pm.expect(item).to.have.property('quantity');",
+									"    pm.expect(item).to.have.property('model');",
+									"    pm.expect(item).to.have.property('price');",
+									"    pm.expect(item).to.have.property('ramGb');",
+									"    pm.expect(item).to.have.property('storageGb');",
+									"    pm.expect(item).to.have.property('screenSizeInch');",
+									"    pm.expect(item).to.have.property('createdOn');",
+									"    pm.expect(item).to.have.property('updatedOn');",
+									"});",
+									"",
+									"pm.sendRequest(pm.collectionVariables.get(\"base_url\")+'/v1/sale-items/'+item.id, (error, response) => {",
+									"  if (error) {",
+									"    console.log(error);",
+									"  }",
+									"  new_sale_item = response.json();",
+									"  console.log('---new sale item------')",
+									"  console.log(new_sale_item);",
+									"  pm.test('Get a new sale item by id, expected attribute values', () => {",
+									"    pm.expect(item.id).to.be.eq(new_sale_item.id);",
+									"    pm.expect(base_item.brandName).to.be.eq(new_sale_item.brandName);",
+									"    pm.expect(base_item.description.trim()).to.be.eq(new_sale_item.description);",
+									"    pm.expect(base_item.model.trim()).to.be.eq(new_sale_item.model);",
+									"    pm.expect(base_item.price).to.be.eq(new_sale_item.price);",
+									"    pm.expect(base_item.ramGb).to.be.eq(new_sale_item.ramGb);",
+									"    pm.expect(base_item.storageGb).to.be.eq(new_sale_item.storageGb);",
+									"    pm.expect(base_item.screenSizeInch).to.be.eq(new_sale_item.screenSizeInch);",
+									"    pm.expect(new_sale_item.updatedOn).to.be.eq(new_sale_item.createdOn);",
+									"    ",
+									"    pm.expect(base_quantity).to.be.eq(new_sale_item.quantity);",
+									"    pm.expect(base_color).to.be.eq(new_sale_item.color);",
+									"    ",
+									"    const moment = require('moment');",
+									"    now = moment(new Date());",
+									"    duration = moment.duration(now.diff(new_sale_item.updatedOn)).asSeconds();",
+									"    pm.expect(duration).to.be.lte(60.0);",
+									"",
+									"    console.log(now.toLocaleString(\"en-UK\", {timeZone: \"Asia/Bangkok\"}) ",
+									"    + \" - \" + moment(new_sale_item.updatedOn)",
+									"    .toLocaleString(\"en-UK\", {timeZone: \"Asia/Bangkok\"}) + \" = \" + duration);",
+									"  });",
+									"});",
+									"",
+									"if(round>=3) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"ADD-SALE-ITEM-NORMAL-RANDOM-CASE\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"round = pm.collectionVariables.get(\"rounds\");",
+									"round = round==undefined || round==null || round > 3 ? 0 : round+1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"const selected_body = round; //Math.round(Math.random()*100)%4;",
+									"const body = new_sale_items[selected_body];",
+									"var body_str = JSON.stringify(body); ",
+									"pm.request.body.raw = body_str;",
+									"SELECTED_ITEM = body;",
+									"console.log('---selected test data-----('+ selected_body+ ')')",
+									"console.log(SELECTED_ITEM);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "ADD-SALE-ITEM-FAIL-RANDOM-CASE",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const item = pm.response.json(),",
+									"base_item = SELECTED_ITEM;",
+									"",
+									"pm.test(\"The Expected Status code is 400, 404, 442 or 500 ** (\"",
+									"  + round + \") **\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400,500,422,404]);",
+									"});",
+									"",
+									"pm.test(\"The Expected Response is an Object\", function () {",
+									"    pm.expect(item).to.be.an('object');",
+									"});",
+									"",
+									"if(round>=3) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"ADD-SALE-ITEM-FAIL-RANDOM-CASE\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"round = pm.collectionVariables.get(\"rounds\");",
+									"round = (round==undefined || round==null) ? 0 : round+1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"const selected_body = round; //Math.round(Math.random()*100)%4;",
+									"const body = new_sale_items_invalid[selected_body];",
+									"var body_str = JSON.stringify(body); ",
+									"pm.request.body.raw = body_str;",
+									"SELECTED_ITEM = body;",
+									"console.log('Selected Test data #'+ selected_body);",
+									"console.log(SELECTED_ITEM);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "PBI-4 EDIT-SALE-ITEM",
+			"item": [
+				{
+					"name": "EDIT-SALE-ITEM-NORMAL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"item = pm.response.json();",
+									"// console.log(pm.request.body.raw);",
+									"pm.test(\"The Expected Status code is 200 ** (\"+ round+\") **\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"The Expected Response is an Object\", function () {",
+									"    pm.expect(item).to.be.an('object');",
+									"});",
+									"// after updated get updated item by id",
+									"",
+									"pm.sendRequest(pm.collectionVariables.get(\"base_url\")+'/v1/sale-items/'",
+									"    + UPDATED_ITEM.target, (error, response, request) => {",
+									"  if (error) {",
+									"    console.log(error);",
+									"  } else {",
+									"    var update_base_item = UPDATED_ITEM;",
+									"    if (update_base_item.quantity == null || update_base_item.quantity < 0 || update_base_item.quantity == undefined) {",
+									"        update_base_item.quantity = 1;",
+									"    }",
+									"    if (update_base_item.color == undefined || update_base_item.color==null || update_base_item.color.trim() == \"\") {",
+									"        update_base_item.color = null;",
+									"    } else {",
+									"        update_base_item.color = update_base_item.color.trim();",
+									"    }",
+									"    new_sale_item = response.json();",
+									"    //  console.log('--- new sale item after updated/base item ---')",
+									"    //  console.log(new_sale_item);",
+									"    //   console.log('--- update_base_item ---')",
+									"    // console.log(update_base_item)",
+									"    pm.test('Get a updated sale item by id, expected attribute values', () => {",
+									"        // pm.expect(update_base_item.id).to.be.eq(new_sale_item.id); // Fixed the ReferenceError by changing 'target.id' to 'update_base_item.id'",
+									"    //     // console.log(\"update_base_item.brandName: \"+ update_base_item.newBrandName);",
+									"    //     // console.log(\"new_sale_item.brandName: \" + new_sale_item.brandName);",
+									"        pm.expect(update_base_item.newBrandName).to.be.eq(new_sale_item.brandName);",
+									"        pm.expect(update_base_item.description.trim()).to.be.eq(new_sale_item.description);",
+									"        pm.expect(update_base_item.model.trim()).to.be.eq(new_sale_item.model);",
+									"        pm.expect(update_base_item.price).to.be.eq(new_sale_item.price);",
+									"        pm.expect(update_base_item.ramGb).to.be.eq(new_sale_item.ramGb);",
+									"        pm.expect(update_base_item.storageGb).to.be.eq(new_sale_item.storageGb);",
+									"        pm.expect(update_base_item.screenSizeInch).to.be.eq(new_sale_item.screenSizeInch);",
+									"    ",
+									"        const moment = require('moment');",
+									"        co = moment(new_sale_item.createdOn);",
+									"        uo = moment(new_sale_item.updatedOn);",
+									"        diff = uo - co;",
+									"        // console.log(\"co: \"+ co);",
+									"        // console.log(\"uo: \"+ uo);",
+									"",
+									"        pm.expect(update_base_item.quantity).to.be.eq(new_sale_item.quantity);",
+									"        pm.expect(update_base_item.color).to.be.eq(new_sale_item.color);",
+									"        pm.expect(diff).to.be.gt(0);",
+									"   ",
+									"        // now = moment(new Date());",
+									"        // duration = moment.duration(now.diff(new_sale_item.updatedOn)).asSeconds();",
+									"        // console.log(new_sale_item.updatedOn);",
+									"        // pm.expect(duration).to.be.lte(60.0);",
+									"",
+									"        console.log(moment(new_sale_item.createdOn).toLocaleString(\"en-UK\", {timeZone: \"Asia/Bangkok\"}) ",
+									"            + \" - \" + moment(new_sale_item.updatedOn)",
+									"            .toLocaleString(\"en-UK\", {timeZone: \"Asia/Bangkok\"}));",
+									"    });",
+									"  }",
+									"});",
+									"// console.log(\"---- end of update procedure next restore previous data ---\")",
+									"// console.log(ORIGINAL_DATA);",
+									"// the_url = pm.request.url.toString();",
+									"// const updateRequest = {",
+									"//     url: the_url,",
+									"//     method: 'PUT',",
+									"//     header: {",
+									"//         'Content-Type': 'application/json'",
+									"//     },",
+									"//     body: {",
+									"//         mode: 'raw',",
+									"//         raw: ORIGINAL_DATA",
+									"//     }",
+									"// };",
+									"",
+									"// pm.sendRequest(updateRequest, function (err, res) {",
+									"//     if (err) {",
+									"//         console.log(err);",
+									"//     } else {",
+									"//         pm.test(\"Restore Sale Item to previous state,\\nExpected Status code is 200\", () => {",
+									"//             let resJson = res.json();",
+									"//             pm.expect(res).to.have.status(200);",
+									"//             pm.expect(resJson.model).to.be.eq(ORIGINAL_DATA.model);",
+									"//             pm.expect(resJson.brandName).to.be.eq(ORIGINAL_DATA.brand.name);",
+									"//         });",
+									"//     }",
+									"// });",
+									"",
+									"if(round>=3) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"EDIT-SALE-ITEM-NORMAL\");",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"round = pm.collectionVariables.get(\"rounds\");",
+									"round = round==undefined || round==null ? 0 : round+1;",
+									"if(round>3) {",
+									"    round = 0;",
+									"}",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"selected_body = round; //Math.round(Math.random()*100)%4; //rounds",
+									"",
+									"// var body_str = JSON.stringify(update_sale_items[selected_body]); ",
+									"var body_str = update_sale_items[selected_body]; ",
+									"",
+									"pm.request.body.raw = JSON.stringify(body_str);",
+									"",
+									"",
+									"UPDATED_ITEM = body_str;",
+									"ORIGINAL_DATA = body_str;",
+									"// UPDATED_ITEM.target = Math.round(Math.random()*1000)%86;",
+									"",
+									"// console.log(\"---- body -----\")",
+									"// console.log(body_str);",
+									"// console.log('---selected test data-----('+ selected_body+ ')')",
+									"// console.log(UPDATED_ITEM);",
+									"// console.log('---end selected test data-----');",
+									"",
+									"pm.collectionVariables.set(\"target_id\", UPDATED_ITEM.target);",
+									"",
+									"// pm.sendRequest(pm.collectionVariables.get(\"base_url\")+'/v1/sale-items/'+UPDATED_ITEM.target, (error, response) => {",
+									"//   if (error) {",
+									"//     console.log(error);",
+									"//   } else {",
+									"//     tmp = response.json();",
+									"//     // console.log(\"---- Original Data -----\");",
+									"//     // console.log(tmp);",
+									"//     ORIGINAL_DATA.id = tmp.id;",
+									"//     ORIGINAL_DATA.model = tmp.model;",
+									"//     ORIGINAL_DATA.description = tmp.description;",
+									"//     ORIGINAL_DATA.brand = BASE_BRAND[tmp.brandName];",
+									"//     ORIGINAL_DATA.price = tmp.price;",
+									"//     ORIGINAL_DATA.ramGb = tmp.ramGb;",
+									"//     ORIGINAL_DATA.screenSizeInch = tmp.screenSizeInch;",
+									"//     ORIGINAL_DATA.color = tmp.color;",
+									"//     ORIGINAL_DATA.storageGb = tmp.storageGb;",
+									"//     ORIGINAL_DATA.quantity = tmp.quantity;",
+									"//     ORIGINAL_DATA.brandName = tmp.brandName;",
+									"//   }",
+									"// });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/sale-items/{{target_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"sale-items",
+								"{{target_id}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "EDIT-SALE-ITEM-FAIL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const item = pm.response.json(),",
+									"update_fail_item = SELECTED_ITEM;",
+									"",
+									"pm.test(\"The Expected Status code is 400, 404, 442 or 500 ** (\"",
+									"  + round + \") **\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400,500,422,404]);",
+									"});",
+									"",
+									"pm.test(\"The Expected Response is an Object\", function () {",
+									"    pm.expect(item).to.be.an('object');",
+									"});",
+									"if(round>=3) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"EDIT-SALE-ITEM-FAIL\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"round = pm.collectionVariables.get(\"rounds\");",
+									"round = round==undefined || round==null ? 0 : round+1;",
+									"if(round>3) {",
+									"    round = 0;",
+									"}",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"selected_body = round; //Math.round(Math.random()*100)%4; //rounds",
+									"body = update_sale_items_invalid[selected_body];",
+									"var body_str = JSON.stringify(body); ",
+									"pm.request.body.raw = body_str;",
+									"",
+									"SELECTED_ITEM = body;",
+									"pm.collectionVariables.set(\"target_id\", SELECTED_ITEM.target);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/sale-items/{{target_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"sale-items",
+								"{{target_id}}"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "PBI-5 DELETE-SALE-ITEM",
+			"item": [
+				{
+					"name": "DELETE-SALE-ITEM-NORMAL",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"round = pm.collectionVariables.get(\"rounds\");",
+									"round = round==undefined || round==null ? 0 : round+1;",
+									"// if(round>3) {",
+									"//     round = 1;",
+									"// }",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"var body_str = JSON.stringify(ADD_FOR_DELETE); ",
+									"",
+									"",
+									"the_url = pm.collectionVariables.get(\"base_url\")+ \"/v1/sale-items\";",
+									"const updateRequest = {",
+									"    url: the_url,",
+									"    method: 'POST',",
+									"    header: {",
+									"        'Content-Type': 'application/json'",
+									"    },",
+									"    body: {",
+									"        mode: 'raw',",
+									"        raw: body_str",
+									"    }",
+									"};",
+									"",
+									"pm.sendRequest(updateRequest, function (err, res) {",
+									"    if (err) {",
+									"        console.log(err);",
+									"    } else {",
+									"        let newSaleItem = res.json();",
+									"        pm.test(\"Add new sale item,\\nExpected Status code is 201\", () => {",
+									" ",
+									"            pm.expect(res).to.have.status(201);",
+									"",
+									"        });",
+									"        pm.collectionVariables.set(\"delete_id\", newSaleItem.id);",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"The successful DELETE request should be 204\", function () {",
+									"    pm.expect(pm.response.code).to.be.eq(204);",
+									"});",
+									"",
+									"pm.sendRequest(pm.collectionVariables.get(\"base_url\")+'/v1/sale-items/'",
+									"    + pm.collectionVariables.get(\"delete_id\"), (error, response) => {",
+									"  if (error) {",
+									"    console.log(error);",
+									"  }",
+									"",
+									"  pm.test('The expected status code when try to get deleted item must be 404', () => {",
+									"    pm.expect(response.code).to.be.eq(404);",
+									"  });",
+									"});",
+									"",
+									"if(round>=3) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"DELETE-SALE-ITEM-NORMAL\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v1/sale-items/{{delete_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"sale-items",
+								"{{delete_id}}"
+							]
+						},
+						"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE-SALE-ITEM-FAIL",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"delete_items = [11,12,13,14,15,919,26,27,28,29,41,42,789, 43,44,45,56,57,58,59];",
+									"round = pm.collectionVariables.get(\"rounds\");",
+									"round = round==undefined || round==null ? 0 : round+1;",
+									"// if(round>3) {",
+									"//     round = 1;",
+									"// }",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"DELETE_ID = Math.round(Math.random()*100) % delete_items.length;",
+									"console.log(\"DELETE_ID \" + delete_items[DELETE_ID]);",
+									"pm.collectionVariables.set(\"delete_id\", delete_items[DELETE_ID]);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete does not exist item, expected 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.eq(404);",
+									"});",
+									"",
+									"",
+									"if(round>=3) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"DELETE-SALE-ITEM-FAIL\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v1/sale-items/{{delete_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"sale-items",
+								"{{delete_id}}"
+							]
+						},
+						"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"brands = ",
+					"[",
+					"  {",
+					"    \"id\": 1,",
+					"    \"name\": \"Samsung\"",
+					"  },",
+					"  {",
+					"    \"id\": 2,",
+					"    \"name\": \"Apple\"",
+					"  },",
+					"  {",
+					"    \"id\": 3,",
+					"    \"name\": \"Xiaomi\"",
+					"  },",
+					"  {",
+					"    \"id\": 4,",
+					"    \"name\": \"Huawei\"",
+					"  },",
+					"  {",
+					"    \"id\": 5,",
+					"    \"name\": \"OnePlus\"",
+					"  },",
+					"  {",
+					"    \"id\": 6,",
+					"    \"name\": \"Sony\"",
+					"  },",
+					"  {",
+					"    \"id\": 7,",
+					"    \"name\": \"LG\"",
+					"  },",
+					"  {",
+					"    \"id\": 8,",
+					"    \"name\": \"Nokia\"",
+					"  },",
+					"  {",
+					"    \"id\": 9,",
+					"    \"name\": \"Motorola\"",
+					"  },",
+					"  {",
+					"    \"id\": 10,",
+					"    \"name\": \"OPPO\"",
+					"  },",
+					"  {",
+					"    \"id\": 11,",
+					"    \"name\": \"Vivo\"",
+					"  },",
+					"  {",
+					"    \"id\": 12,",
+					"    \"name\": \"ASUS\"",
+					"  },",
+					"  {",
+					"    \"id\": 13,",
+					"    \"name\": \"Google\"",
+					"  },",
+					"  {",
+					"    \"id\": 14,",
+					"    \"name\": \"Realme\"",
+					"  },",
+					"  {",
+					"    \"id\": 15,",
+					"    \"name\": \"BlackBerry\"",
+					"  },",
+					"  {",
+					"    \"id\": 16,",
+					"    \"name\": \"HTC\"",
+					"  },",
+					"  {",
+					"    \"id\": 17,",
+					"    \"name\": \"ZTE\"",
+					"  },",
+					"  {",
+					"    \"id\": 18,",
+					"    \"name\": \"Lenovo\"",
+					"  },",
+					"  {",
+					"    \"id\": 19,",
+					"    \"name\": \"Honor\"",
+					"  },",
+					"  {",
+					"    \"id\": 20,",
+					"    \"name\": \"Nothing\"",
+					"  }",
+					"];",
+					"BASE_BRAND = Array;",
+					"brands.forEach((brand, index) => {",
+					"    BASE_BRAND[brand.name] = brand;",
+					"});",
+					"// console.log(base_brand);",
+					"new_sale_items = [",
+					"  {",
+					"    \"id\": 1,",
+					"    \"model\": \"  Galaxy S24   \",",
+					"    \"description\": \"    ล่าสุดจากซัมซุง Latest Samsung flagship with high-end features    \",",
+					"    \"price\": 49999,",
+					"    \"ramGb\": 12,",
+					"    \"screenSizeInch\": 6.8,",
+					"    \"quantity\": 1,",
+					"    \"storageGb\": 256,",
+					"    \"color\": \"     \",",
+					"    \"brand\": {",
+					"      \"id\": 1",
+					"    },",
+					"    \"brandName\" : \"Samsung\"",
+					"  },",
+					"  {",
+					"    \"id\": null,",
+					"    \"model\": \"    iPhone 15 Pro.   \",",
+					"    \"description\": \"   Apple's newest smartphone with ceramic shield สภาพสวยกว่านางฟ้า \",",
+					"    \"price\": 41199,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": 6.1,",
+					"    \"quantity\": 0,",
+					"    \"storageGb\": null,",
+					"    \"color\": \" ซิลเวอร์   \",",
+					"    \"brand\": {",
+					"      \"id\": 2,",
+					"      \"name\": \"Apple Phone\"",
+					"    },",
+					"    \"brandName\" : \"Apple\"",
+					"  },",
+					"  {",
+					"    \"model\": \"  Pixel 8. \",",
+					"    \"description\": \"  Google's phone with AI features. \",",
+					"    \"price\": 799,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": null,",
+					"    \"quantity\": 2,",
+					"    \"storageGb\": 128,",
+					"    \"color\": \"  Obsidian \",",
+					"    \"brand\": {",
+					"      \"id\": 13,",
+					"      \"name\": \"Google Mobile\"",
+					"    },",
+					"    \"brandName\" : \"Google\"",
+					"  },",
+					"  {",
+					"    \"id\": -100,",
+					"    \"model\": \"  iPhone จีน \",",
+					"    \"description\": \"  Apple's Lenuvo smartphone with ceramic shield  \",",
+					"    \"price\": 31199,",
+					"    \"ramGb\": null,",
+					"    \"screenSizeInch\": 6.1,",
+					"    \"quantity\": -2,",
+					"    \"storageGb\": 512,",
+					"    \"color\": \" ทองนพเก้า  \",",
+					"    \"brand\": {",
+					"      \"id\": 18,",
+					"      \"name\": \"Lenuvo\"",
+					"    },",
+					"    \"brandName\" : \"Lenovo\"",
+					"  }",
+					"];",
+					"",
+					"new_sale_items_invalid = [",
+					"    {",
+					"    \"model\": \"     \",",
+					"    \"description\": \"       \",",
+					"    \"price\": null,",
+					"    \"quantity\": null,",
+					"    \"brand\": {",
+					"      \"id\": 1",
+					"    }",
+					"  },",
+					"    {",
+					"    \"id\": null,",
+					"    \"model\": \"    iPhone 15 Pro.   \",",
+					"    \"description\": \"   Apple's newest smartphone with ceramic shield สภาพสวยกว่านางฟ้า\",",
+					"    \"price\": 41199,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": 6.1,",
+					"    \"quantity\": 0,",
+					"    \"storageGb\": 512,",
+					"    \"color\": \":ซิลเวอร์   \",",
+					"    \"brand\": {",
+					"      \"id\": 34,",
+					"      \"name\": \"Apple phone\"",
+					"    }",
+					"  },  {",
+					"    \"id\": 9999,",
+					"    \"model\": \"Pixel 8\",",
+					"    \"description\": \" \",",
+					"    \"price\": 799,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": 6.2,",
+					"    \"quantity\": 2,",
+					"    \"storageGb\": 128,",
+					"    \"color\": \"Obsidian\",",
+					"    \"brand\": {",
+					"      \"id\": 13,",
+					"      \"name\": \"Google\"",
+					"    }",
+					"  },",
+					"    {",
+					"    \"id\": -100,",
+					"    \"model\": \"  iPhone จีน \",",
+					"    \"description\": \"  Apple's Lenuvo smartphone with ceramic shield  \",",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": 6.1,",
+					"    \"quantity\": -2,",
+					"    \"storageGb\": 512,",
+					"    \"color\": \"     \",",
+					"    \"brand\": {",
+					"      \"id\": 18,",
+					"      \"name\": \"Lenuvo\"",
+					"    }",
+					"  }",
+					"];",
+					"",
+					"update_sale_items = [",
+					"  {",
+					"    \"id\": 1,",
+					"    \"model\": \"  Galaxy S24   \",",
+					"    \"description\": \"    ล่าสุดจากซัมซุง Latest Samsung flagship with high-end features    \",",
+					"    \"price\": 49999,",
+					"    \"ramGb\": 12,",
+					"    \"screenSizeInch\": 6.8,",
+					"    \"quantity\": 1,",
+					"    \"storageGb\": 256,",
+					"    \"color\": \"     \",",
+					"    \"brand\": {",
+					"      \"id\": 1",
+					"    },",
+					"    \"newBrandName\" : \"Samsung\",",
+					"    \"target\" : 85",
+					"  },",
+					"  {",
+					"    \"id\": null,",
+					"    \"model\": \"    iPhone 15 Pro.   \",",
+					"    \"description\": \"   Apple's newest smartphone with ceramic shield สภาพสวยกว่านางฟ้า \",",
+					"    \"price\": 41199,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": 6.1,",
+					"    \"quantity\": 0,",
+					"    \"storageGb\": null,",
+					"    \"color\": \" ซิลเวอร์   \",",
+					"    \"brand\": {",
+					"      \"id\": 2,",
+					"      \"name\": \"Apple Phone\"",
+					"    },",
+					"    \"newBrandName\" : \"Apple\",",
+					"    \"target\" : 61",
+					"  },",
+					"  {",
+					"    \"model\": \"  Pixel 8. \",",
+					"    \"description\": \"  Google's phone with AI features. \",",
+					"    \"price\": 799,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": null,",
+					"    \"quantity\": 2,",
+					"    \"storageGb\": 128,",
+					"    \"color\": \"  Obsidian \",",
+					"    \"brand\": {",
+					"      \"id\": 13,",
+					"      \"name\": \"Google Mobile\"",
+					"    },",
+					"    \"newBrandName\" : \"Google\",",
+					"    \"target\" : 3",
+					"  },",
+					"  {",
+					"    \"id\": -100,",
+					"    \"model\": \"  iPhone จีน \",",
+					"    \"description\": \"  Apple's Lenuvo smartphone with ceramic shield  \",",
+					"    \"price\": 31199,",
+					"    \"ramGb\": null,",
+					"    \"screenSizeInch\": 6.1,",
+					"    \"quantity\": -2,",
+					"    \"storageGb\": 512,",
+					"    \"color\": \" ทองนพเก้า  \",",
+					"    \"brand\": {",
+					"      \"id\": 18,",
+					"      \"name\": \"Lenuvo\"",
+					"    },",
+					"    \"newBrandName\" : \"Lenovo\",",
+					"    \"target\" : 39",
+					"  }",
+					"];",
+					"",
+					"update_sale_items_invalid = [",
+					"    {",
+					"    \"model\": \"     \",",
+					"    \"description\": \"       \",",
+					"    \"price\": null,",
+					"    \"quantity\": null,",
+					"    \"brand\": {",
+					"      \"id\": 1",
+					"    },",
+					"    \"target\" : 1",
+					"  },",
+					"    {",
+					"    \"id\": null,",
+					"    \"model\": \"    iPhone 15 Pro.   \",",
+					"    \"description\": \"   Apple's newest smartphone with ceramic shield สภาพสวยกว่านางฟ้า\",",
+					"    \"price\": 41199,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": 6.1,",
+					"    \"quantity\": 0,",
+					"    \"storageGb\": 512,",
+					"    \"color\": \":ซิลเวอร์   \",",
+					"    \"brand\": {",
+					"      \"id\": 700,",
+					"      \"name\": \"Apple phone\"",
+					"    },",
+					"    \"target\" : 2",
+					"  },  ",
+					"  {",
+					"    \"id\": 9999,",
+					"    \"model\": \"Pixel 8\",",
+					"    \"description\": \" \",",
+					"    \"price\": 799,",
+					"    \"ramGb\": 8,",
+					"    \"screenSizeInch\": 6.2,",
+					"    \"quantity\": 2,",
+					"    \"storageGb\": 128,",
+					"    \"color\": \"Obsidian\",",
+					"    \"brand\": {",
+					"      \"id\": 13,",
+					"      \"name\": \"Google\"",
+					"    },",
+					"    \"target\" : 9999",
+					"  },",
+					"  {",
+					"    \"brand\": {",
+					"      \"id\": 18,",
+					"      \"name\": \"Lenuvo\"",
+					"    },",
+					"    \"target\" : 1",
+					"  }",
+					"]",
+					"",
+					"ADD_FOR_DELETE = ",
+					"  {",
+					"    \"id\": 1,",
+					"    \"model\": \"Galaxy S24\",",
+					"    \"description\": \"ล่าสุดจากซัมซุง Latest Samsung flagship with high-end features\",",
+					"    \"price\": 49999,",
+					"    \"ramGb\": 12,",
+					"    \"screenSizeInch\": 6.8,",
+					"    \"quantity\": 1,",
+					"    \"storageGb\": 256,",
+					"    \"color\": \"NONE\",",
+					"    \"brand\": {",
+					"      \"id\": 1",
+					"    },",
+					"  }"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"The response Content-type: \"+pm.response.headers.get('Content-type'), function() {",
+					"    if(pm.response.code != 204) {",
+					"    pm.expect(pm.response.headers.get('Content-type')).to.eql('application/json');",
+					"    }",
+					"});",
+					"",
+					"pm.test(\"Expected test server is host.sit\",function() {    ",
+					"    pm.expect(pm.request.url.toString()).to.be.contains(\"ip24\");",
+					"    pm.expect(pm.request.url.toString()).to.be.contains(\"sit.kmutt.ac.th\");",
+					"});",
+					"",
+					"pm.test(\"Test on \"+ Date(),function() {    ",
+					"    // do nothing",
+					"});",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://ip24ft.sit.kmutt.ac.th:8080/itb-mshop",
+			"type": "string"
+		},
+		{
+			"key": "rounds",
+			"value": ""
+		},
+		{
+			"key": "target_id",
+			"value": ""
+		},
+		{
+			"key": "original_data",
+			"value": ""
+		},
+		{
+			"key": "delete_id",
+			"value": ""
+		}
+	]
+}

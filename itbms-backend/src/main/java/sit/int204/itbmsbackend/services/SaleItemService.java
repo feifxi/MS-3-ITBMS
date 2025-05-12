@@ -55,6 +55,7 @@ public class SaleItemService {
         return modelMapper.map(saleItem, DetailSaleItemRes.class);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CreateUpdateSaleItemRes addSaleItem(CreateSaleItemReq saleItemDto) {
         Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
         saleItemDto.setBrand(brand);
@@ -64,6 +65,7 @@ public class SaleItemService {
         return modelMapper.map(newSaleItem, CreateUpdateSaleItemRes.class);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CreateUpdateSaleItemRes updateSaleItem(UpdateSaleItemReq saleItemDto) {
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())

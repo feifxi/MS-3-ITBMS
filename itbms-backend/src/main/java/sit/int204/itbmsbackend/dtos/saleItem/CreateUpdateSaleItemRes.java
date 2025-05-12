@@ -28,6 +28,9 @@ public class CreateUpdateSaleItemRes {
     public String getBrandName() {
         return brand.getName();
     }
-    private Instant createdOn;
-    private Instant updatedOn;
+//    private Instant createdOn;
+//    private Instant updatedOn;
+
+    private LocalDateTime createdOn;
+    private LocalDateTime updatedOn;
 }

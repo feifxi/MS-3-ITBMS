@@ -87,11 +87,19 @@ public class SaleItem {
 //    @Column(name = "updated_on")
 //    private LocalDateTime updatedOn;
 
+//    @CreationTimestamp
+//    @Column(name = "createdOn", updatable = false, nullable = false)
+//    private Instant createdOn;
+//
+//    @UpdateTimestamp
+//    @Column(name = "updatedOn", nullable = false)
+//    private Instant updatedOn;
+
     @CreationTimestamp
     @Column(name = "createdOn", updatable = false, nullable = false)
-    private Instant createdOn;
+    private LocalDateTime createdOn;
 
     @UpdateTimestamp
     @Column(name = "updatedOn", nullable = false)
-    private Instant updatedOn;
+    private LocalDateTime updatedOn;
 }

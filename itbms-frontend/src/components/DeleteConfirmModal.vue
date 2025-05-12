@@ -1,4 +1,6 @@
 <script setup>
+import Button from './Button.vue';
+
 defineProps({
   itemName: {
     type: String,
@@ -12,17 +14,20 @@ const emit = defineEmits(['confirm', 'cancel'])
   <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full text-center animate-fade-in">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Confirm Deletion</h2>
-      <p class="text-gray-600 mb-6 itbms-message">Are you sure you want to delete "<span class="font-bold">{{ itemName }}</span>"?</p>
+      <p class="itbms-message text-gray-600 mb-6">
+        {{ 'Do you want to delete this sale item?' }}
+      </p>
 
       <div class="flex justify-center gap-4">
         <button
-          class="itbms-button-confirm bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          class="itbms-confirm-button bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
           @click="$emit('confirm')"
         >
           Delete
         </button>
+
         <button
-          class="itbms-button-cancel bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+          class="itbms-cancel-button bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
           @click="$emit('cancel')"
         >
           Cancel

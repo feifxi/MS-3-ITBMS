@@ -50,11 +50,12 @@ const confirmDelete = async () => {
     const res = await deleteSaleItem(id)
     if (!res.ok) throw new Error('Deletion failed')
 
-    statusMessageStore.setStatusMessage(`"${model}" has been successfully deleted.`, true)
+    statusMessageStore.setStatusMessage('The sale item has been deleted.', true)
     router.push('/sale-items')
   } catch (err) {
     console.error(err)
-    statusMessageStore.setStatusMessage(`Failed to delete "${model}".`, false)
+    statusMessageStore.setStatusMessage(`The requested sale item does not exist.`, false)
+    router.push('/sale-items')
   } finally {
     isDeleting.value = false
     showConfirmDialog.value = false
@@ -159,7 +160,7 @@ onMounted(fetchItem)
               </div>
 
               <div class="flex gap-3 items-center mt-10">
-                <RouterLink :to="`/sale-items/${item.id}/edit`">
+                <RouterLink :to="`/sale-items/${item.id}/edit`" class="itbms-edit-button">
                   <Button variant="secondary">Edit</Button>
                 </RouterLink>
                 <Button

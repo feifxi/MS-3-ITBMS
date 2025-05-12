@@ -12,13 +12,13 @@ const route =  useRoute()
 const { id } = route.params
 const saleItem = ref({
     model: '',
-    price: 1,
+    price: '',
     description: '',
-    ramGb: 0,
-    storageGb: 0,
-    screenSizeInch: 0,
+    ramGb: '',
+    storageGb: '',
+    screenSizeInch: '',
     color: '',
-    quantity: 0,
+    quantity: '',
     brand: {
         id: 0,
         name: ''
@@ -36,8 +36,7 @@ const requiredField = [
     "model",
     "price",
     "description",
-    "quantity",
-    "brandId",
+    "brand",
 ]
 
 const fetchSaleItem = async () => {
@@ -65,6 +64,7 @@ const fetchBrands = async () => {
     isLoading.value = false
 }
 
+
 // Validate Require field
 const validateData = () => {
     isDataValid.value = true
@@ -72,6 +72,7 @@ const validateData = () => {
         if (
             (requiredField.includes(field) && !saleItem.value[field]) || 
             (typeof saleItem.value[field] === 'number' && saleItem.value[field] <= 0) ||
+            (field === 'model' && saleItem.value[field].length > 60) || 
             (JSON.stringify(saleItem.value) === saleItemResponseModel)
         ) {
             isDataValid.value = false
@@ -86,7 +87,7 @@ const submitForm = async (e) => {
         saleItem.value.brand.name = brands.value.find((brand)=> brand.id === saleItem.value.brand.id)?.name
         const res = await updateSaleItem(id , saleItem.value)
         if (!res.ok) throw new Error("Something went wrong")
-        statusMessageStore.setStatusMessage("The sale item has been successfully updated")
+        statusMessageStore.setStatusMessage("The sale item has been updated.")
     } catch (err) {
         console.log(err)
         alert("Something went wrong")
@@ -143,7 +144,10 @@ watch(saleItem, () => {
                 <div class="flex-1 p-3">
                     <form @submit="submitForm" class="flex flex-col gap-3">
                         <div class="flex flex-col gap-1">
-                            <label>Brand</label>
+                            <label>
+                                <span class="text-red-500 text-xl">*</span>
+                                Brand
+                            </label>
                             <select class="itbms-brand input" v-model="saleItem.brand.id">
                                 <option v-for="brand of brands" :value="brand.id">
                                     {{ brand.name }}
@@ -203,10 +207,7 @@ watch(saleItem, () => {
                         </div>
 
                         <div class="flex flex-col gap-1">
-                            <label>
-                                <span class="text-red-500 text-xl">*</span>
-                                Quantity
-                            </label>
+                            <label>Quantity</label>
                             <input name="quantity" type="number" class="itbms-quantity input" placeholder="Quantity..."
                                 v-model="saleItem.quantity">
                         </div>

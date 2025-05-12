@@ -39,7 +39,7 @@ public class BrandService {
     );}
 
     public List<BrandDto> getAllBrandDtos() {
-        List<Brand> brands = brandRepository.findAll();
+        List<Brand> brands = brandRepository.findAllByOrderByNameAsc();
         return listMapper.mapList(brands, BrandDto.class, modelMapper);
     }
 

@@ -10,13 +10,13 @@ import { useStatusMessageStore } from '@/stores/statusMessage';
 const router = useRouter()
 const saleItem = reactive({
     model: '',
-    price: 1,
+    price: '',
     description: '',
-    ramGb: 0,
-    storageGb: 0,
-    screenSizeInch: 0,
+    ramGb: '',
+    storageGb: '',
+    screenSizeInch: '',
     color: '',
-    quantity: 0,
+    quantity: '',
     brand: {
         id: 0,
         name: ''
@@ -32,8 +32,7 @@ const requiredField = [
     "model",
     "price",
     "description",
-    "quantity",
-    "brandId",
+    "brand",
 ]
 
 const fetchBrands = async () => {
@@ -54,7 +53,8 @@ const validateData = () => {
     for (const field in saleItem) {
         if (
             (requiredField.includes(field) && !saleItem[field]) || 
-            (typeof saleItem[field] === 'number' && saleItem[field] <= 0)
+            (typeof saleItem[field] === 'number' && saleItem[field] < 0) || 
+            (field === 'model' && saleItem[field]?.length > 60)
         ) {
             isDataValid.value = false
         }
@@ -68,7 +68,7 @@ const submitForm = async (e) => {
         saleItem.brand.name = brands.value.find((brand)=> brand.id === saleItem.brand.id).name
         const res = await createSaleItem(saleItem)
         if (!res.ok) throw new Error("Something went wrong")
-        statusMessageStore.setStatusMessage("The sale item has been successfully added")
+        statusMessageStore.setStatusMessage("The sale item has been successfully added.")
         router.push('/sale-items')
     } catch (err) {
         console.log(err)
@@ -124,7 +124,10 @@ watch(saleItem, () => {
                 <div class="flex-1 p-3">
                     <form @submit="submitForm" class="flex flex-col gap-3">
                         <div class="flex flex-col gap-1">
-                            <label>Brand</label>
+                            <label>
+                                <span class="text-red-500 text-xl">*</span>
+                                Brand
+                            </label>
                             <select class="itbms-brand input" v-model="saleItem.brand.id">
                                 <option v-for="brand of brands" :value="brand.id">
                                     {{ brand.name }}
@@ -184,10 +187,7 @@ watch(saleItem, () => {
                         </div>
 
                         <div class="flex flex-col gap-1">
-                            <label>
-                                <span class="text-red-500 text-xl">*</span>
-                                Quantity
-                            </label>
+                            <label>Quantity</label>
                             <input name="quantity" type="number" class="itbms-quantity input" placeholder="Quantity..."
                                 v-model="saleItem.quantity">
                         </div>

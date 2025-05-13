@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int204.itbmsbackend.dtos.brand.CreateBrandDto;
+import sit.int204.itbmsbackend.dtos.brand.CreateUpdateBrandDto;
 import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.services.BrandService;
 import sit.int204.itbmsbackend.utils.ListMapper;
@@ -43,7 +43,7 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody CreateBrandDto dto) {
+    public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody CreateUpdateBrandDto dto) {
         return ResponseEntity.ok(brandService.createBrand(dto));
     }
 
@@ -54,5 +54,9 @@ public class BrandController {
         return ResponseEntity.noContent().build();
     }
 
+        @PatchMapping("/{id}/restore")
+    public ResponseEntity<BrandDetailDto> restoreBrand(@PathVariable Integer id) {
+        return ResponseEntity.ok(brandService.restoreBrand(id));
+    }
 
 }

@@ -89,7 +89,7 @@ public class BrandService {
         return modelMapper.map(brand, BrandDetailDto.class);
     }
     @Transactional
-    public void deleteBrand(Integer id) {
+    public void deleteBrand(Integer id) {//Soft Delete
         Brand brand = brandRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Cannot delete: No brand found with ID = " + id));
@@ -103,6 +103,28 @@ public class BrandService {
         // ไม่ต้องเซต updatedOn — DB จัดการเองแล้ว
         brandRepository.save(brand);
     }
+    @Transactional
+    public void deleteBrandIfNoSaleItems(Integer id) { //Hard Delete
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Cannot delete: Brand with ID = " + id + " not found."
+                ));
+
+        // ตรวจสอบว่ามี sale items หรือไม่
+        boolean hasSaleItems = !saleItemRepository.findByBrandId(brand.getId()).isEmpty();
+
+        if (hasSaleItems) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Cannot delete: Brand has related sale items."
+            );
+        }
+
+        // ลบ brand จริงๆ (hard delete)
+        brandRepository.delete(brand);
+    }
+
 
     @Transactional
     public BrandDetailDto restoreBrand(Integer id) {
@@ -119,6 +141,19 @@ public class BrandService {
 
         return modelMapper.map(saved, BrandDetailDto.class);
     }
+
+
+//    @Transactional
+//    public BrandDetailDto setBrandActiveStatus(Integer id, Boolean isActive) {
+//        Brand brand = brandRepository.findById(id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Brand not found"));
+//
+//        brand.setIsActive(isActive);
+//        brand.setUpdatedOn(LocalDateTime.now());
+//
+//        Brand saved = brandRepository.save(brand);
+//        return modelMapper.map(saved, BrandDetailDto.class);
+//    }
 
 
 

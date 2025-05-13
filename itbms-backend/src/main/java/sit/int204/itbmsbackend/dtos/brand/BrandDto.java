@@ -10,4 +10,6 @@ import lombok.Setter;
 public class BrandDto {
     private Integer id;
     private String name;
+    private String websiteUrl;
+    private String countryOfOrigin;
 }

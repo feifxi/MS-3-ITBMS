@@ -4,6 +4,10 @@ import SaleItemView from '../views/SaleItemView.vue' // ✅ เพิ่ม
 import SaleItemDetailView from '../views/SaleItemDetailView.vue' // ✅ เพิ่ม
 import CreateSaleItem from '@/views/CreateSaleItem.vue'
 import UpdateSaleItem from '@/views/UpdateSaleItem.vue'
+import ListSaelItem from '../views/ListSaelItem.vue'
+import BrandList from '../views/BrandList.vue'
+import BrandEdit from '../views/BrandEdit.vue'
+import BrandAdd from '../views/BrandAdd.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +36,26 @@ const router = createRouter({
       path: '/sale-items/:id/edit',
       name: 'UpdateSaleItem',
       component: UpdateSaleItem,
+    },
+    {
+      path: '/sale-items/list',
+      name: 'ListSaelItem',
+      component: ListSaelItem,
+    },
+    {
+      path: '/brands',
+      name: 'BrandList',
+      component: BrandList,
+    },
+    {
+      path: '/brands/:id/edit',
+      name: 'BrandEdit',
+      component: BrandEdit,
+    },
+    {
+      path: '/brands/add',
+      name: 'BrandAdd',
+      component: BrandAdd,
     },
   ],
 })

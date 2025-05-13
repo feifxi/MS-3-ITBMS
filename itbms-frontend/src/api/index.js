@@ -34,3 +34,10 @@ export const deleteSaleItem = async (id) => {
 export const fetchAllBrands = async () => {
     return await fetch(`${BASE_API}/v1/brands`)
 }
+
+export const deleteBrand = async (id) => {
+    return await fetch(`${BASE_API}/v1/brands/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+    })
+}

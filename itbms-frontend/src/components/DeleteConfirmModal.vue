@@ -6,6 +6,10 @@ defineProps({
     type: String,
     default: 'this item',
   },
+  itemType: {
+    type: String,
+    default: '', // หรือ default: 'item'
+  },
 })
 const emit = defineEmits(['confirm', 'cancel'])
 </script>
@@ -15,7 +19,7 @@ const emit = defineEmits(['confirm', 'cancel'])
     <div class="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full text-center animate-fade-in">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Confirm Deletion</h2>
       <p class="itbms-message text-gray-600 mb-6">
-        {{ 'Do you want to delete this sale item?' }}
+        {{ `Do you want to delete this ${itemType} is ${itemName} ?` }}
       </p>
 
       <div class="flex justify-center gap-4">
@@ -32,7 +36,6 @@ const emit = defineEmits(['confirm', 'cancel'])
         >
           Cancel
         </button>
-
       </div>
     </div>
   </div>

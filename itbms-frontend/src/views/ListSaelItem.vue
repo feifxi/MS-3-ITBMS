@@ -34,7 +34,10 @@ function goToManageBrand() {
   <main class="px-10 py-8">
     
     <h1 class="text-3xl font-bold text-center mb-6">📦 All Discounted Sale Items</h1>
-    <Button @click="goToManageBrand">⚙️ Manage Brand</Button>
+    <RouterLink to="/sale-items/add" class="itbms-sale-item-add">
+        <button class="border-2 rounded p-2 cursor-pointer hover:bg-white hover:text-black hover:border-white font-bold  duration-300">Add Sale Item</button>
+      </RouterLink>
+    <Button @click="goToManageBrand" class="itbms-manage-brand">⚙️ Manage Brand</Button>
 
     <div v-if="isLoading" class="text-center text-blue-500 text-xl animate-pulse">Loading...</div>
     <div v-else-if="saleItems.length === 0" class="text-center text-gray-500 text-lg">No sale item.</div>

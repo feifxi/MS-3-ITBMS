@@ -2,10 +2,6 @@
 import { fetchAllSaleItems } from '@/api/index.js'
 import { ref, computed, onMounted } from 'vue'
 import CardProduct from '../components/CardProduct.vue'
-import Button from '@/components/Button.vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 
 const items = ref([])
 const searchQuery = ref('')
@@ -31,9 +27,6 @@ const filterItems = computed(() => {
     return matchesSearch && matchesBrand
   })
 })
-function goToListSaleItem() {
-  router.push('/sale-items/list')
-}
 </script>
 
 
@@ -42,8 +35,6 @@ function goToListSaleItem() {
     <h1 class="text-3xl font-extrabold mb-8 text-gray-800 text-center">
       🛍️ All Sale Items
     </h1>
-    <Button @click="goToListSaleItem">📋 List Sale Item</Button>
-
 
     <div class="flex flex-col md:flex-row md:items-center gap-4 mb-10 justify-center">
       <input v-model="searchQuery" type="text" placeholder="🔍 Search by model..."

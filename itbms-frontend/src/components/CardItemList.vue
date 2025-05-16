@@ -38,15 +38,15 @@ const confirmDelete = async () => {
   />
 
   <div class="itbms-row grid grid-cols-10 gap-3 items-center border p-4 rounded shadow-sm">
-    <div class="col-span-1">{{ props.item.id }}</div>
+    <div class="itbms-id col-span-1">{{ props.item.id }}</div>
     <div class="itbms-brand col-span-1 ">{{ props.item.brandName }}</div>
     <div class="itbms-model col-span-2 ">{{ props.item.model }}</div>
     <div class="itbms-ramGb col-span-1 ">{{ props.item.ramGb }}</div>
     <div class="itbms-storageGb col-span-1 ">{{ props.item.storageGb }}</div>
     <div class="itbms-color col-span-1 ">{{ props.item.color }}</div>
-    <div class="itbms-screenSizeInch col-span-1 ">{{ props.item.screenSizeInch }}</div>
+    <!-- <div class="itbms-screenSizeInch col-span-1 ">{{ props.item.screenSizeInch }}</div> -->
     <div class="itbms-price col-span-1 ">{{ props.item.price }}</div>
-    <div class="itbms-quantity col-span-1 ">{{ props.item.quantity }}</div>
+    <!-- <div class="itbms-quantity col-span-1 ">{{ props.item.quantity }}</div> -->
     <div class="col-span-1 flex gap-1">
       <RouterLink :to="`/sale-items/${props.item.id}/edit`" class="itbms-edit-button">
         <Button variant="secondary">E</Button>

@@ -89,17 +89,21 @@ onMounted(fetchBrand)
     <form v-else class="bg-white shadow-lg p-6 rounded-lg space-y-4">
       <div class="flex flex-col">
         <label class="font-semibold mb-1">Brand Name</label>
-        <input type="text" v-model="brand.name" class="input border border-blue-300 rounded px-3 py-2" />
+        <input type="text" v-model="brand.name" class="itbms-name input border border-blue-300 rounded px-3 py-2" />
       </div>
 
       <div class="flex flex-col">
         <label class="font-semibold mb-1">Website URL</label>
-        <input type="text" v-model="brand.websiteUrl" class="input border border-blue-300 rounded px-3 py-2" />
+        <input type="text" v-model="brand.websiteUrl" class="itbms-websiteUrl input border border-blue-300 rounded px-3 py-2" />
       </div>
+                  <!-- add itbms-isActive -->
 
+
+
+                  <!--                     -->
       <div class="flex flex-col">
         <label class="font-semibold mb-1">Country of Origin</label>
-        <input type="text" v-model="brand.countryOfOrigin" class="input border border-blue-300 rounded px-3 py-2" />
+        <input type="text" v-model="brand.countryOfOrigin" class="itbms-cancel-button input border border-blue-300 rounded px-3 py-2" />
       </div>
 
       <div class="flex justify-between mt-6">
@@ -107,7 +111,7 @@ onMounted(fetchBrand)
           type="button"
           variant="secondary"
           :onclick="cancelEdit"
-          class-name="bg-gray-200 text-gray-700 hover:bg-gray-300"
+          class-name="itbms-cancel-button bg-gray-200 text-gray-700 hover:bg-gray-300"
         >
           Cancel
         </Button>
@@ -117,7 +121,7 @@ onMounted(fetchBrand)
           variant="primary"
           :onclick="saveChanges"
           :disabled="!isModified || isSubmitting"
-          class-name="bg-blue-600 hover:bg-blue-700 text-white"
+          class-name="itbms-save-button bg-blue-600 hover:bg-blue-700 text-white"
         >
           {{ isSubmitting ? 'Saving...' : 'Save' }}
         </Button>

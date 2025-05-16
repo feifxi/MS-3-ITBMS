@@ -43,7 +43,7 @@ const cancelEdit = () => {
 <template>
 
   <div class="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white flex justify-center items-center p-6">
-  <div class="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-2xl border border-blue-100">
+  <div class="itbms-manage-brand bg-white shadow-2xl rounded-3xl p-10 w-full max-w-2xl border border-blue-100">
     <h2 class="text-3xl font-extrabold text-blue-800 mb-8 text-center tracking-wide">Add New Brand</h2>
 
     <form @submit.prevent="submitBrand" class="space-y-6">
@@ -69,7 +69,7 @@ const cancelEdit = () => {
           type="text"
           required
           placeholder="Enter brand name"
-          class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
+          class="itbms-name w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
         />
       </div>
 
@@ -79,24 +79,29 @@ const cancelEdit = () => {
           v-model.trim="newBrand.websiteUrl"
           type="url"
           placeholder="https://example.com"
-          class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
+          class="itbms-websiteUrl w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
         />
       </div>
 
+                  <!-- add itbms-isActive -->
+
+
+
+                  <!--                     -->
       <div>
         <label class="block text-blue-700 font-semibold mb-1">Country of Origin</label>
         <input
           v-model.trim="newBrand.countryOfOrigin"
           type="text"
           placeholder="Country"
-          class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
+          class="itbms-countryOfOrigin w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
         />
       </div>
 
       <div class="flex justify-between pt-6">
         <button
           type="button"
-          class="bg-gray-100 text-gray-700 px-5 py-2.5 rounded-lg hover:bg-gray-200 transition font-medium"
+          class="itbms-cancel-button bg-gray-100 text-gray-700 px-5 py-2.5 rounded-lg hover:bg-gray-200 transition font-medium"
           :onclick="cancelEdit"
         >
           Cancel
@@ -104,7 +109,7 @@ const cancelEdit = () => {
         <button
           type="submit"
           :disabled="isSubmitting"
-          class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition font-semibold"
+          class="itbms-save-button bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition font-semibold"
         >
           {{ isSubmitting ? "Saving..." : "Save" }}
         </button>

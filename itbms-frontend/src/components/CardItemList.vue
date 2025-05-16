@@ -11,6 +11,7 @@ const router = useRouter()
 const statusMessageStore = useStatusMessageStore()
 const showConfirmDialog = ref(false)
 const isDeleting = ref(false)
+const emit = defineEmits(['deleted'])
 
 const confirmDelete = async () => {
   try {
@@ -18,7 +19,7 @@ const confirmDelete = async () => {
     const res = await deleteSaleItem(props.item.id)
     if (!res.ok) throw new Error('Failed')
     statusMessageStore.setStatusMessage(`"${props.item.model}" has been deleted.`, true)
-    window.location.reload()
+    emit('deleted', props.item.id)  // แจ้งไปยัง parent
   } catch (err) {
     console.error(err)
     statusMessageStore.setStatusMessage(`Failed to delete "${props.item.model}".`, false)

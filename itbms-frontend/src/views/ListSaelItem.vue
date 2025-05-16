@@ -28,6 +28,10 @@ onMounted(async () => {
 function goToManageBrand() {
   router.push('/brands')
 }
+function handleDeleted(deletedItemId) {
+  saleItems.value = saleItems.value.filter(item => item.id !== deletedItemId)
+}
+
 </script>
 
 <template>
@@ -43,7 +47,12 @@ function goToManageBrand() {
     <div v-else-if="saleItems.length === 0" class="text-center text-gray-500 text-lg">No sale item.</div>
 
     <div v-else class="space-y-3">
-      <CardItemList v-for="item in saleItems" :key="item.id" :item="item" />
+      <CardItemList
+        v-for="item in saleItems"
+        :key="item.id"
+        :item="item"
+        @deleted="handleDeleted"
+      />
     </div>
   </main>
 </template>

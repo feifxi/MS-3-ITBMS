@@ -31,6 +31,10 @@ onMounted(async () => {
 function goToAddBrand() {
   router.push('/brands/add')
 }
+function handleDeleted(deletedBrandId) {
+  brands.value = brands.value.filter(b => b.id !== deletedBrandId)
+}
+
 </script>
 
 <template>
@@ -48,7 +52,9 @@ function goToAddBrand() {
         :key="brand.id"
         :brand="brand"
         :sale-items="saleItems"
+        @deleted="handleDeleted"
       />
+
     </div>
   </main>
 </template>

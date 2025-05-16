@@ -35,6 +35,14 @@ import { RouterLink } from 'vue-router'
             </svg>
           </button>
         </RouterLink>
+        <RouterLink to="/sale-items/list" class="itbms-seller text-gray-700 hover:text-gray-300 font-medium text-lg transition duration-300">
+          <button class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-medium py-3 sm:py-4 px-8 sm:px-10 md:px-12 rounded-full text-base sm:text-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl flex items-center">
+            <span class=" mr-2">SELLER</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </RouterLink>
       </div>
       
       <!-- Features section -->

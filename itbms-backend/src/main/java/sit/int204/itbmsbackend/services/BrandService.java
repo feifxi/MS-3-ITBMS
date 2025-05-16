@@ -12,7 +12,7 @@ import sit.int204.itbmsbackend.repositories.SaleItemRepository;
 import sit.int204.itbmsbackend.utils.ListMapper;
 import sit.int204.itbmsbackend.dtos.brand.BrandDetailDto;
 import sit.int204.itbmsbackend.dtos.brand.BrandDto;
-import sit.int204.itbmsbackend.dtos.brand.CreateBrandDto;
+import sit.int204.itbmsbackend.dtos.brand.CreateUpdateBrandDto;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -64,14 +64,14 @@ public class BrandService {
         return modelMapper.map(saved, BrandDetailDto.class);
     }
 
-    public BrandDetailDto createBrand(CreateBrandDto dto) {
+    public BrandDetailDto createBrand(CreateUpdateBrandDto dto) {
         String brandName = dto.getName();
         String trimmedName = brandName.trim();
+
         if (!brandName.isEmpty() && Character.isWhitespace(brandName.charAt(0))) {
             throw new IllegalArgumentException("Brand name must not start with a space");
         }
 
-        // ตรวจสอบชื่อซ้ำ โดยไม่สนใจตัวพิมพ์เล็ก/ใหญ่ และเว้นวรรค
         List<Brand> existingBrands = brandRepository.findByNameIgnoreCase(trimmedName);
         boolean duplicateExists = existingBrands.stream()
                 .anyMatch(b -> b.getName().trim().equalsIgnoreCase(trimmedName));
@@ -79,37 +79,82 @@ public class BrandService {
         if (duplicateExists) {
             throw new IllegalArgumentException("This brand name already exists in the system.");
         }
+
         Brand brand = modelMapper.map(dto, Brand.class);
-        brand.setName(trimmedName); // ใช้ชื่อที่ตัดเว้นวรรคแล้ว
+        brand.setName(trimmedName);
         brand.setIsActive(true);
-        brand.setCreatedOn(ZonedDateTime.now(ZoneId.of("Asia/Bangkok")));
-        brand.setUpdatedOn(LocalDateTime.now(ZoneId.of("Asia/Bangkok")));
 
+        // ไม่ต้องตั้งค่า createdOn และ updatedOn ในที่นี้ เพราะฐานข้อมูลจะจัดการให้
         brand = brandRepository.save(brand);
-
         return modelMapper.map(brand, BrandDetailDto.class);
     }
     @Transactional
-    public void deleteBrand(Integer id) {
+    public void deleteBrand(Integer id) {//Soft Delete
         Brand brand = brandRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cannot delete: No brand found with ID = " + id));
-        brandRepository.delete(brand); // JPA จะลบ SaleItem ที่เกี่ยวข้องให้ด้วย
-//        if (!Boolean.TRUE.equals(brand.getIsActive())) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brand is already inactive.");
-//        }
-//        // Soft delete Brand
-//        brand.setIsActive(false);
-//        brand.setUpdatedOn(ZonedDateTime.now(ZoneId.of("Asia/Bangkok")));
-//        brandRepository.save(brand);
-//
-//        // Soft delete SaleItems under the brand
-//        List<SaleItem> saleItems = saleItemRepository.findByBrandId(brand.getId());
-//        for (SaleItem item : saleItems) {
-//            item.setIsActive(false);
-//            item.setUpdatedOn(ZonedDateTime.now(ZoneId.of("Asia/Bangkok")).toInstant());
-//        }
-//        saleItemRepository.saveAll(saleItems);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cannot delete: No brand found with ID = " + id));
+
+        if (Boolean.FALSE.equals(brand.getIsActive())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brand is already inactive.");
+        }
+
+        // Soft delete the brand
+        brand.setIsActive(false);
+        // ไม่ต้องเซต updatedOn — DB จัดการเองแล้ว
+        brandRepository.save(brand);
     }
+    @Transactional
+    public void deleteBrandIfNoSaleItems(Integer id) { //Hard Delete
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Cannot delete: Brand with ID = " + id + " not found."
+                ));
+
+        // ตรวจสอบว่ามี sale items หรือไม่
+        boolean hasSaleItems = !saleItemRepository.findByBrandId(brand.getId()).isEmpty();
+
+        if (hasSaleItems) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Cannot delete: Brand has related sale items."
+            );
+        }
+
+        // ลบ brand จริงๆ (hard delete)
+        brandRepository.delete(brand);
+    }
+
+
+    @Transactional
+    public BrandDetailDto restoreBrand(Integer id) {
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Cannot restore: No brand found with ID = " + id));
+
+        if (Boolean.TRUE.equals(brand.getIsActive())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brand is already active.");
+        }
+
+        brand.setIsActive(true);
+        Brand saved = brandRepository.save(brand);
+
+        return modelMapper.map(saved, BrandDetailDto.class);
+    }
+
+
+//    @Transactional
+//    public BrandDetailDto setBrandActiveStatus(Integer id, Boolean isActive) {
+//        Brand brand = brandRepository.findById(id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Brand not found"));
+//
+//        brand.setIsActive(isActive);
+//        brand.setUpdatedOn(LocalDateTime.now());
+//
+//        Brand saved = brandRepository.save(brand);
+//        return modelMapper.map(saved, BrandDetailDto.class);
+//    }
+
 
 
 

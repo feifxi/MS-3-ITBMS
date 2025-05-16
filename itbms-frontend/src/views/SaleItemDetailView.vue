@@ -70,6 +70,7 @@ onMounted(fetchItem)
     <!-- Delete Confirmation Modal -->
     <DeleteConfirmModal
       v-if="showConfirmDialog"
+      :itemType="'sale item'                "
       :item-name="item?.model || `ID ${route.params.id}`"
       @confirm="confirmDelete"
       @cancel="showConfirmDialog = false"

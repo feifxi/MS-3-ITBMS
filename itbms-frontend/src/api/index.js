@@ -34,3 +34,27 @@ export const deleteSaleItem = async (id) => {
 export const fetchAllBrands = async () => {
     return await fetch(`${BASE_API}/v1/brands`)
 }
+
+export const deleteBrand = async (id) => {
+    return await fetch(`${BASE_API}/v1/brands/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+    })
+}
+
+export const createBrand = async (brand) => {
+  return await fetch(`${BASE_API}/v1/brands`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(brand),
+  })
+}
+
+
+export const updateBrand = async (id, brand) => {
+  return await fetch(`${BASE_API}/v1/brands/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(brand),
+  })
+}

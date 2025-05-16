@@ -3,9 +3,11 @@ package sit.int204.itbmsbackend.controllers;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int204.itbmsbackend.dtos.brand.CreateBrandDto;
+import org.springframework.web.server.ResponseStatusException;
+import sit.int204.itbmsbackend.dtos.brand.CreateUpdateBrandDto;
 import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.services.BrandService;
 import sit.int204.itbmsbackend.utils.ListMapper;
@@ -15,6 +17,7 @@ import sit.int204.itbmsbackend.dtos.brand.BrandDto;
 
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/brands")
@@ -43,14 +46,37 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody CreateBrandDto dto) {
+    public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody CreateUpdateBrandDto dto) {
         return ResponseEntity.ok(brandService.createBrand(dto));
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/soft") //Soft Delete
     public ResponseEntity<Void> deleteBrand(@PathVariable Integer id) {
         brandService.deleteBrand(id);
         return ResponseEntity.noContent().build();
     }
+    @DeleteMapping("/{id}") //Hard Delete
+    public ResponseEntity<Void> deleteBrandIfNoSaleItems(@PathVariable Integer id) {
+        brandService.deleteBrandIfNoSaleItems(id);
+        return ResponseEntity.ok().build(); // ส่ง 200 OK ถ้าลบสำเร็จ
+    }
+
+
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<BrandDetailDto> restoreBrand(@PathVariable Integer id) {
+        return ResponseEntity.ok(brandService.restoreBrand(id));
+    }
+
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<BrandDetailDto> updateBrandStatus(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
+//        if (!updates.containsKey("isActive")) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing 'isActive' field.");
+//        }
+//
+//        Boolean isActive = Boolean.valueOf(updates.get("isActive").toString());
+//        return ResponseEntity.ok(brandService.setBrandActiveStatus(id, isActive));
+//    }
+
+
 }

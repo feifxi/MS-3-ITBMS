@@ -34,15 +34,28 @@ public class Brand {
     @Column(name = "country_of_origin", length = 80)
     private String countryOfOrigin;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_on", updatable = false)
-    private ZonedDateTime createdOn;
+    @Column(name = "created_on", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdOn;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_on")
+    @Column(name = "updated_on", insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedOn;
+
 
     @OneToMany(mappedBy = "brand")
     private Set<SaleItem> saleItems = new LinkedHashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        if (createdOn == null) {
+            createdOn = LocalDateTime.now();
+        }
+        updatedOn = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedOn = LocalDateTime.now();
+    }
+
 
 }

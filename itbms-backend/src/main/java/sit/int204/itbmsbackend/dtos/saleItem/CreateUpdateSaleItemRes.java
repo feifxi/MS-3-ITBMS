@@ -7,6 +7,7 @@ import lombok.Setter;
 import sit.int204.itbmsbackend.entities.Brand;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
@@ -31,6 +32,6 @@ public class CreateUpdateSaleItemRes {
 //    private Instant createdOn;
 //    private Instant updatedOn;
 
-    private LocalDateTime createdOn;
-    private LocalDateTime updatedOn;
+    private String createdOn;
+    private String updatedOn;
 }

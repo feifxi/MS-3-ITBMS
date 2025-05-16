@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
@@ -97,9 +98,9 @@ public class SaleItem {
 
     @CreationTimestamp
     @Column(name = "createdOn", updatable = false, nullable = false)
-    private LocalDateTime createdOn;
+    private Timestamp createdOn;
 
     @UpdateTimestamp
     @Column(name = "updatedOn", nullable = false)
-    private LocalDateTime updatedOn;
+    private Timestamp updatedOn;
 }

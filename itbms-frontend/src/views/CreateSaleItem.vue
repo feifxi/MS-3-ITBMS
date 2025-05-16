@@ -78,8 +78,10 @@ const submitForm = async (e) => {
     isSubmitting.value = false
 }
 
-const trimmedData = (e) => {
-    saleItem[e.target.name] = saleItem[e.target.name].trim()
+const handleFocusOut = (e) => {
+    if (typeof saleItem[e.target.name] === 'string') {
+        saleItem[e.target.name] = saleItem[e.target.name].trim()
+    }
 }
 
 const goBackHome = () => {
@@ -141,7 +143,7 @@ watch(saleItem, () => {
                                 Model
                             </label>
                             <input name="model" type="text" class="itbms-model input" placeholder="Model..."
-                                v-model="saleItem.model" @focusout="trimmedData">
+                                v-model="saleItem.model" @focusout="handleFocusOut">
                         </div>
 
                         <div class="flex flex-col gap-1">
@@ -150,7 +152,7 @@ watch(saleItem, () => {
                                 Price
                             </label>
                             <input name="price" type="number" class="itbms-price input" placeholder="Price..."
-                                v-model="saleItem.price">
+                                v-model="saleItem.price" @focusout="handleFocusOut">
                         </div>
 
                         <div class="flex flex-col gap-1">
@@ -159,37 +161,37 @@ watch(saleItem, () => {
                                 Description
                             </label>
                             <textarea name="description" class="itbms-description input" placeholder="Description..."
-                                v-model="saleItem.description" @focusout="trimmedData"></textarea>
+                                v-model="saleItem.description" @focusout="handleFocusOut"></textarea>
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Ram (GM)</label>
                             <input name="ramGb" type="number" class="itbms-ramGb input" placeholder="Ram..."
-                                v-model="saleItem.ramGb">
+                                v-model="saleItem.ramGb" @focusout="handleFocusOut">
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Screen Size (Inches)</label>
                             <input name="screenSizeInch" type="number" class="itbms-screenSizeInch input" placeholder="Screen Size..."
-                                v-model="saleItem.screenSizeInch">
+                                v-model="saleItem.screenSizeInch" @focusout="handleFocusOut">
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Storage (GB)</label>
                             <input name="storageGb" type="number" class="itbms-storageGb input" placeholder="Storage..."
-                                v-model="saleItem.storageGb">
+                                v-model="saleItem.storageGb" @focusout="handleFocusOut">
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Color</label>
                             <input name="color" type="text" class="itbms-color input" placeholder="Color..."
-                                v-model="saleItem.color" @focusout="trimmedData">
+                                v-model="saleItem.color" @focusout="handleFocusOut">
                         </div>
 
                         <div class="flex flex-col gap-1">
                             <label>Quantity</label>
                             <input name="quantity" type="number" class="itbms-quantity input" placeholder="Quantity..."
-                                v-model="saleItem.quantity">
+                                v-model="saleItem.quantity" @focusout="handleFocusOut">
                         </div>
 
                         <div class="flex gap-3 items-center mt-5">

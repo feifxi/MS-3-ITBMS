@@ -27,4 +27,7 @@ public class DetailSaleItemRes {
     public String getBrandName() {
         return brand.getName();
     }
+
+    private String createdOn;
+    private String updatedOn;
 }

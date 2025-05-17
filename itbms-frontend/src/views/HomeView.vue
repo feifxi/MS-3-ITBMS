@@ -26,7 +26,7 @@ import { RouterLink } from 'vue-router'
       </div>
       
       <!-- Shop button container with animation -->
-      <div class="flex justify-center mt-8 sm:mt-10 md:mt-12">
+      <div class="flex justify-center gap-3 mt-8 sm:mt-10 md:mt-12">
         <RouterLink to="/sale-items" class="itbms-shopnow text-gray-700 hover:text-gray-300 font-medium text-lg transition duration-300">
           <button class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-medium py-3 sm:py-4 px-8 sm:px-10 md:px-12 rounded-full text-base sm:text-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl flex items-center">
             <span class=" mr-2">SHOP NOW</span>

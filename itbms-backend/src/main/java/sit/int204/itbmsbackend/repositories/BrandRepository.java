@@ -10,4 +10,6 @@ public interface BrandRepository extends JpaRepository<Brand, Integer> {
     List<Brand> findByIsActiveTrue(); // ถ้าใช้ในหน้า List เฉพาะที่ยัง active
     // ใน BrandRepository
     List<Brand> findByNameIgnoreCase(String name);
+
+    Boolean existsByNameIgnoreCase(String name);
 }

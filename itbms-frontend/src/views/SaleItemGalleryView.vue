@@ -1,7 +1,7 @@
 <script setup>
 import { fetchAllSaleItems } from '@/api/index.js'
 import { ref, computed, onMounted } from 'vue'
-import CardProduct from '../components/CardProduct.vue'
+import CardSaleItem from '../components/CardSaleItem.vue'
 
 const items = ref([])
 const searchQuery = ref('')
@@ -47,7 +47,7 @@ const filterItems = computed(() => {
     <div v-else-if="items.length === 0" class="text-center text-gray-500 text-lg">No sale item.</div>
     <!-- Have an Item -->
     <div v-else class="mx-auto max-w-screen-xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-      <CardProduct v-for="item in filterItems" :key="item.id" :item="item" />
+      <CardSaleItem v-for="item in filterItems" :key="item.id" :item="item" />
     </div>
   </main>
 </template>

@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import SaleItemView from '../views/SaleItemView.vue' // ✅ เพิ่ม
+import SaleItemView from '../views/SaleItemGalleryView.vue' // ✅ เพิ่ม
 import SaleItemDetailView from '../views/SaleItemDetailView.vue' // ✅ เพิ่ม
 import CreateSaleItem from '@/views/CreateSaleItem.vue'
 import UpdateSaleItem from '@/views/UpdateSaleItem.vue'
-import ListSaelItem from '../views/ListSaelItem.vue'
+import ListSaelItem from '../views/SaleItemListView.vue'
 import BrandList from '../views/BrandList.vue'
 import BrandEdit from '../views/BrandEdit.vue'
 import BrandAdd from '../views/BrandAdd.vue'
@@ -19,7 +19,7 @@ const router = createRouter({
     },
     {
       path: '/sale-items',
-      name: 'SaleItem',
+      name: 'SaleItemGallery',
       component: SaleItemView,
     },
     {
@@ -39,7 +39,7 @@ const router = createRouter({
     },
     {
       path: '/sale-items/list',
-      name: 'ListSaelItem',
+      name: 'SaleItemList',
       component: ListSaelItem,
     },
     {
@@ -49,12 +49,12 @@ const router = createRouter({
     },
     {
       path: '/brands/:id/edit',
-      name: 'BrandEdit',
+      name: 'UpdateBrand',
       component: BrandEdit,
     },
     {
       path: '/brands/add',
-      name: 'BrandAdd',
+      name: 'AddBrand',
       component: BrandAdd,
     },
   ],

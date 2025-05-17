@@ -35,6 +35,10 @@ export const fetchAllBrands = async () => {
     return await fetch(`${BASE_API}/v1/brands`)
 }
 
+export const fetchBrandById = async (id) => {
+    return await fetch(`${BASE_API}/v1/brands/${id}`)
+}
+
 export const deleteBrand = async (id) => {
     return await fetch(`${BASE_API}/v1/brands/${id}`, {
         method: "DELETE",

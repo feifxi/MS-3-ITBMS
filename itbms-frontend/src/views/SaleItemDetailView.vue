@@ -1,14 +1,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { fetchSaleItemById, deleteSaleItem } from '../api'
 import { formatNumber } from '@/libs/utils';
 import ItemNotFound from '../components/ItemNotFound.vue';
 import mockPhone from '@/assets/image/mockPhone.webp'
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import Button from '@/components/Button.vue';
-import DeleteConfirmModal from '@/components/DeleteConfirmModal.vue';
+import DeleteConfirmModal from '@/components/ConfirmModal.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 
 const route = useRoute()
@@ -43,8 +43,7 @@ const goBack = () => {
 
 const confirmDelete = async () => {
   const id = route.params.id
-  const model = item.value?.model || `ID ${id}`
-
+  
   try {
     isDeleting.value = true
     const res = await deleteSaleItem(id)
@@ -70,15 +69,15 @@ onMounted(fetchItem)
     <!-- Delete Confirmation Modal -->
     <DeleteConfirmModal
       v-if="showConfirmDialog"
-      :itemType="'sale item'                "
-      :item-name="item?.model || `ID ${route.params.id}`"
+      :title="'Delete Confirmation'"                
+      :message="'Do you want to delete this sale item?'"
+      :button-label="'Delete'"
       @confirm="confirmDelete"
       @cancel="showConfirmDialog = false"
     />
-
     <main class="px-16 py-8">
       <BreadCrumb v-if="item" :links="[
-        { to: '/sale-items', label: 'Home' },
+        { to: {name: 'SaleItemGallery'}, label: 'Home' },
         { to: '#', label: `${item.model}` },
       ]" />
 

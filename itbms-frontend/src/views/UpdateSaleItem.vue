@@ -119,7 +119,7 @@ watch(saleItem, () => {
 <template>
     <main class="px-16 py-8">
         <BreadCrumb v-if="saleItem" :links="[
-            { to: '/sale-items', label: 'Home' },
+            { to: {name: 'SaleItemGallery'}, label: 'Home' },
             { to: `/sale-items/${saleItem.id}`, label: modelName },
             { to: '#', label: 'Edit' },
         ]" />

@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { deleteSaleItem } from '@/api/index.js'
 import { useStatusMessageStore } from '@/stores/statusMessage'
 import Button from '@/components/Button.vue'
-import DeleteConfirmModal from './DeleteConfirmModal.vue'
+import DeleteConfirmModal from './ConfirmModal.vue'
 
 const props = defineProps({ item: Object })
 const router = useRouter()
@@ -32,11 +32,13 @@ const confirmDelete = async () => {
 
 <template>
   <DeleteConfirmModal
-    v-if="showConfirmDialog"
-    :item-name="props.item.model"
-    @confirm="confirmDelete"
-    @cancel="showConfirmDialog = false"
-  />
+      v-if="showConfirmDialog"
+      :title="'Delete Confirmation'"                
+      :message="`Do you want to ${props.item.model} brand?`"
+      :button-label="'Delete'"
+      @confirm="confirmDelete"
+      @cancel="showConfirmDialog = false"
+    />
 
   <div class="itbms-row grid grid-cols-10 gap-3 items-center border p-4 rounded shadow-sm">
     <div class="itbms-id col-span-1">{{ props.item.id }}</div>

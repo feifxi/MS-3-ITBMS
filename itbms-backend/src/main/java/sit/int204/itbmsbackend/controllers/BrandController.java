@@ -47,36 +47,13 @@ public class BrandController {
 
     @PostMapping
     public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody CreateUpdateBrandDto dto) {
-        return ResponseEntity.ok(brandService.createBrand(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(brandService.createBrand(dto));
     }
 
 
-    @DeleteMapping("/{id}/soft") //Soft Delete
+    @DeleteMapping("/{id}") //Soft Delete
     public ResponseEntity<Void> deleteBrand(@PathVariable Integer id) {
         brandService.deleteBrand(id);
         return ResponseEntity.noContent().build();
     }
-    @DeleteMapping("/{id}") //Hard Delete
-    public ResponseEntity<Void> deleteBrandIfNoSaleItems(@PathVariable Integer id) {
-        brandService.deleteBrandIfNoSaleItems(id);
-        return ResponseEntity.ok().build(); // ส่ง 200 OK ถ้าลบสำเร็จ
-    }
-
-
-    @PatchMapping("/{id}/restore")
-    public ResponseEntity<BrandDetailDto> restoreBrand(@PathVariable Integer id) {
-        return ResponseEntity.ok(brandService.restoreBrand(id));
-    }
-
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<BrandDetailDto> updateBrandStatus(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
-//        if (!updates.containsKey("isActive")) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing 'isActive' field.");
-//        }
-//
-//        Boolean isActive = Boolean.valueOf(updates.get("isActive").toString());
-//        return ResponseEntity.ok(brandService.setBrandActiveStatus(id, isActive));
-//    }
-
-
 }

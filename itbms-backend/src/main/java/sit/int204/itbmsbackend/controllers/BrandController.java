@@ -25,7 +25,7 @@ public class BrandController {
     private final BrandService brandService;
 
     @Autowired
-    public BrandController(BrandService brandService, ModelMapper modelMapper, ListMapper listMapper, BrandRepository brandRepository) {
+    public BrandController(BrandService brandService) {
         this.brandService = brandService;
     }
     @GetMapping

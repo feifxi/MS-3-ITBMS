@@ -1,6 +1,5 @@
 package sit.int204.itbmsbackend.services;
 
-import jakarta.persistence.EntityManager;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +16,6 @@ import sit.int204.itbmsbackend.entities.SaleItem;
 import sit.int204.itbmsbackend.repositories.SaleItemRepository;
 import sit.int204.itbmsbackend.utils.ListMapper;
 
-import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -36,42 +34,41 @@ public class SaleItemService {
         this.listMapper = listMapper;
     }
 
-    public List<ListSaleItemRes> findAll(String brand, String sort) {
+    public List<ListSaleItemResponseDto> findAll(String brand, String sort) {
         // Implement Sort and Filtering later
 
         List <SaleItem> saleItems = saleItemRepository.findAll();
-        return listMapper.mapList(saleItems, ListSaleItemRes.class, modelMapper);
+        return listMapper.mapList(saleItems, ListSaleItemResponseDto.class, modelMapper);
     }
 
-    public PageDTO<ListSaleItemRes> findAll(Integer page, Integer size) {
+    public PageDTO<ListSaleItemResponseDto> findAll(Integer page, Integer size) {
         Page<SaleItem> saleItemPages = saleItemRepository.findAll(PageRequest.of(page, size));
-        return listMapper.toPageDTO(saleItemPages, ListSaleItemRes.class, modelMapper);
+        return listMapper.toPageDTO(saleItemPages, ListSaleItemResponseDto.class, modelMapper);
     }
 
-    public DetailSaleItemRes findById(Integer id) {
+    public DetailSaleItemResponseDto findById(Integer id) {
         SaleItem saleItem =  saleItemRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
         );
-        return modelMapper.map(saleItem, DetailSaleItemRes.class);
+        return modelMapper.map(saleItem, DetailSaleItemResponseDto.class);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public CreateUpdateSaleItemRes addSaleItem(CreateSaleItemReq saleItemDto) {
+    public CreateUpdateSaleItemResponseDto addSaleItem(CreateSaleItemRequestDto saleItemDto) {
         Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
         saleItemDto.setBrand(brand);
         SaleItem newSaleItem = saleItemRepository.save(
                 modelMapper.map(saleItemDto, SaleItem.class)
         );
-        return modelMapper.map(newSaleItem, CreateUpdateSaleItemRes.class);
+        return modelMapper.map(newSaleItem, CreateUpdateSaleItemResponseDto.class);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public CreateUpdateSaleItemRes updateSaleItem(UpdateSaleItemReq saleItemDto) {
+    public CreateUpdateSaleItemResponseDto updateSaleItem(UpdateSaleItemRequestDto saleItemDto) {
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())
         );
         Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
-
         existingSaleItem.setModel(saleItemDto.getModel());
         existingSaleItem.setPrice(saleItemDto.getPrice());
         existingSaleItem.setColor(saleItemDto.getColor());
@@ -82,7 +79,7 @@ public class SaleItemService {
         existingSaleItem.setScreenSizeInch(saleItemDto.getScreenSizeInch());
         existingSaleItem.setBrand(brand);
         SaleItem updatedSaleItem = saleItemRepository.save(existingSaleItem);
-        return modelMapper.map(updatedSaleItem, CreateUpdateSaleItemRes.class);
+        return modelMapper.map(updatedSaleItem, CreateUpdateSaleItemResponseDto.class);
     }
 
     public void removeSaleItem(Integer id) {

@@ -1,10 +1,10 @@
 package sit.int204.itbmsbackend.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int204.itbmsbackend.dtos.MessageResponse;
 import sit.int204.itbmsbackend.dtos.PageDTO;
 import sit.int204.itbmsbackend.dtos.saleItem.*;
 import sit.int204.itbmsbackend.services.SaleItemService;
@@ -23,7 +23,7 @@ public class SaleItemController {
         this.saleItemService = saleItemService;}
 
     @GetMapping
-    public ResponseEntity<List<ListSaleItemRes>> getAllSaleItems(
+    public ResponseEntity<List<ListSaleItemResponseDto>> getAllSaleItems(
             @RequestParam(defaultValue = "") String brand,
             @RequestParam(defaultValue = "asc") String sort
     ) {
@@ -31,7 +31,7 @@ public class SaleItemController {
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<PageDTO<ListSaleItemRes>> getCustomerPages(
+    public ResponseEntity<PageDTO<ListSaleItemResponseDto>> getCustomerPages(
             @RequestParam(defaultValue = "1") Integer pageNo,
             @RequestParam(defaultValue = "5") Integer pageSize)
     {
@@ -39,17 +39,17 @@ public class SaleItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DetailSaleItemRes> getSaleItemById(@PathVariable Integer id) {
+    public ResponseEntity<DetailSaleItemResponseDto> getSaleItemById(@PathVariable Integer id) {
         return ResponseEntity.ok(saleItemService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<CreateUpdateSaleItemRes> addSaleItem(@RequestBody CreateSaleItemReq saleItem) {
+    public ResponseEntity<CreateUpdateSaleItemResponseDto> addSaleItem(@Valid @RequestBody CreateSaleItemRequestDto saleItem) {
         return ResponseEntity.status(HttpStatus.CREATED).body(saleItemService.addSaleItem(saleItem));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CreateUpdateSaleItemRes> updateProduct(@PathVariable Integer id, @RequestBody UpdateSaleItemReq saleItem) {
+    public ResponseEntity<CreateUpdateSaleItemResponseDto> updateProduct(@Valid @PathVariable Integer id, @RequestBody UpdateSaleItemRequestDto saleItem) {
         saleItem.setId(id);
         return ResponseEntity.ok(saleItemService.updateSaleItem(saleItem));
     }

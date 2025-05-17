@@ -7,14 +7,11 @@ import lombok.Setter;
 import sit.int204.itbmsbackend.entities.Brand;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Data
 @Getter
 @Setter
-public class CreateUpdateSaleItemRes {
+public class CreateUpdateSaleItemResponseDto {
     private Integer id;
     private String model;
     private String description;

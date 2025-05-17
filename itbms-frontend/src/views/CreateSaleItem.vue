@@ -66,6 +66,7 @@ const submitForm = async (e) => {
     isSubmitting.value = true
     try {
         saleItem.brand.name = brands.value.find((brand)=> brand.id === saleItem.brand.id).name
+        console.log(saleItem)
         const res = await createSaleItem(saleItem)
         if (!res.ok) throw new Error("Something went wrong")
         statusMessageStore.setStatusMessage("The sale item has been successfully added.")

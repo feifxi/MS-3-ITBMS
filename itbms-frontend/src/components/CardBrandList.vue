@@ -63,11 +63,11 @@ const handleDeleteBrand = async () => {
   <div class="itbms-row">
     <!-- Confirm Modal -->
     <Confirmodal v-if="showConfirmDialog" 
-      :title="'Delete Confirmation'" 
+      :title="isAbleToDelete ? 'Delete Confirmation' : 'Cannot Delete'" 
       :message="
         isAbleToDelete
         ? `Do you want to delete ${props.brand.name}`
-        : `Delete ${props.brand.name} is not allowed. There are sale items with this brand.`" :button-label="'Delete'"
+        : `Delete ${props.brand.name} is not allowed. There are sale items associative with this brand.`" :button-label="'Delete'"
       @confirm="confirmDelete" 
       @cancel="showConfirmDialog = false" 
       :is-disabled="!isAbleToDelete" />

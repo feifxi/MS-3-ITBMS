@@ -28,6 +28,7 @@ public class BrandController {
     public BrandController(BrandService brandService) {
         this.brandService = brandService;
     }
+
     @GetMapping
     public ResponseEntity<List<BrandDto>> getAllBrandDtos() {
         return ResponseEntity.ok().body(brandService.getAllBrandDtos());

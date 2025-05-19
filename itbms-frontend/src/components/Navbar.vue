@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header class="bg-black text-white flex justify-between items-center px-16 py-4">
+  <header class="bg-gradient-to-r from-purple-500 to-rose-500 text-white flex justify-between items-center px-16 py-4">
     <div class="flex items-center gap-8">
       <RouterLink to="/" class="text-2xl font-bold">ITBMS</RouterLink>
     </div>  
@@ -19,7 +19,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <ShoppingCart />
       </button>
       
-      <button class="size-8 bg-gray-400 rounded-full overflow-hidden flex items-center justify-center">
+      <button class="size-8 rounded-full overflow-hidden flex items-center justify-center">
         <User />
       </button>
     </nav>

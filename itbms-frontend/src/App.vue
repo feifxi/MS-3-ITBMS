@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue';
 import ToastMessage from './components/ToastMessage.vue';
+import MockUIView from './views/MockUIView.vue';
 
 </script>
 
@@ -10,6 +11,7 @@ import ToastMessage from './components/ToastMessage.vue';
     <Navbar />
     <RouterView />
     <ToastMessage />
+    <MockUIView />
   </main>
 </template>
 

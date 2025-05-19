@@ -97,7 +97,6 @@ onMounted(fetchBrand)
 
 <template>
     <div>
-      <h1>แก้ไขแบรนด์ ID: {{ $route.params.id }}</h1>
   <div
     class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100 flex justify-center items-center p-6"
   >
@@ -114,9 +113,9 @@ onMounted(fetchBrand)
         Loading...
       </div>
 
-      <form v-else @submit.prevent="saveChanges" class="space-y-6">
+      <form v-else @submit.prevent="saveChanges" class="itbms-managed-brand space-y-6">
         <!-- Brand Name -->
-        <div>
+        <div class="itbms-name">
           <label class="block text-purple-700 font-semibold mb-1">
             🏷️ Brand Name *
           </label>
@@ -129,22 +128,20 @@ onMounted(fetchBrand)
         </div>
 
      <!-- Website URL -->
-        <div>
+        <div class="itbms-websiteUrl">
         <label class="block text-purple-700 font-semibold mb-1">🌐 Website</label>
         <input
            v-model="brand.websiteUrl"
-          type="text"
+          type="url"
+          placeholder="https://example.com"
           class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400
            transition shadow-inner"
         />
-        <p v-if="websiteError" class="text-red-500 text-sm mt-1 font-medium">
-        {{ websiteError }}
-        </p>
         </div>
 
 
         <!-- Active Toggle -->
-        <div class="flex items-center justify-between">
+        <div class="itbms-isActive flex items-center justify-between">
           <label class="text-purple-800 font-semibold">✨ Active</label>
           <button
             type="button"
@@ -160,7 +157,7 @@ onMounted(fetchBrand)
         </div>
 
         <!-- Country of Origin -->
-        <div>
+        <div class="itbms-countryOfOrigin">
           <label class="block text-purple-700 font-semibold mb-1">
             🏳️ Country of Origin
           </label>
@@ -176,7 +173,7 @@ onMounted(fetchBrand)
         <div class="flex justify-between pt-6">
           <button
             type="button"
-            class="bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
+            class="itbms-cancle-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
             @click="cancelEdit"
           >
             ❌ Cancel
@@ -184,7 +181,7 @@ onMounted(fetchBrand)
           <button
             type="submit"
             :disabled="!isModified || isSubmitting"
-            class="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-rose-400 
+            class="itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-rose-400 
             hover:to-pink-400 shadow-lg transition font-bold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {{ isSubmitting ? "Saving..." : "💾 Save" }}

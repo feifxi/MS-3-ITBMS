@@ -37,33 +37,35 @@ const cancelEdit = () => {
     <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-10 w-full max-w-2xl border-4 border-pink-100 backdrop-blur-md">
       <h2 class="text-4xl font-extrabold text-rose-500 mb-10 text-center tracking-widest drop-shadow-sm">🌸 Add New Brand 🌸</h2>
 
-      <form @submit.prevent="submitBrand" class="space-y-6">
+      <form @submit.prevent="submitBrand" class="itbms-manage-brand space-y-6">
 
         <!-- Brand Name -->
-        <div>
+        <div class="itbms-name">
           <label class="block text-purple-700 font-semibold mb-1">🏷️ Brand Name *</label>
           <input
             v-model="newBrand.name"
             type="text"
             required
             placeholder="Enter brand name"
-            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 transition shadow-inner"
+            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 
+            transition shadow-inner"
           />
         </div>
 
         <!-- Website -->
-        <div>
+        <div class="itbms-websiteUrl">
           <label class="block text-purple-700 font-semibold mb-1">🌐 Website</label>
           <input
             v-model="newBrand.websiteUrl"
             type="url"
             placeholder="https://example.com"
-            class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400 transition shadow-inner"
+            class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 
+            focus:ring-purple-400 transition shadow-inner"
           />
         </div>
 
         <!-- Active Toggle -->
-        <div class="flex items-center justify-between">
+        <div class="itbms-isActive flex items-center justify-between">
           <label class="text-purple-800 font-semibold">✨ Active</label>
           <button
             type="button"
@@ -79,7 +81,7 @@ const cancelEdit = () => {
         </div>
 
         <!-- Country of Origin -->
-        <div>
+        <div class="itbms-countryOfOrigin">
           <label class="block text-purple-700 font-semibold mb-1">🏳️ Country of Origin</label>
           <input
             v-model="newBrand.countryOfOrigin"
@@ -93,7 +95,7 @@ const cancelEdit = () => {
         <div class="flex justify-between pt-6">
           <button
             type="button"
-            class="bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
+            class="itbms-cancle-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
             @click="cancelEdit"
           >
             ❌ Cancel
@@ -101,7 +103,7 @@ const cancelEdit = () => {
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-rose-400 hover:to-pink-400 shadow-lg transition font-bold"
+            class="itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-rose-400 hover:to-pink-400 shadow-lg transition font-bold"
           >
             {{ isSubmitting ? "Saving..." : "💾 Save" }}
           </button>

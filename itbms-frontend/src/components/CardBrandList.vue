@@ -59,35 +59,77 @@ const handleDeleteBrand = async () => {
 </script>
 
 <template>
-  <div class="itbms-row">
+  <div class="border-b last:border-none hover:bg-gray-50 transition">
     <!-- Confirm Modal -->
-    <Confirmodal v-if="showConfirmDialog" 
-      :title="isAbleToDelete ? 'Delete Confirmation' : 'Cannot Delete'" 
-      :message="
-        isAbleToDelete
+    <Confirmodal
+      v-if="showConfirmDialog"
+      :title="isAbleToDelete ? 'Delete Confirmation' : 'Cannot Delete'"
+      :message="isAbleToDelete
         ? `Do you want to delete ${props.brand.name} brand?`
-        : `Delete ${props.brand.name} is not allowed. There are sale items with ${props.brand.name} brand.`" :button-label="'Delete'"
-      @confirm="confirmDelete" 
-      @cancel="showConfirmDialog = false" 
-      :is-disabled="!isAbleToDelete" />
+        : `Delete ${props.brand.name} is not allowed. There are sale items with ${props.brand.name} brand.`"
+      :button-label="'Delete'"
+      @confirm="confirmDelete"
+      @cancel="showConfirmDialog = false"
+      :is-disabled="!isAbleToDelete"
+    />
 
-    <div class="grid grid-cols-8 items-center gap-3 border p-4 rounded shadow-sm">
-      <div class="itbms-id col-span-1">{{ props.brand.id }}</div>
-      <div class="itbms-name col-span-2 font-semibold">{{ props.brand.name }}</div>
-      <div class="itbms-websiteUrl col-span-3 text-blue-600 underline">
-        <a :href="props.brand.websiteUrl" target="_blank">{{ props.brand.websiteUrl }}</a>
+    <!-- Desktop View -->
+    <div class="hidden md:grid grid-cols-8 gap-3 items-center p-4 text-center text-sm">
+      <div class="break-words whitespace-normal overflow-hidden px-1">{{ props.brand.id }}</div>
+      <div class="font-medium text-gray-900 break-words whitespace-normal overflow-hidden px-1">
+        {{ props.brand.name }}
       </div>
-      <div class="itbms-isActive col-span-1">{{ props.brand.isActive }}</div>
-
-      <div class="itbms-countryOfOrigin col-span-1">{{ props.brand.countryOfOrigin }}</div>
-      <div class="col-span-1 flex gap-1">
+      <div class="col-span-2 break-words whitespace-normal overflow-hidden px-1 text-blue-600 underline">
+        <a :href="props.brand.websiteUrl" target="_blank">{{ props.brand.websiteUrl || '-' }}</a>
+      </div>
+      <div class="break-words whitespace-normal overflow-hidden px-1">
+        <span :class="props.brand.isActive ? 'text-green-600' : 'text-red-600'">
+          {{ props.brand.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+      <div class="break-words whitespace-normal overflow-hidden px-1">{{ props.brand.countryOfOrigin || '-' }}</div>
+      <div class="col-span-2 flex justify-center gap-2 flex-wrap">
         <RouterLink :to="`/brands/${props.brand.id}/edit`">
-          <Button class="itbms-edit-button" variant="secondary">E</Button>
+          <Button variant="secondary">Edit</Button>
         </RouterLink>
-        <Button class="itbms-delete-button" variant="destructive" :onclick="handleDeleteBrand" :disabled="isDeleting">
-          D
+        <Button variant="destructive" :onclick="handleDeleteBrand" :disabled="isDeleting">
+          Delete
         </Button>
       </div>
     </div>
+
+
+
+    <!-- Mobile View -->
+    <div class="grid md:hidden grid-cols-1 gap-2 text-sm border rounded-xl p-4 shadow-sm">
+      <div><span class="font-semibold">ID:</span> {{ props.brand.id }}</div>
+      <div class="break-words whitespace-normal overflow-hidden">
+        <span class="font-semibold">Name:</span> {{ props.brand.name }}
+      </div>
+      <div class="break-words whitespace-normal overflow-hidden">
+        <span class="font-semibold">Country:</span> {{ props.brand.countryOfOrigin || '-' }}
+      </div>
+      <div class="break-words whitespace-normal overflow-hidden">
+        <span class="font-semibold">Status:</span>
+        <span :class="props.brand.isActive ? 'text-green-600' : 'text-red-600'">
+          {{ props.brand.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+      <div class="whitespace-nowrap overflow-hidden text-ellipsis">
+        <span class="font-semibold">Website:</span>
+        <a :href="props.brand.websiteUrl" target="_blank" class="text-blue-600 underline block">
+          {{ props.brand.websiteUrl || '-' }}
+        </a>
+      </div>
+      <div class="flex justify-start gap-2 flex-wrap pt-2">
+        <RouterLink :to="`/brands/${props.brand.id}/edit`">
+          <Button variant="secondary" size="sm">Edit</Button>
+        </RouterLink>
+        <Button variant="destructive" size="sm" :onclick="handleDeleteBrand" :disabled="isDeleting">
+          Delete
+        </Button>
+      </div>
+    </div>
+
   </div>
 </template>

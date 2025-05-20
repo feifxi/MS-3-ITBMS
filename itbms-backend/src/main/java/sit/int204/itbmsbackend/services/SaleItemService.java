@@ -35,8 +35,6 @@ public class SaleItemService {
     }
 
     public List<ListSaleItemResponseDto> findAll(String brand, String sort) {
-        // Implement Sort and Filtering later
-
         List <SaleItem> saleItems = saleItemRepository.findAll();
         return listMapper.mapList(saleItems, ListSaleItemResponseDto.class, modelMapper);
     }
@@ -87,6 +85,4 @@ public class SaleItemService {
         }
         saleItemRepository.deleteById(id);
     }
-
-
 }

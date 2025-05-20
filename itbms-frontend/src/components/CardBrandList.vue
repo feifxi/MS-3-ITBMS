@@ -15,6 +15,9 @@ const showConfirmDialog = ref(false)
 const isAbleToDelete = ref(false)
 const isDeleting = ref(false)
 
+
+
+
 const emit = defineEmits(['deleted']) // เพิ่ม
 
 const confirmDelete = async () => {

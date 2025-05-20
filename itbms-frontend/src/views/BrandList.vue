@@ -39,8 +39,8 @@ function handleDeleted(deletedBrandId) {
 
 <template>
   <main class="px-10 py-8">
-    <h1 class="text-3xl font-bold text-center mb-6">🏷️ All Brands</h1>
-    <Button @click="goToAddBrand">➕ Add Brand</Button>
+    <h1 class=" text-3xl font-bold text-center mb-6">🏷️ All Brands</h1>
+    <Button @click="goToAddBrand" class="itbms-add-button">➕ Add Brand</Button>
 
 
     <div v-if="isLoading" class="text-center text-blue-500 text-xl animate-pulse">Loading...</div>

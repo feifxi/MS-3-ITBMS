@@ -11,7 +11,7 @@ import MockUIView from './views/MockUIView.vue';
     <Navbar />
     <RouterView />
     <ToastMessage />
-    <MockUIView />
+    <!-- <MockUIView /> -->
   </main>
 </template>
 

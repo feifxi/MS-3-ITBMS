@@ -1,5 +1,6 @@
 <script setup>
-import { formatNumber } from '@/libs/utils';
+// import { formatNumber } from '@/libs/utils'
+import { formatNumber } from "../libs/utils.js";
 import { RouterLink } from 'vue-router'
 import mockPhone from '@/assets/image/mockPhone.webp'
 
@@ -9,7 +10,6 @@ defineProps({
         required: true
     }
 })
-
 </script>
 
 <template>

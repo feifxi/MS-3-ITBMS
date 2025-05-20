@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref , computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { createBrand } from '@/api/index.js'
 
@@ -30,6 +30,9 @@ const submitBrand = async () => {
 const cancelEdit = () => {
   router.push('/brands')
 }
+const isFormValid = computed(() => {
+  return newBrand.value.name.trim() !== ''
+})
 </script>
 
 <template>
@@ -100,13 +103,15 @@ const cancelEdit = () => {
           >
             ❌ Cancel
           </button>
-          <button
-            type="submit"
-            :disabled="isSubmitting"
-            class="itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-rose-400 hover:to-pink-400 shadow-lg transition font-bold"
-          >
-            {{ isSubmitting ? "Saving..." : "💾 Save" }}
-          </button>
+      <button
+  type="submit"
+  :disabled="isSubmitting || !isFormValid"
+  class="itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full
+         hover:from-rose-400 hover:to-pink-400 shadow-lg transition font-bold"
+>
+  {{ isSubmitting ? "Saving..." : "💾 Save" }}
+</button>
+
         </div>
       </form>
     </div>

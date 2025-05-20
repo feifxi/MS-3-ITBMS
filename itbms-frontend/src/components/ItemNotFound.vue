@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CircleAlert } from 'lucide-vue-next';
+import Button from '@/components/Button.vue'
 
 </script>
 
@@ -10,10 +11,10 @@ import { CircleAlert } from 'lucide-vue-next';
     </div>
     <h2 class="text-xl font-bold text-gray-800 mb-2">Item Not Found</h2>
     <p class="itbms-message text-lg mb-6 text-gray-600">The requested sale item does not exist.</p>
-    <button
-      class="itbms-button bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md text-base font-medium cursor-pointer transition-colors duration-200"
+    <Button
+      class="itbms-button mx-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md text-base font-medium cursor-pointer transition-colors duration-200"
       @click="$emit('goBack')">
       OK
-    </button>
+    </Button>
   </div>
 </template>

@@ -9,11 +9,20 @@ defineProps({
 </script>
 
 <template>
-    <button :class="[className, 'cursor-pointer border-2 px-8 py-3 rounded font-bold transition-all duration-300', {
-        'border-blue-600 bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-900 disabled:bg-blue-900 disabled:border-blue-900 disabled:cursor-not-allowed': variant === 'primary',
-        'border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white': variant === 'secondary',
-        'border-red-600 text-red-600 hover:bg-red-600 hover:text-white': variant === 'destructive',
-    }]" :type="type" @click="onclick" :disabled="disabled">
+    <button 
+        :class="[
+            className, 
+            'cursor-pointer px-4 py-2 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2',
+            {
+                'bg-gradient-to-r from-rose-500 to-purple-600 text-white hover:opacity-90 transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100': variant === 'primary',
+                'bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white': variant === 'secondary',
+                'bg-rose-100 text-rose-600 hover:bg-rose-600 hover:text-white': variant === 'destructive',
+            }
+        ]" 
+        :type="type" 
+        @click="onclick" 
+        :disabled="disabled"
+    >
         <slot></slot>
     </button>
 </template>

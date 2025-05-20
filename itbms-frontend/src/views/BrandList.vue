@@ -36,17 +36,28 @@ function handleDeleted(deletedBrandId) {
 }
 
 </script>
-
 <template>
-  <main class="px-10 py-8">
-    <h1 class=" text-3xl font-bold text-center mb-6">🏷️ All Brands</h1>
-    <Button @click="goToAddBrand" class="itbms-add-button">➕ Add Brand</Button>
-
+  <main class="p-4 md:p-8 max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800">🏷️ All Brands</h1>
+      <Button @click="goToAddBrand" variant="primary">➕ Add Brand</Button>
+    </div>
 
     <div v-if="isLoading" class="text-center text-blue-500 text-xl animate-pulse">Loading...</div>
     <div v-else-if="brands.length === 0" class="text-center text-gray-500 text-lg">No brand found.</div>
 
-    <div v-else class="space-y-3">
+    <div v-else class="overflow-x-auto shadow rounded-lg">
+      <!-- Headings -->
+    <div class="hidden md:grid grid-cols-8 gap-3 bg-gray-100 p-4 font-semibold text-gray-700 text-center">
+      <div>ID</div>
+      <div>Name</div>
+      <div class="col-span-2">Website</div>
+      <div>Status</div>
+      <div>Country</div>
+      <div class="col-span-2">Actions</div>
+    </div>
+
+      <!-- Brand Rows -->
       <CardBrandList
         v-for="brand in brands"
         :key="brand.id"
@@ -54,7 +65,6 @@ function handleDeleted(deletedBrandId) {
         :sale-items="saleItems"
         @deleted="handleDeleted"
       />
-
     </div>
   </main>
 </template>

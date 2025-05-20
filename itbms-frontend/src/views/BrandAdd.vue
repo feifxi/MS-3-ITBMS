@@ -3,6 +3,7 @@ import { ref , computed, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { createBrand } from '@/api/index.js'
 import { useStatusMessageStore } from '@/stores/statusMessage';
+import Button from '@/components/Button.vue'
 
 const statusMessageStore = useStatusMessageStore()
 
@@ -110,14 +111,14 @@ watch(newBrand.value, () => {
 
         <!-- Buttons -->
         <div class="flex justify-between pt-6">
-          <button
+          <Button
             type="button"
             class="itbms-cancel-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
             @click="cancelEdit"
           >
             ❌ Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             :disabled="isSubmitting || !isFormValid"
             :class="['itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full  hover:from-rose-400 hover:to-pink-400 shadow-lg transition font-bold',
@@ -126,7 +127,7 @@ watch(newBrand.value, () => {
             }]"
           >
             {{ isSubmitting ? "Saving..." : "💾 Save" }}
-          </button>
+          </Button>
 
         </div>
       </form>

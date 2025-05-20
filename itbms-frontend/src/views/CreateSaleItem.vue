@@ -70,7 +70,7 @@ const submitForm = async (e) => {
         const res = await createSaleItem(saleItem)
         if (!res.ok) throw new Error("Something went wrong")
         statusMessageStore.setStatusMessage("The sale item has been successfully added.")
-        router.push('/sale-items')
+        router.push('/sale-items/list')
     } catch (err) {
         console.log(err)
         alert("Something went wrong")

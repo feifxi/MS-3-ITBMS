@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchAllBrands, updateBrand } from '@/api/index.js'
+import { fetchAllBrands, fetchBrandById, updateBrand } from '@/api/index.js'
 import Button from '@/components/Button.vue'
 import { useStatusMessageStore } from '@/stores/statusMessage'
 
@@ -33,17 +33,18 @@ const isSubmitting = ref(false)
 const isModified = ref(false)
 
 const fetchBrand = async () => {
-  isLoading.value = true
-  const res = await fetchAllBrands()
-  const allBrands = await res.json()
-  const foundBrand = allBrands.find(b => b.id === parseInt(brandId))
-  if (!foundBrand) {
+  try {
+    const res = await fetchBrandById(brandId)
+    if (!res.ok) throw new Error('Failed to create brand')
+    const data = await res.json()
+    brand.value = data
+    originalBrand.value = JSON.stringify(data)
+  } catch (err) {
+    console.error(err)
     statusMessageStore.setStatusMessage("The brand does not exist.", false)
-    return router.push('/brands')
+  } finally {
+    isLoading.value = false
   }
-  brand.value = { ...foundBrand }
-  originalBrand.value = JSON.stringify(foundBrand)
-  isLoading.value = false
 }
 
 const validateForm = () => {
@@ -55,8 +56,6 @@ const validateForm = () => {
   }
   isModified.value =
     brand.value.name.trim() !== '' &&
-    brand.value.websiteUrl.trim() !== '' &&
-    brand.value.countryOfOrigin.trim() !== '' &&
     hasChanged
 }
 
@@ -115,33 +114,33 @@ onMounted(fetchBrand)
 
       <form v-else @submit.prevent="saveChanges" class="itbms-managed-brand space-y-6">
         <!-- Brand Name -->
-        <div class="itbms-name">
+        <div>
           <label class="block text-purple-700 font-semibold mb-1">
             🏷️ Brand Name *
           </label>
           <input
             v-model="brand.name"
             type="text"
-            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 
+            class="itbms-name w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 
             transition shadow-inner"
           />
         </div>
 
      <!-- Website URL -->
-        <div class="itbms-websiteUrl">
+        <div class="">
         <label class="block text-purple-700 font-semibold mb-1">🌐 Website</label>
         <input
-           v-model="brand.websiteUrl"
+          v-model="brand.websiteUrl"
           type="url"
           placeholder="https://example.com"
-          class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400
+          class="itbms-websiteUrl w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400
            transition shadow-inner"
-        />
+          />
         </div>
 
 
         <!-- Active Toggle -->
-        <div class="itbms-isActive flex items-center justify-between">
+        <!-- <div class="itbms-isActive flex items-center justify-between">
           <label class="text-purple-800 font-semibold">✨ Active</label>
           <button
             type="button"
@@ -154,17 +153,21 @@ onMounted(fetchBrand)
               :class="brand.isActive ? 'translate-x-6' : 'translate-x-1'"
             />
           </button>
+        </div> -->
+        <div class="flex items-center justify-between">
+          <label class="text-purple-800 font-semibold">✨ Active</label>
+          <input type="checkbox" class="itbms-isActive size-5" v-model="brand.isActive">
         </div>
 
         <!-- Country of Origin -->
-        <div class="itbms-countryOfOrigin">
+        <div class="">
           <label class="block text-purple-700 font-semibold mb-1">
             🏳️ Country of Origin
           </label>
           <input
             v-model="brand.countryOfOrigin"
             type="text"
-            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 
+            class="itbms-countryOfOrigin w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 
             focus:ring-rose-300 transition shadow-inner"
           />
         </div>
@@ -173,7 +176,7 @@ onMounted(fetchBrand)
         <div class="flex justify-between pt-6">
           <button
             type="button"
-            class="itbms-cancle-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
+            class="itbms-cancel-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
             @click="cancelEdit"
           >
             ❌ Cancel
@@ -181,8 +184,10 @@ onMounted(fetchBrand)
           <button
             type="submit"
             :disabled="!isModified || isSubmitting"
-            class="itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-rose-400 
-            hover:to-pink-400 shadow-lg transition font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="['itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full  hover:from-rose-400 hover:to-pink-400 shadow-lg transition font-bold',
+            {
+              'cursor-not-allowed' : !isModified,
+            }]"
           >
             {{ isSubmitting ? "Saving..." : "💾 Save" }}
           </button>

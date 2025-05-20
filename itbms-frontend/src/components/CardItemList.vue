@@ -19,7 +19,7 @@ const confirmDelete = async () => {
     isDeleting.value = true
     const res = await deleteSaleItem(props.item.id)
     if (!res.ok) throw new Error('Failed')
-    statusMessageStore.setStatusMessage(`"${props.item.model}" has been deleted.`, true)
+    statusMessageStore.setStatusMessage('The sale item has been deleted.', true)
     emit('deleted', props.item.id)  // แจ้งไปยัง parent
   } catch (err) {
     console.error(err)
@@ -35,7 +35,7 @@ const confirmDelete = async () => {
   <DeleteConfirmModal
       v-if="showConfirmDialog"
       :title="'Delete Confirmation'"                
-      :message="`Do you want to ${props.item.model} brand?`"
+      :message="`Do you want to delete this sale item?`"
       :button-label="'Delete'"
       @confirm="confirmDelete"
       @cancel="showConfirmDialog = false"

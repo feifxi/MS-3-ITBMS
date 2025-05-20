@@ -7,6 +7,7 @@ import lombok.Setter;
 import sit.int204.itbmsbackend.entities.Brand;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Data
 @Getter
@@ -26,9 +27,9 @@ public class CreateUpdateSaleItemResponseDto {
     public String getBrandName() {
         return brand.getName();
     }
-//    private Instant createdOn;
-//    private Instant updatedOn;
+    private Instant createdOn;
+    private Instant updatedOn;
 
-    private String createdOn;
-    private String updatedOn;
+//    private String createdOn;
+//    private String updatedOn;
 }

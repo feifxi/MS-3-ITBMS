@@ -2,6 +2,7 @@ package sit.int204.itbmsbackend.dtos.saleItem;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -21,10 +22,12 @@ public class UpdateSaleItemRequestDto {
 
     @NotNull(message = "Model is required")
     @NotEmpty
+    @NotBlank
     private String model;
 
     @NotNull(message = "Description is required")
     @NotEmpty
+    @NotBlank
     private String description;
 
     @Min(0)

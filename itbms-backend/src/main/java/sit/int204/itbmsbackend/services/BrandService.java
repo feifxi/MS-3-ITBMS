@@ -39,7 +39,7 @@ public class BrandService {
     );}
 
     public List<BrandDto> getAllBrandDtos() {
-        List<Brand> brands = brandRepository.findAllByOrderByNameAsc();
+        List<Brand> brands = brandRepository.findAll();
         return listMapper.mapList(brands, BrandDto.class, modelMapper);
     }
 
@@ -51,6 +51,8 @@ public class BrandService {
 
     public BrandDetailDto createBrand(CreateUpdateBrandDto brandDto) {
         if (brandRepository.existsByNameIgnoreCase(brandDto.getName())) {
+            System.out.println(brandDto.getName());
+            System.out.println(brandRepository.existsByNameIgnoreCase(brandDto.getName()));
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This brand name already exists");
         }
         brandDto.setName(brandDto.getName().trim());
@@ -66,6 +68,9 @@ public class BrandService {
         Brand existing = brandRepository.findById(brandDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Brand Item not found")
         );
+        if (brandRepository.existsByNameIgnoreCase(brandDto.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This brand name already exists");
+        }
         existing.setName(brandDto.getName().trim());
         existing.setWebsiteUrl(brandDto.getWebsiteUrl());
         existing.setIsActive(brandDto.getIsActive() != null && brandDto.getIsActive());

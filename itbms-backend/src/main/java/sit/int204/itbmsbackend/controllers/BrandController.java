@@ -1,23 +1,16 @@
 package sit.int204.itbmsbackend.controllers;
 
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.dtos.brand.CreateUpdateBrandDto;
-import sit.int204.itbmsbackend.repositories.BrandRepository;
 import sit.int204.itbmsbackend.services.BrandService;
-import sit.int204.itbmsbackend.utils.ListMapper;
 import sit.int204.itbmsbackend.dtos.brand.BrandDetailDto;
 import sit.int204.itbmsbackend.dtos.brand.BrandDto;
 
-
-
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/v1/brands")

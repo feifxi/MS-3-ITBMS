@@ -63,7 +63,6 @@ public class SaleItemService {
         return modelMapper.map(newSaleItem, CreateUpdateSaleItemResponseDto.class);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CreateUpdateSaleItemResponseDto updateSaleItem(UpdateSaleItemRequestDto saleItemDto) {
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())

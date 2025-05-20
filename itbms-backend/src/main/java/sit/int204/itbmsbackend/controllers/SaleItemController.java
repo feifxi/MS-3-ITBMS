@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/sale-items")
-
 public class SaleItemController {
     private final SaleItemService saleItemService;
 

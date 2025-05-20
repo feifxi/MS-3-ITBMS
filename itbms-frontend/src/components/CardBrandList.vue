@@ -24,14 +24,10 @@ const confirmDelete = async () => {
   try {
     isDeleting.value = true
     const res = await deleteBrand(props.brand.id)
-    if (res.status === 200) {
-      statusMessageStore.setStatusMessage(`"${props.brand.name}" brand has been deleted.`, true)
-      emit('deleted', props.brand.id)  // แจ้งไปยัง parent ว่าลบสำเร็จ
-    } else if (res.status === 404) {
-      statusMessageStore.setStatusMessage('An error has occurred, the status does not exist.', false)
-    } else {
-      throw new Error('Unexpected response')
-    }
+    if (res.ok) {
+      statusMessageStore.setStatusMessage(`The brand has been deleted.`, true)
+      emit('deleted', props.brand.id)  
+    } else throw new Error("fail to delete")
   } catch (err) {
     console.error(err)
     statusMessageStore.setStatusMessage(`Failed to delete "${props.brand.name}".`, false)
@@ -69,8 +65,8 @@ const handleDeleteBrand = async () => {
       :title="isAbleToDelete ? 'Delete Confirmation' : 'Cannot Delete'" 
       :message="
         isAbleToDelete
-        ? `Do you want to delete ${props.brand.name}`
-        : `Delete ${props.brand.name} is not allowed. There are sale items associative with this brand.`" :button-label="'Delete'"
+        ? `Do you want to delete ${props.brand.name} brand?`
+        : `Delete ${props.brand.name} is not allowed. There are sale items with ${props.brand.name} brand.`" :button-label="'Delete'"
       @confirm="confirmDelete" 
       @cancel="showConfirmDialog = false" 
       :is-disabled="!isAbleToDelete" />

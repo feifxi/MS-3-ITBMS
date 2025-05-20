@@ -58,49 +58,11 @@ public class SaleItem {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-//    @ColumnDefault("CURRENT_TIMESTAMP")
-//    @Column(name = "created_on", insertable = false, updatable = false)
-//    private Instant createdOn;
-//
-//    @ColumnDefault("CURRENT_TIMESTAMP")
-//    @Column(name = "updated_on", insertable = false)
-//    private Instant updatedOn;
-
-//    @CreationTimestamp
-//    @Column(name = "createdOn", insertable = false, updatable = false, nullable = false)
-//    private Instant createdOn;
-//
-//    @UpdateTimestamp
-//    @Column(name = "updatedOn", insertable = false, nullable = false)
-//    private Instant updatedOn;
-
-//    @Column(name = "created_on", insertable = false, updatable = false, nullable = false)
-//    private Instant createdOn;
-//
-//    @Column(name = "updated_on", insertable = false, nullable = false)
-//    private Instant updatedOn;
-
-//    @CreatedDate
-//    @Column(name = "created_on", nullable = false, updatable = false)
-//    private LocalDateTime createdOn;
-//
-//    @LastModifiedDate
-//    @Column(name = "updated_on")
-//    private LocalDateTime updatedOn;
-
-//    @CreationTimestamp
-//    @Column(name = "createdOn", updatable = false, nullable = false)
-//    private Instant createdOn;
-//
-//    @UpdateTimestamp
-//    @Column(name = "updatedOn", nullable = false)
-//    private Instant updatedOn;
-
     @CreationTimestamp
     @Column(name = "createdOn", updatable = false, nullable = false)
-    private Timestamp createdOn;
+    private Instant createdOn;
 
     @UpdateTimestamp
     @Column(name = "updatedOn", nullable = false)
-    private Timestamp updatedOn;
+    private Instant updatedOn;
 }

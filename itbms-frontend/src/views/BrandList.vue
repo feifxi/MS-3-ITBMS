@@ -40,7 +40,7 @@ function handleDeleted(deletedBrandId) {
   <main class="p-4 md:p-8 max-w-7xl mx-auto">
     <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
       <h1 class="text-2xl md:text-3xl font-bold text-gray-800">🏷️ All Brands</h1>
-      <Button @click="goToAddBrand" variant="primary">➕ Add Brand</Button>
+      <Button @click="goToAddBrand" variant="primary" class="shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">➕ Add Brand</Button>
     </div>
 
     <div v-if="isLoading" class="text-center text-blue-500 text-xl animate-pulse">Loading...</div>

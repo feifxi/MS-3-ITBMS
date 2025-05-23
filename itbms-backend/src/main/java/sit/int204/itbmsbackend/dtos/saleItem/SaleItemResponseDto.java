@@ -29,7 +29,4 @@ public class SaleItemResponseDto {
     }
     private Instant createdOn;
     private Instant updatedOn;
-
-//    private String createdOn;
-//    private String updatedOn;
 }

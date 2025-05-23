@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import sit.int204.itbmsbackend.entities.SaleItem;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -21,9 +21,10 @@ public class BrandDetailDto {
     private String countryOfOrigin;
     @JsonIgnore
     private Set<SaleItem> saleItems = new LinkedHashSet<>();
+
     public Integer getNoOfSaleItems () {
         return saleItems.size();
     };
-    private LocalDateTime createdOn;
-    private LocalDateTime updatedOn;
+    private Instant createdOn;
+    private Instant updatedOn;
 }

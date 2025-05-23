@@ -2,9 +2,7 @@ package sit.int204.itbmsbackend.dtos.brand;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import sit.int204.itbmsbackend.utils.Utils;
 
 @Data

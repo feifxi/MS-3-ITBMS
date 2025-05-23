@@ -3,7 +3,6 @@ package sit.int204.itbmsbackend.dtos.saleItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
@@ -16,22 +15,17 @@ import java.math.BigDecimal;
 @Data
 @Getter
 @Setter
-public class UpdateSaleItemRequestDto {
+public class SaleItemCreateDto {
     @JsonIgnore
     private Integer id;
 
-    @NotNull(message = "Model is required")
-    @NotEmpty
-    @NotBlank
+    @NotBlank(message = "Model is required")
     private String model;
 
-    @NotNull(message = "Description is required")
-    @NotEmpty
-    @NotBlank
+    @NotBlank(message = "Description is required")
     private String description;
 
-    @Min(0)
-    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be greater than 0")
     private BigDecimal price;
 
     @Min(value = 0, message = "ramGb must be greater than 0")

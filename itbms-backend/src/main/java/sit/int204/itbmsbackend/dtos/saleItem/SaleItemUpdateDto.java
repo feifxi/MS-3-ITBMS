@@ -16,18 +16,14 @@ import java.math.BigDecimal;
 @Data
 @Getter
 @Setter
-public class CreateSaleItemRequestDto {
+public class SaleItemUpdateDto {
     @JsonIgnore
     private Integer id;
 
-    @NotNull(message = "Model is required")
-    @NotEmpty
-    @NotBlank
+    @NotBlank(message = "Model is required")
     private String model;
 
-    @NotNull(message = "Description is required")
-    @NotEmpty
-    @NotBlank
+    @NotBlank(message = "Description is required")
     private String description;
 
     @Min(0)

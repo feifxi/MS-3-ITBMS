@@ -7,7 +7,7 @@ USE `ms3_itbms_db` ;
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`brands` (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL UNIQUE,
-    website_url VARCHAR(40),
+    website_url VARCHAR(40),	
     is_active BOOLEAN,
     country_of_origin VARCHAR(80),
     created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

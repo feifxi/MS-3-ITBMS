@@ -12,7 +12,7 @@ import java.time.Instant;
 @Data
 @Getter
 @Setter
-public class CreateUpdateSaleItemResponseDto {
+public class SaleItemResponseDto {
     private Integer id;
     private String model;
     private String description;

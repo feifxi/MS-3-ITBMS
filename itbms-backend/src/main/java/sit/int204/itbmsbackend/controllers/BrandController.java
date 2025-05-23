@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int204.itbmsbackend.dtos.brand.CreateUpdateBrandDto;
+import sit.int204.itbmsbackend.dtos.brand.BrandCreateUpdateDto;
 import sit.int204.itbmsbackend.services.BrandService;
 import sit.int204.itbmsbackend.dtos.brand.BrandDetailDto;
-import sit.int204.itbmsbackend.dtos.brand.BrandDto;
+import sit.int204.itbmsbackend.dtos.brand.BrandListDto;
 
 import java.util.List;
 
@@ -23,24 +23,24 @@ public class BrandController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BrandDto>> getAllBrandDtos() {
-        return ResponseEntity.ok().body(brandService.getAllBrandDtos());
+    public ResponseEntity<List<BrandListDto>> getAllBrand() {
+        return ResponseEntity.ok().body(brandService.getAllBrand());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BrandDetailDto> getBrandByIdDto(@PathVariable Integer id) {
+    public ResponseEntity<BrandDetailDto> getBrandById(@PathVariable Integer id) {
         return ResponseEntity.ok(brandService.getBrandByIdDto(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BrandDetailDto> updateBrand(@PathVariable Integer id, @Valid @RequestBody BrandDetailDto brandDto) {
-        brandDto.setId(id); // ใช้ id จาก URL เสมอ
+        brandDto.setId(id);
         BrandDetailDto updated = brandService.updateBrand(brandDto);
         return ResponseEntity.ok(updated);
     }
 
     @PostMapping
-    public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody CreateUpdateBrandDto dto) {
+    public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody BrandCreateUpdateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(brandService.createBrand(dto));
     }
 

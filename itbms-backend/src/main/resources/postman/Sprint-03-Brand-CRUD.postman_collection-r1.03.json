@@ -707,7 +707,7 @@
 			]
 		},
 		{
-			"name": "PBI-5 DELETE-BRAND",
+			"name": "PBI-8 DELETE-BRAND",
 			"item": [
 				{
 					"name": "DELETE-BRAND-NORMAL",
@@ -1100,8 +1100,12 @@
 					"    }",
 					"});",
 					"",
+					"var request_url = pm.request.url.toString();",
+					"// console.log(request_url);",
+					"// console.log(\"sit.kmutt.ac.th -> \"+ request_url.includes(\"sit.kmutt.ac.th\"));",
+					"var expected_url = request_url.includes(\"ip24\") || request_url.includes(\"intproject24\");",
 					"pm.test(\"Expected test server is host.sit\",function() {    ",
-					"    pm.expect(pm.request.url.toString()).to.be.contains(\"ip24\");",
+					"    pm.expect(expected_url).to.be.eq(true);",
 					"    pm.expect(pm.request.url.toString()).to.be.contains(\"sit.kmutt.ac.th\");",
 					"});",
 					"",

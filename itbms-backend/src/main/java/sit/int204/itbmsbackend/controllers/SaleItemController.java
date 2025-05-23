@@ -22,7 +22,7 @@ public class SaleItemController {
         this.saleItemService = saleItemService;}
 
     @GetMapping
-    public ResponseEntity<List<ListSaleItemResponseDto>> getAllSaleItems(
+    public ResponseEntity<List<SaleItemListDto>> getAllSaleItems(
             @RequestParam(defaultValue = "") String brand,
             @RequestParam(defaultValue = "asc") String sort
     ) {
@@ -30,7 +30,7 @@ public class SaleItemController {
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<PageDTO<ListSaleItemResponseDto>> getCustomerPages(
+    public ResponseEntity<PageDTO<SaleItemListDto>> getCustomerPages(
             @RequestParam(defaultValue = "1") Integer pageNo,
             @RequestParam(defaultValue = "5") Integer pageSize)
     {
@@ -38,17 +38,17 @@ public class SaleItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DetailSaleItemResponseDto> getSaleItemById(@PathVariable Integer id) {
+    public ResponseEntity<SaleItemDetailDto> getSaleItemById(@PathVariable Integer id) {
         return ResponseEntity.ok(saleItemService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<CreateUpdateSaleItemResponseDto> addSaleItem(@Valid @RequestBody CreateSaleItemRequestDto saleItem) {
+    public ResponseEntity<SaleItemResponseDto> addSaleItem(@Valid @RequestBody SaleItemCreateDto saleItem) {
         return ResponseEntity.status(HttpStatus.CREATED).body(saleItemService.addSaleItem(saleItem));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CreateUpdateSaleItemResponseDto> updateProduct(@Valid @PathVariable Integer id, @RequestBody UpdateSaleItemRequestDto saleItem) {
+    public ResponseEntity<SaleItemResponseDto> updateProduct(@Valid @PathVariable Integer id, @RequestBody SaleItemUpdateDto saleItem) {
         saleItem.setId(id);
         return ResponseEntity.ok(saleItemService.updateSaleItem(saleItem));
     }

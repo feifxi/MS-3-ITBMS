@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Data
 @Getter
 @Setter
-public class DetailSaleItemResponseDto {
+public class SaleItemDetailDto {
     private Integer id;
     private String model;
     private String description;

@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.dtos.PageDTO;
 import sit.int204.itbmsbackend.dtos.saleItem.*;
@@ -34,34 +32,33 @@ public class SaleItemService {
         this.listMapper = listMapper;
     }
 
-    public List<ListSaleItemResponseDto> findAll(String brand, String sort) {
+    public List<SaleItemListDto> findAll(String brand, String sort) {
         List <SaleItem> saleItems = saleItemRepository.findAll();
-        return listMapper.mapList(saleItems, ListSaleItemResponseDto.class, modelMapper);
+        return listMapper.mapList(saleItems, SaleItemListDto.class, modelMapper);
     }
 
-    public PageDTO<ListSaleItemResponseDto> findAll(Integer page, Integer size) {
+    public PageDTO<SaleItemListDto> findAll(Integer page, Integer size) {
         Page<SaleItem> saleItemPages = saleItemRepository.findAll(PageRequest.of(page, size));
-        return listMapper.toPageDTO(saleItemPages, ListSaleItemResponseDto.class, modelMapper);
+        return listMapper.toPageDTO(saleItemPages, SaleItemListDto.class, modelMapper);
     }
 
-    public DetailSaleItemResponseDto findById(Integer id) {
+    public SaleItemDetailDto findById(Integer id) {
         SaleItem saleItem =  saleItemRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
         );
-        return modelMapper.map(saleItem, DetailSaleItemResponseDto.class);
+        return modelMapper.map(saleItem, SaleItemDetailDto.class);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public CreateUpdateSaleItemResponseDto addSaleItem(CreateSaleItemRequestDto saleItemDto) {
+    public SaleItemResponseDto addSaleItem(SaleItemCreateDto saleItemDto) {
         Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
         saleItemDto.setBrand(brand);
         SaleItem newSaleItem = saleItemRepository.save(
                 modelMapper.map(saleItemDto, SaleItem.class)
         );
-        return modelMapper.map(newSaleItem, CreateUpdateSaleItemResponseDto.class);
+        return modelMapper.map(newSaleItem, SaleItemResponseDto.class);
     }
 
-    public CreateUpdateSaleItemResponseDto updateSaleItem(UpdateSaleItemRequestDto saleItemDto) {
+    public SaleItemResponseDto updateSaleItem(SaleItemUpdateDto saleItemDto) {
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())
         );
@@ -76,7 +73,7 @@ public class SaleItemService {
         existingSaleItem.setScreenSizeInch(saleItemDto.getScreenSizeInch());
         existingSaleItem.setBrand(brand);
         SaleItem updatedSaleItem = saleItemRepository.save(existingSaleItem);
-        return modelMapper.map(updatedSaleItem, CreateUpdateSaleItemResponseDto.class);
+        return modelMapper.map(updatedSaleItem, SaleItemResponseDto.class);
     }
 
     public void removeSaleItem(Integer id) {

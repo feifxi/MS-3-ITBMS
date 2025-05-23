@@ -11,13 +11,9 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-public class BrandDto {
+public class BrandListDto {
     private Integer id;
 
-    @NotNull(message = "name is required")
-    @NotEmpty
-    @NotBlank
-    @Size(min = 1, max = 30)
     private String name;
 
     private String websiteUrl;

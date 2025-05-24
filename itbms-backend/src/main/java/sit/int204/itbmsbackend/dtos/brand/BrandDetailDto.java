@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import sit.int204.itbmsbackend.entities.SaleItem;
+import sit.int204.itbmsbackend.utils.Utils;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -36,4 +37,20 @@ public class BrandDetailDto {
     };
     private Instant createdOn;
     private Instant updatedOn;
+
+    public void setName(String name) {
+        this.name = name.trim();
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive != null ? isActive : false;
+    }
+
+    public void setWebsiteUrl(String websiteUrl) {
+        this.websiteUrl = Utils.trimOrSetNull(websiteUrl);
+    }
+
+    public void setCountryOfOrigin(String countryOfOrigin) {
+        this.countryOfOrigin = Utils.trimOrSetNull(countryOfOrigin);
+    }
 }

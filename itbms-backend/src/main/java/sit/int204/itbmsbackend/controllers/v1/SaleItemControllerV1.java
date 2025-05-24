@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sit.int204.itbmsbackend.dtos.PageDTO;
 import sit.int204.itbmsbackend.dtos.saleItem.*;
 import sit.int204.itbmsbackend.services.SaleItemService;
 
@@ -14,12 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/sale-items")
-public class SaleItemController {
+public class SaleItemControllerV1 {
     private final SaleItemService saleItemService;
 
     @Autowired
-    public SaleItemController(SaleItemService saleItemService) {
-        this.saleItemService = saleItemService;}
+    public SaleItemControllerV1(SaleItemService saleItemService) {
+        this.saleItemService = saleItemService;
+    }
 
     @GetMapping
     public ResponseEntity<List<SaleItemListDto>> getAllSaleItems() {

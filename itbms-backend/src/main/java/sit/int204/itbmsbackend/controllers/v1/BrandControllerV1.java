@@ -14,11 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/brands")
-public class BrandController {
+public class BrandControllerV1 {
     private final BrandService brandService;
 
     @Autowired
-    public BrandController(BrandService brandService) {
+    public BrandControllerV1(BrandService brandService) {
         this.brandService = brandService;
     }
 
@@ -43,7 +43,6 @@ public class BrandController {
     public ResponseEntity<BrandDetailDto> createBrand(@Valid @RequestBody BrandCreateUpdateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(brandService.createBrand(dto));
     }
-
 
     @DeleteMapping("/{id}") //Soft Delete
     public ResponseEntity<Void> deleteBrand(@PathVariable Integer id) {

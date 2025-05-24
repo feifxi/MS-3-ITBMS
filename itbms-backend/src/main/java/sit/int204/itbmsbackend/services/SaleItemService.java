@@ -2,8 +2,9 @@ package sit.int204.itbmsbackend.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,14 +33,28 @@ public class SaleItemService {
         this.listMapper = listMapper;
     }
 
-    public List<SaleItemListDto> findAll(String brand, String sort) {
+    public List<SaleItemListDto> findAll() {
         List <SaleItem> saleItems = saleItemRepository.findAll();
         return listMapper.mapList(saleItems, SaleItemListDto.class, modelMapper);
     }
 
-    public PageDTO<SaleItemListDto> findAll(Integer page, Integer size) {
-        Page<SaleItem> saleItemPages = saleItemRepository.findAll(PageRequest.of(page, size));
-        return listMapper.toPageDTO(saleItemPages, SaleItemListDto.class, modelMapper);
+    public PageDTO<SaleItemListDto> findAll(List<String> brands, Integer page, Integer size, String sortField ,String sortDirection) {
+        // Sorting
+        Sort sort;
+        if ("desc".equalsIgnoreCase(sortDirection)) {
+            sort = Sort.by(sortField).descending();
+        } else {
+            sort = Sort.by(sortField).ascending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (brands == null || brands.isEmpty()) {
+            return listMapper.toPageDTO(saleItemRepository.findAll(pageable), SaleItemListDto.class, modelMapper);
+        }
+        return listMapper.toPageDTO(
+                saleItemRepository.findByBrandNameIn(brands, pageable),
+                SaleItemListDto.class, modelMapper
+        );
     }
 
     public SaleItemDetailDto findById(Integer id) {

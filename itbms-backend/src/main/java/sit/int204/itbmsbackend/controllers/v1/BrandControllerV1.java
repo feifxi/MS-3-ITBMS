@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.controllers;
+package sit.int204.itbmsbackend.controllers.v1;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

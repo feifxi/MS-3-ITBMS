@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.controllers;
+package sit.int204.itbmsbackend.controllers.v1;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +22,8 @@ public class SaleItemController {
         this.saleItemService = saleItemService;}
 
     @GetMapping
-    public ResponseEntity<List<SaleItemListDto>> getAllSaleItems(
-            @RequestParam(defaultValue = "") String brand,
-            @RequestParam(defaultValue = "asc") String sort
-    ) {
-        return ResponseEntity.ok(saleItemService.findAll(brand, sort));
-    }
-
-    @GetMapping("/pages")
-    public ResponseEntity<PageDTO<SaleItemListDto>> getCustomerPages(
-            @RequestParam(defaultValue = "1") Integer pageNo,
-            @RequestParam(defaultValue = "5") Integer pageSize)
-    {
-        return ResponseEntity.ok(saleItemService.findAll(pageNo, pageSize));
+    public ResponseEntity<List<SaleItemListDto>> getAllSaleItems() {
+        return ResponseEntity.ok(saleItemService.findAll());
     }
 
     @GetMapping("/{id}")

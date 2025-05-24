@@ -15,7 +15,7 @@ export const fetchAllSaleItemsV2 = async (page, size, filterBrands, sortField, s
     const brands = '&filterBrands=' + filterBrands.reduce((allBrand, brand) => allBrand + ',' + brand, '')
     const sort = `&sortField=${sortField}${sortField === 'createdOn' ? '' : '&sortDirection='+sortDirection}` 
     const query = `?page=${page}&size=${size}` + (filterBrands.length > 0 ? brands : '') + sort
-    console.log(query)
+    // console.log(query)
     return await fetch(`${BASE_API}/v2/sale-items` + query)
 }
 

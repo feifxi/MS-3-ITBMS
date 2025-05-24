@@ -19,7 +19,7 @@ public class PageDTO<T> {
     @JsonIgnore
     private Integer number;
 
-    public Integer getPageNumber() {
+    public Integer getPage() {
         return number;
     }
 }

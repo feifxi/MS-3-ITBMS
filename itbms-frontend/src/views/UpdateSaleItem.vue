@@ -214,12 +214,11 @@ watch(saleItem, () => {
 
                         <div class="flex gap-3 items-center mt-5">
                             <Button variant="primary" :onclick="submitForm" :disabled="isSubmitting || !isDataValid"
-                                class-name="itbms-save-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]" type="submit">
+                                class-name="itbms-save-button" type="submit">
                                 {{ isSubmitting ? 'Loading...' : 'Save' }}
                             </Button>
 
-                            <Button variant="secondary" :onclick="goBackHome" type="button" 
-                            class-name="itbms-cancel-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
+                            <Button variant="ghost" :onclick="goBackHome" type="button" class-name="itbms-cancel-button">
                                 Cancel
                             </Button>
                         </div>

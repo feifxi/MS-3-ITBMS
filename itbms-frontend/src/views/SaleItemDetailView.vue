@@ -75,7 +75,7 @@ onMounted(fetchItem)
       @confirm="confirmDelete"
       @cancel="showConfirmDialog = false"
     />
-    <main class="px-16 py-8">
+    <main class="px-16 py-4">
       <BreadCrumb v-if="item" :links="[
         { to: {name: 'SaleItemGallery'}, label: 'Home' },
         { to: '#', label: `${item.model}` },
@@ -160,14 +160,15 @@ onMounted(fetchItem)
               </div>
 
               <div class="flex gap-3 items-center mt-10">
-                <RouterLink :to="`/sale-items/${item.id}/edit`" class="itbms-edit-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
+                <RouterLink :to="`/sale-items/${item.id}/edit`" class="itbms-edit-button">
                   <Button variant="secondary">Edit</Button>
                 </RouterLink>
+
                 <Button
                   variant="destructive"
                   @click="showConfirmDialog = true"
                   :disabled="isDeleting"
-                  class="itbms-delete-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
+                  class="itbms-delete-button">
                   {{ isDeleting ? 'Loading...' : 'Delete' }}
                 </Button>
               </div>

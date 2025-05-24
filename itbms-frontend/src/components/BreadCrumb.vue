@@ -10,12 +10,12 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex items-center font-bold pb-8 text-xl">
+    <div class="flex items-center font-bold pb-4 text-xl">
         <div v-for="(link, index) of links" class="flex">
             <div v-if="index === links.length-1" class="">
                 {{ link.label }}
             </div>
-            <RouterLink v-else :to="link.to" class="text-blue-600" :class="{
+            <RouterLink v-else :to="link.to" class="text-rose-500" :class="{
                 'itbms-home-button': index === 0,
                 'itbms-back-button': index === 1,
             }">

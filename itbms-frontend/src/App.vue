@@ -7,7 +7,7 @@ import MockUIView from './views/MockUIView.vue';
 </script>
 
 <template>
-  <main class="relative">
+  <main class="relative bg-gradient-to-br from-rose-50 to-purple-50">
     <Navbar />
     <RouterView />
     <ToastMessage />

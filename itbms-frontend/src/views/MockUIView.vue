@@ -88,35 +88,6 @@ const products = ref([
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-rose-50 to-purple-50">
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/70 border-b border-gray-100">
-      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="text-rose-500">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-          </div>
-          <h1 class="font-bold text-xl">PhoneHub</h1>
-        </div>
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <input 
-              type="text" 
-              placeholder="Search phones..." 
-              class="py-1.5 px-3 pr-8 rounded-full text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-rose-300 transition-all w-40 md:w-60"
-            >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute right-3 top-2 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          </div>
-          <div class="relative">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-            <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
-          </div>
-          <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-          </div>
-        </div>
-      </div>
-    </nav>
-
     <!-- Hero Section -->
     <div class="container mx-auto px-4 py-8">
       <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-500 to-purple-600 h-80 md:h-96">
@@ -180,7 +151,7 @@ const products = ref([
               <div class="flex">
                 <svg v-for="i in 5" :key="i" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="i <= product.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star text-amber-400"><path d="m12 2-2.2 6.6H3l5.5 4-2.1 6.6 5.6-4 5.6 4-2.1-6.6 5.5-4h-6.8Z"/></svg>
               </div>
-              <span class="text-xs text-gray-500">{{ product.reviews }} reviews</span>
+              <span class="text-xs text-gray-500">{{ 128 }} reviews</span>
             </div>
             <h3 class="font-medium text-gray-900">{{ product.name }}</h3>
             <div class="flex items-center justify-between mt-2">

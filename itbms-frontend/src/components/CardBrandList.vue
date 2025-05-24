@@ -124,7 +124,7 @@ const handleDeleteBrand = async () => {
       </div>
       <div class="flex justify-start gap-2 flex-wrap pt-2">
         <RouterLink :to="`/brands/${props.brand.id}/edit`">
-          <Button variant="secondary" size="sm" ><Pencil /></Button>
+          <Button variant="secondary"><Pencil/></Button>
         </RouterLink>
         <Button class="itbms-delete-button" variant="destructive" size="sm" :onclick="handleDeleteBrand" :disabled="isDeleting">
           <Trash2 />  

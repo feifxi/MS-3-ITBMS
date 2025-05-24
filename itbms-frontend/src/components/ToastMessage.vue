@@ -18,14 +18,9 @@ const statusMessageStore = useStatusMessageStore()
             statusMessageStore.isSuccess ? 'bg-gradient-to-b from-rose-500 to-purple-600' : 'bg-red-500'
         ]"></div>
         <div class="flex items-center p-4">
-            <div 
-                :class="[
-                    'flex items-center justify-center w-10 h-10 rounded-full mr-3',
-                    statusMessageStore.isSuccess ? 'bg-gradient-to-br from-rose-100 to-purple-100 text-rose-600' : 'bg-red-100 text-red-500'
-                ]"
-            >
-                <CircleCheckBig v-if="statusMessageStore.isSuccess" class="size-6" />
-                <CircleX v-else class="size-6" />
+            <div :class="['flex items-center justify-center w-10 h-10 rounded-full mr-3']">
+                <CircleCheckBig v-if="statusMessageStore.isSuccess" class="size-6 text-green-500" />
+                <CircleX v-else class="size-6 text-red-500" />
             </div>
             <p class="itbms-message">{{ statusMessageStore.statusMessage }}</p>
         </div>

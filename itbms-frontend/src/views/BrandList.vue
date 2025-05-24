@@ -49,7 +49,7 @@ function handleDeleted(deletedBrandId) {
 
     <div v-else class="overflow-x-auto shadow rounded-lg">
       <!-- Headings -->
-    <div class="hidden md:grid grid-cols-8 gap-3 bg-gradient-to-r from-rose-300 to-rose-200 p-4 font-semibold text-gray-700 text-center">
+    <div class="hidden md:grid grid-cols-8 gap-3 bg-gradient-to-r from-rose-200 to-rose-100 p-4 font-semibold text-gray-700 text-center">
       <div>ID</div>
       <div>Name</div>
       <div class="col-span-2">Website</div>

@@ -148,8 +148,8 @@ watch([()=> pagination.size, filterBrands, sortOptions], () => {
 })
 
 onMounted(async () => {
-  await fetchSaleItems()
   await fetchBrands()
+  await fetchSaleItems()
 })
 
 

@@ -23,9 +23,9 @@ import homeVideo from '../assets/video/home.mp4'
       <div class="container mx-auto px-4 py-8 sm:py-12">
       
       <!-- Hero Section -->
-      <div class="bg-white rounded-2xl shadow-md p-8 sm:p-12 text-center mb-12">
-        <h1 class="text-4xl sm:text-5xl font-bold text-gray-800 mb-4">Welcome to ITBMS</h1>
-        <p class="text-gray-600 text-lg sm:text-xl mb-6">
+      <div class="bg-white rounded-2xl shadow-md bg-gradient-to-r from-rose-400 to-purple-400 p-8 sm:p-12 text-center mb-12">
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Welcome to ITBMS</h1>
+        <p class="text-gray-700 text-lg sm:text-xl mb-6">
           Discover amazing tech products tailored for your needs
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">

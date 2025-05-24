@@ -49,7 +49,7 @@ const fetchBrand = async () => {
 
 const validateForm = () => {
   const hasChanged = JSON.stringify(brand.value).trim() !== originalBrand.value
-    if (!isValidUrl(brand.value.websiteUrl.trim())) {
+    if (!isValidUrl(brand.value.websiteUrl?.trim())) {
     websiteError.value = 'Please enter a valid URL.'
   } else {
     websiteError.value = ''

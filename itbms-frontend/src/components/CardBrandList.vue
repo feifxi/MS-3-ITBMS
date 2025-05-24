@@ -4,6 +4,7 @@ import { deleteBrand, fetchBrandById } from '@/api/index.js'
 import { useStatusMessageStore } from '@/stores/statusMessage'
 import Button from '@/components/Button.vue'
 import Confirmodal from './ConfirmModal.vue'
+import {Trash2,Pencil } from 'lucide-vue-next';
 
 const props = defineProps({
   brand: Object,
@@ -59,7 +60,7 @@ const handleDeleteBrand = async () => {
 </script>
 
 <template>
-  <div class="border-b last:border-none hover:bg-gray-50 transition">
+  <div class="border-b bg-white last:border-none hover:bg-gray-50 transition">
     <!-- Confirm Modal -->
     <Confirmodal
       v-if="showConfirmDialog"
@@ -74,9 +75,9 @@ const handleDeleteBrand = async () => {
     />
 
     <!-- Desktop View -->
-    <div class="hidden md:grid grid-cols-8 gap-3 items-center p-4 text-center text-sm">
-      <div class="break-words whitespace-normal overflow-hidden px-1">{{ props.brand.id }}</div>
-      <div class="font-medium text-gray-900 break-words whitespace-normal overflow-hidden px-1">
+    <div class="itbms-row hidden md:grid grid-cols-8 gap-3 items-center p-4 text-center text-sm">
+      <div class="itbms-id break-words whitespace-normal overflow-hidden px-1">{{ props.brand.id }}</div>
+      <div class="itbms-name font-medium text-gray-900 break-words whitespace-normal overflow-hidden px-1">
         {{ props.brand.name }}
       </div>
       <div class="col-span-2 break-words whitespace-normal overflow-hidden px-1 text-blue-600 underline">
@@ -90,10 +91,10 @@ const handleDeleteBrand = async () => {
       <div class="break-words whitespace-normal overflow-hidden px-1">{{ props.brand.countryOfOrigin || '-' }}</div>
       <div class="col-span-2 flex justify-center gap-2 flex-wrap">
         <RouterLink :to="`/brands/${props.brand.id}/edit`">
-          <Button variant="secondary">Edit</Button>
+          <Button variant="secondary"  class=" itbms-edit-button" ><Pencil /></Button>
         </RouterLink>
-        <Button variant="destructive" :onclick="handleDeleteBrand" :disabled="isDeleting">
-          Delete
+        <Button class=" itbms-delete-button" variant="destructive" :onclick="handleDeleteBrand" :disabled="isDeleting">
+          <Trash2 />  
         </Button>
       </div>
     </div>
@@ -101,10 +102,10 @@ const handleDeleteBrand = async () => {
 
 
     <!-- Mobile View -->
-    <div class="grid md:hidden grid-cols-1 gap-2 text-sm border rounded-xl p-4 shadow-sm">
-      <div><span class="font-semibold">ID:</span> {{ props.brand.id }}</div>
+    <div class=" grid md:hidden grid-cols-1 gap-2 text-sm border rounded-xl p-4 shadow-sm">
+      <div><span class="font-semibold">ID:</span> <span class="itbms-id">{{ props.brand.id }}</span></div>
       <div class="break-words whitespace-normal overflow-hidden">
-        <span class="font-semibold">Name:</span> {{ props.brand.name }}
+        <span class="font-semibold">Name:</span> <span class=""></span> {{ props.brand.name }}
       </div>
       <div class="break-words whitespace-normal overflow-hidden">
         <span class="font-semibold">Country:</span> {{ props.brand.countryOfOrigin || '-' }}
@@ -123,10 +124,10 @@ const handleDeleteBrand = async () => {
       </div>
       <div class="flex justify-start gap-2 flex-wrap pt-2">
         <RouterLink :to="`/brands/${props.brand.id}/edit`">
-          <Button variant="secondary" size="sm">Edit</Button>
+          <Button variant="secondary" size="sm" ><Pencil /></Button>
         </RouterLink>
-        <Button variant="destructive" size="sm" :onclick="handleDeleteBrand" :disabled="isDeleting">
-          Delete
+        <Button class="itbms-delete-button" variant="destructive" size="sm" :onclick="handleDeleteBrand" :disabled="isDeleting">
+          <Trash2 />  
         </Button>
       </div>
     </div>

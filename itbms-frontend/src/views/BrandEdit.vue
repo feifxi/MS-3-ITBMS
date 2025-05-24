@@ -176,7 +176,7 @@ onMounted(fetchBrand)
         <div class="flex justify-between pt-6">
           <Button
             type="button"
-            class="itbms-cancel-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow"
+            class="itbms-cancel-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] "
             @click="cancelEdit"
           >
             ❌ Cancel
@@ -184,7 +184,7 @@ onMounted(fetchBrand)
           <Button
             type="submit"
             :disabled="!isModified || isSubmitting"
-            :class="['itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full  hover:from-rose-400 hover:to-pink-400 shadow-lg transition font-bold',
+            :class="['itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full  hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]',
             {
               'cursor-not-allowed' : !isModified,
             }]"

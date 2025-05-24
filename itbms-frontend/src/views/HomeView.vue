@@ -1,13 +1,26 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import Button from '@/components/Button.vue';
-
+import homeVideo from '../assets/video/home.mp4'
 </script>
 
 
 <template>
   <div class="landing-page bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 sm:py-12">
+    <!-- Video -->
+      <div class="video">
+          <video
+          class="w-full max-w-7xl mx-auto mb-1  shadow-md"
+          autoplay
+          muted
+          loop
+          playsinline
+        >
+          <source :src="homeVideo" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+       </div>
+      <div class="container mx-auto px-4 py-8 sm:py-12">
       
       <!-- Hero Section -->
       <div class="bg-white rounded-2xl shadow-md bg-gradient-to-r from-rose-400 to-purple-400 p-8 sm:p-12 text-center mb-12">
@@ -17,12 +30,12 @@ import Button from '@/components/Button.vue';
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
           <RouterLink to="/sale-items" class="itbms-shopnow">
-            <Button class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-medium py-3 px-6 rounded-full text-lg shadow-md hover:scale-105 transition">
+            <Button class="bg-gradient-to-r from-blue-500 to-blue-500 text-white font-medium py-3 px-6 rounded-full text-lg shadow-md hover:scale-105 transition drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
               SHOP NOW
             </Button>
           </RouterLink>
           <RouterLink to="/sale-items/list" class="itbms-seller">
-            <Button class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-medium py-3 px-6 rounded-full text-lg shadow-md hover:scale-105 transition">
+            <Button class="bg-gradient-to-r from-purple-500 to-purple-500 text-white font-medium py-3 px-6 rounded-full text-lg shadow-md hover:scale-105 transition drop-shadow-[0_1px_1px_rgba(0,0,0,1)]">
               SELLER
             </Button>
           </RouterLink>

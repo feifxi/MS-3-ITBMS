@@ -1,7 +1,22 @@
 const BASE_API = import.meta.env.VITE_BASE_API
 
+function cleanObject(obj) {
+  return Object.fromEntries(
+    Object.entries(obj)
+      .filter(([_, value]) => value !== null && value !== '' && value !== undefined)
+  );
+}
+
 export const fetchAllSaleItems = async () => {
     return await fetch(`${BASE_API}/v1/sale-items`)
+}
+
+export const fetchAllSaleItemsV2 = async (page, size, filterBrands, sortField, sortDirection) => {
+    const brands = '&filterBrands=' + filterBrands.reduce((allBrand, brand) => allBrand + ',' + brand, '')
+    const sort = `&sortField=${sortField}${sortField === 'createdOn' ? '' : '&sortDirection='+sortDirection}` 
+    const query = `?page=${page}&size=${size}` + (filterBrands.length > 0 ? brands : '') + sort
+    console.log(query)
+    return await fetch(`${BASE_API}/v2/sale-items` + query)
 }
 
 export const fetchSaleItemById = async (id) => {

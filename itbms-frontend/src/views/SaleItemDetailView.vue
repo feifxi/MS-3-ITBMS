@@ -160,14 +160,14 @@ onMounted(fetchItem)
               </div>
 
               <div class="flex gap-3 items-center mt-10">
-                <RouterLink :to="`/sale-items/${item.id}/edit`" class="itbms-edit-button">
+                <RouterLink :to="`/sale-items/${item.id}/edit`" class="itbms-edit-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
                   <Button variant="secondary">Edit</Button>
                 </RouterLink>
                 <Button
                   variant="destructive"
                   @click="showConfirmDialog = true"
                   :disabled="isDeleting"
-                  class="itbms-delete-button">
+                  class="itbms-delete-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
                   {{ isDeleting ? 'Loading...' : 'Delete' }}
                 </Button>
               </div>

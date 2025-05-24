@@ -3,3 +3,7 @@
 .input {
     @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-black focus:border-black
 }
+
+.paginationBtn {
+    @apply border rounded flex items-center justify-center cursor-pointer p-2 disabled:bg-neutral-300 disabled:cursor-auto
+}

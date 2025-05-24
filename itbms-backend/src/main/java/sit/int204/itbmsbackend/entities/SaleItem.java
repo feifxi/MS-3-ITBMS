@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "sale_items")
-
-
 public class SaleItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

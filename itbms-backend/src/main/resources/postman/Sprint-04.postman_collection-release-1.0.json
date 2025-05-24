@@ -1,0 +1,1206 @@
+{
+	"info": {
+		"_postman_id": "c87bd04c-d0d1-43b8-a680-3bb5ac6e5995",
+		"name": "Sprint-04",
+		"description": "GET ALL SALE ITEM SORTING BY BRAND NAME\n\nGET ALL SALE ITEM FILTER BY BRAND NAME\n\nGET ALL SALE ITEM WITH PAGINATION",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6637675"
+	},
+	"item": [
+		{
+			"name": "PBI-10-GET SALE-ITEM-SORT-BY-BRAND",
+			"item": [
+				{
+					"name": "GET-ALL-SALE-ITEM-UNSORTED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var saleItems;",
+									"if (page.content == undefined || page.content == null) {",
+									"    saleItems = page;",
+									"} else {",
+									"    saleItems = page.content;",
+									"}",
+									"pm.test(\"The expected sale item order by craeation time\", function () {",
+									"    pm.expect(saleItems.length).to.be.at.least(60);",
+									"    UNORDER_BRANDS.forEach((b, index) => {",
+									"        pm.expect(saleItems[index*10].brandName).to.equal(b);",
+									"        pm.expect(saleItems[index*10+9].brandName).to.equal(b);",
+									"    })",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"size=60\");",
+									"pm.request.addQueryParams(\"page=0\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "GET-SALE-ITEM-SORT-BY-BRAND-DEFAULT-DIRECTION",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var saleItems;",
+									"if (page.content == undefined || page.content == null) {",
+									"    saleItems = page;",
+									"} else {",
+									"    saleItems = page.content;",
+									"}",
+									"",
+									"pm.test(\"The expected sale item order by craeation time\", function () {",
+									"    pm.expect(saleItems.length).to.be.at.least(60);",
+									"    ORDER_BRANDS.forEach((b, index) => {",
+									"        pm.expect(saleItems[index*10].brandName).to.equal(b);",
+									"        pm.expect(saleItems[index*10+9].brandName).to.equal(b);",
+									"    })",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"size=60\");",
+									"pm.request.addQueryParams(\"page=0\");",
+									"pm.request.addQueryParams(\"sortField=brand.name\")"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "GET-SALE-ITEM-SORT-BY-BRAND-ASC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var saleItems;",
+									"if (page.content == undefined || page.content == null) {",
+									"    saleItems = page;",
+									"} else {",
+									"    saleItems = page.content;",
+									"}",
+									"pm.test(\"The expected sale item order by Brand Name: ASC\", function () {",
+									"    pm.expect(saleItems.length).to.be.at.least(60);",
+									"    ORDER_BRANDS.forEach((b, index) => {",
+									"        pm.expect(saleItems[index*10].brandName).to.equal(b);",
+									"        pm.expect(saleItems[index*10+9].brandName).to.equal(b);",
+									"    })",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"size=60\");",
+									"pm.request.addQueryParams(\"page=0\");",
+									"pm.request.addQueryParams(\"sortField=brand.name\")",
+									"pm.request.addQueryParams(\"sortDirection=AsC\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "GET-SALE-ITEM-SORT-BY-BRAND-DESC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Defined the round function to fix the ReferenceError",
+									"var page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var saleItems;",
+									"if (page.content == undefined || page.content == null) {",
+									"    saleItems = page;",
+									"} else {",
+									"    saleItems = page.content;",
+									"}",
+									"pm.test(\"The expected sale item order by Brand Name: DESC\", function () {",
+									"    pm.expect(saleItems.length).to.be.at.least(60);",
+									"    ORDER_BRANDS.forEach((b, index) => {",
+									"        pm.expect(saleItems[(ORDER_BRANDS.length-index-1)*10].brandName).to.equal(b);",
+									"        pm.expect(saleItems[(ORDER_BRANDS.length-index-1)*10+9].brandName).to.equal(b);",
+									"    })",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"size=60\");",
+									"pm.request.addQueryParams(\"page=0\");",
+									"pm.request.addQueryParams(\"sortField=brand.name\")",
+									"pm.request.addQueryParams(\"sortDirection=dESc\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/10a80bc6-1b07-4f9a-a441-32096bfd7830/aW1hZ2UucG5n\" width=\"812\" height=\"167\">\n\n**BASE SALE ITEM, default brand order (creation time)  \n**Apple -> Samsung -> Xiaomi -> Huawei -> ASUS -> OPPO\n\n**BASE SALE ITEM, brand order by Ascending  \n**Apple-> ASUS -> Huawei -> OPPO -> Samsung -> Xiaomi",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "PBI-11-FILTER-SALE-ITEM-BY-BRAND-NAME",
+			"item": [
+				{
+					"name": "FILTER-BY-BRAND-NO-SALE-ITEM",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200 #\"+ round, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var saleItems;",
+									"if (page.content == undefined || page.content == null) {",
+									"    saleItems = page;",
+									"} else {",
+									"    saleItems = page.content;",
+									"}",
+									"",
+									"pm.test(\"The expected empty sale items\", function () {",
+									"    pm.expect(saleItems.length).to.be.eq(0);",
+									"});",
+									"",
+									"if(round >= 2) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"FILTER-BY-BRAND-NO-SALE-ITEM\");",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"if (!pm.collectionVariables.has(\"rounds\")) {",
+									"    pm.collectionVariables.set(\"rounds\", 999);",
+									"}",
+									"round = parseInt(pm.collectionVariables.get(\"rounds\"));",
+									"round = (isNaN(round) || round >= 2) ? 0 : round + 1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"",
+									"filter = FILTER_BRAND_NOT_EXIST[Math.round(Math.random()*10) % 7];",
+									"pm.request.addQueryParams(filter);",
+									"pm.request.addQueryParams(\"size=60\");",
+									"pm.request.addQueryParams(\"page=0\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER-BY-BRAND-SORT-ASC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200 #\"+ round, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var saleItems;",
+									"if (page.content == undefined || page.content == null) {",
+									"    saleItems = page;",
+									"} else {",
+									"    saleItems = page.content;",
+									"}",
+									"",
+									"pm.test(\"The expected total number of sale items is \"+ filter.noOfItems, function () {",
+									"    pm.expect(saleItems.length).to.be.eq(filter.noOfItems);",
+									"});",
+									"",
+									"var responseBrand = {}",
+									"filter.brandNames.forEach(function(name) {",
+									"    responseBrand[name] = 0;",
+									"});",
+									"",
+									"//Count item of each brand",
+									"saleItems.forEach(function (si, index) {",
+									"    responseBrand[si.brandName] = responseBrand[si.brandName]+1;",
+									"});",
+									"",
+									"filter.brandNames.forEach(function (f, index) {",
+									"    pm.test(\"The expected <\" + f + \"> has 10 sale items\", function () {",
+									"        pm.expect(responseBrand[f]).to.be.eq(10);",
+									"    });",
+									"});",
+									"",
+									"filter.brandNames.forEach(function (f, index) {",
+									"    pm.test(\"The expected \"+ ORDER_NAME[index] +\" order is \" + f , function () {",
+									"        pm.expect(saleItems[index*10].brandName).to.be.eq(f);",
+									"    });",
+									"});",
+									"",
+									"if(round >= 2) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"FILTER-BY-BRAND-SORT-ASC\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"if (!pm.collectionVariables.has(\"rounds\")) {",
+									"    pm.collectionVariables.set(\"rounds\", 999);",
+									"}",
+									"",
+									"round = parseInt(pm.collectionVariables.get(\"rounds\"));",
+									"round = (isNaN(round) || round >= 2) ? 0 : round + 1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"",
+									"filter = FILTER_BRAND_EXIST[Math.round(Math.random()*10) % 7];",
+									"pm.request.addQueryParams(filter.filter);",
+									"pm.request.addQueryParams(\"size=60\");",
+									"pm.request.addQueryParams(\"page=0\");",
+									"pm.request.addQueryParams(\"sortField=brand.name\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER-BY-BRAND-SORT-DESC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200 #\"+ round, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var saleItems;",
+									"if (page.content == undefined || page.content == null) {",
+									"    saleItems = page;",
+									"} else {",
+									"    saleItems = page.content;",
+									"}",
+									"",
+									"pm.test(\"The expected total number of sale items is \"+ filter.noOfItems, function () {",
+									"    pm.expect(saleItems.length).to.be.eq(filter.noOfItems);",
+									"});",
+									"",
+									"var responseBrand = {}",
+									"filter.brandNames.forEach(function(name) {",
+									"    responseBrand[name] = 0;",
+									"});",
+									"",
+									"//Count item of each brand",
+									"saleItems.forEach(function (si, index) {",
+									"    responseBrand[si.brandName] = responseBrand[si.brandName]+1;",
+									"});",
+									"",
+									"filter.brandNames.forEach(function (f, index) {",
+									"    pm.test(\"The expected <\" + f + \"> has 10 sale items\", function () {",
+									"        pm.expect(responseBrand[f]).to.be.eq(10);",
+									"    });",
+									"});",
+									"",
+									"filter.brandNames.forEach(function (f, index) {",
+									"    pm.test(\"The expected \"+ ORDER_NAME[index] +\" order is \" + filter.brandNames[filter.brandNames.length-1-index] , function () {",
+									"        pm.expect(saleItems[(filter.brandNames.length-1-index)*10].brandName).to.be.eq(f);",
+									"    });",
+									"});",
+									"",
+									"if(round >= 2) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"FILTER-BY-BRAND-SORT-DESC\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"if (!pm.collectionVariables.has(\"rounds\")) {",
+									"    pm.collectionVariables.set(\"rounds\", 999);",
+									"}",
+									"",
+									"round = parseInt(pm.collectionVariables.get(\"rounds\"));",
+									"round = (isNaN(round) || round >= 2) ? 0 : round + 1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"",
+									"filter = FILTER_BRAND_EXIST[Math.round(Math.random()*10) % 7];",
+									"pm.request.addQueryParams(filter.filter);",
+									"pm.request.addQueryParams(\"size=60\");",
+									"pm.request.addQueryParams(\"page=0\");",
+									"pm.request.addQueryParams(\"sortField=brand.name\");",
+									"pm.request.addQueryParams(\"sortDirection=dESc\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/f927ccd5-0035-44d9-98a4-e181b26fe85e/aW1hZ2UucG5n\" alt=\"\" height=\"201\" width=\"669\">",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"FILTER_BRAND_NOT_EXIST = [",
+							"    'filterBrands=Sony&filterBrands=LG',",
+							"    'filterBrands=Nokia&filterBrands=Vivo',",
+							"    'filterBrands=LG&filterBrands=Motorola',",
+							"    'filterBrands=Google&filterBrands=Realme', ",
+							"    'filterBrands=HTC&filterBrands=ZTE',",
+							"    'filterBrands=Honor&filterBrands=Nothing',",
+							"    'filterBrands=Galaxy'",
+							"];",
+							"",
+							"FILTER_BRAND_EXIST = [",
+							"    {",
+							"        \"filter\" : \"filterBrands=Xiaomi&filterBrands=Samsung&filterBrands=Huawei\",",
+							"        \"brandNames\" : [\"Huawei\",\"Samsung\", \"Xiaomi\"],",
+							"        \"noOfItems\" : 30",
+							"    },",
+							"    {",
+							"        \"filter\" : \"filterBrands=Apple&filterBrands=Samsung&filterBrands=Huawei\",",
+							"        \"brandNames\" : [\"Apple\",\"Huawei\", \"Samsung\"],",
+							"        \"noOfItems\" : 30",
+							"    },",
+							"    {",
+							"        \"filter\" : \"filterBrands=OPPO&filterBrands=ASUS&filterBrands=Xiaomi\",",
+							"        \"brandNames\" : [\"ASUS\",\"OPPO\", \"Xiaomi\"],",
+							"        \"noOfItems\" : 30",
+							"    },",
+							"        {",
+							"        \"filter\" : \"filterBrands=ASUS&filterBrands=Apple\",",
+							"        \"brandNames\" : [\"Apple\",\"ASUS\"],",
+							"        \"noOfItems\" : 20",
+							"    },",
+							"        {",
+							"        \"filter\" : \"filterBrands=OPPO&filterBrands=Samsung&filterBrands=Huawei\",",
+							"        \"brandNames\" : [\"Huawei\",\"OPPO\", \"Samsung\"],",
+							"        \"noOfItems\" : 30",
+							"    },",
+							"    {",
+							"        \"filter\" : \"filterBrands=Samsung\",",
+							"        \"brandNames\" : [\"Samsung\"],",
+							"        \"noOfItems\" : 10",
+							"    },",
+							"        {",
+							"        \"filter\" : \"filterBrands=OPPO&&filterBrands=Huawei\",",
+							"        \"brandNames\" : [\"Huawei\",\"OPPO\"],",
+							"        \"noOfItems\" : 20",
+							"    }",
+							"];",
+							"ORDER_NAME = [\"First\", \"Second\", \"Third\"]"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "PBI-11-FILTER-SALE-ITEM-PAGINATION",
+			"item": [
+				{
+					"name": "GET-ALL-SALE-ITEM-WITHOUT-PAGE-PARAM (FAIL)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Defined the round function to fix the ReferenceError",
+									"saleItems = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.addQueryParams(\"size=3\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER-BY-BRAND-NO-SALE-ITEM",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Defined the round function to fix the ReferenceError",
+									"page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200 #\"+ round, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"The expected Page properties\", function () {",
+									"    pm.expect(page).to.have.property('content');",
+									"    pm.expect(page).to.have.property('page');",
+									"    pm.expect(page).to.have.property('size');",
+									"    pm.expect(page).to.have.property('first');",
+									"    pm.expect(page).to.have.property('last');",
+									"    pm.expect(page).to.have.property('sort');",
+									"    pm.expect(page).to.have.property('totalElements');",
+									"    pm.expect(page).to.have.property('totalPages');",
+									"});",
+									"",
+									"pm.test(\"The expected, Empty content\", function () {",
+									"    pm.expect(page.content.length).to.be.eq(0);",
+									"});",
+									"",
+									"if(round >= 2) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"FILTER-BY-BRAND-NO-SALE-ITEM\");",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"if (!pm.collectionVariables.has(\"rounds\")) {",
+									"    pm.collectionVariables.set(\"rounds\", 999);",
+									"}",
+									"round = parseInt(pm.collectionVariables.get(\"rounds\"));",
+									"round = (isNaN(round) || round >= 2) ? 0 : round + 1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"",
+									"filter = FILTER_BRAND_NOT_EXIST[Math.round(Math.random()*10) % 7];",
+									"pm.request.addQueryParams(filter);",
+									"pm.request.addQueryParams(\"size=3\");",
+									"pm.request.addQueryParams(\"page=\" + (Math.round(Math.random()*10) % 10));"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER-BY-BRAND-PAGINATION-UNSORTED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200 #\"+ round, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check the expected of Page/Content Info \", function () {",
+									"    pm.expect(page.content.length).to.be.eq(PAGE_SIZE);",
+									"    pm.expect(page.page).to.be.eq(0);",
+									"    pm.expect(page.size).to.be.eq(PAGE_SIZE);",
+									"    pm.expect(page.totalElements).to.be.eq(filter.noOfItems);",
+									"});",
+									"",
+									"// page.content[0].brandName = \"XXXXXX\";",
+									"",
+									"var unExpectedSaleItem = null;",
+									"saleItems = page.content;",
+									"saleItems.forEach((si, index) => {",
+									"    if (! filter.brandNames.includes(si.brandName)) {",
+									"        unExpectedSaleItem = si.brandName;",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"The UNEXPECTED Brand Name must be null \", function () {",
+									"    pm.expect(unExpectedSaleItem).to.be.eq(null);",
+									"});",
+									"",
+									"// pm.test(\"The expected sale item order by Brand Name: ASC\", function () {",
+									"//     filter.unOrderBrands.forEach((b, index) => {",
+									"//         pm.expect(saleItems[index*10].brandName).to.equal(b);",
+									"//         pm.expect(saleItems[index*10+9].brandName).to.equal(b);",
+									"//     })",
+									"// });",
+									"",
+									"if(round >= 2) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"FILTER-BY-BRAND-PAGINATION-UNSORTED\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"if (!pm.collectionVariables.has(\"rounds\")) {",
+									"    pm.collectionVariables.set(\"rounds\", 999);",
+									"}",
+									"",
+									"round = parseInt(pm.collectionVariables.get(\"rounds\"));",
+									"round = (isNaN(round) || round >= 2) ? 0 : round + 1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"filter = FILTER_BRAND_EXIST[Math.round(Math.random()*10) % 7];",
+									"PAGE_SIZE = filter.noOfItems;",
+									"pm.request.addQueryParams(filter.filter);",
+									"pm.request.addQueryParams(\"size=\"+ PAGE_SIZE);",
+									"pm.request.addQueryParams(\"page=0\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER-BY-BRAND-PAGINATION-SORTED-ASC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200 #\"+ round, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check the expected of Page/Content Info \", function () {",
+									"    pm.expect(page.content.length).to.be.eq(PAGE_SIZE);",
+									"    pm.expect(page.page).to.be.eq(0);",
+									"    pm.expect(page.size).to.be.eq(PAGE_SIZE);",
+									"    pm.expect(page.totalElements).to.be.eq(filter.noOfItems);",
+									"});",
+									"",
+									"// page.content[0].brandName = \"XXXXXX\";",
+									"",
+									"var unExpectedSaleItem = null;",
+									"saleItems = page.content;",
+									"saleItems.forEach((si, index) => {",
+									"    if (! filter.brandNames.includes(si.brandName)) {",
+									"        unExpectedSaleItem = si.brandName;",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"The UNEXPECTED Brand Name must be null \", function () {",
+									"    pm.expect(unExpectedSaleItem).to.be.eq(null);",
+									"});",
+									"",
+									"pm.test(\"The expected sale item order by Brand Name: ASC\", function () {",
+									"    filter.brandNames.forEach((b, index) => {",
+									"        pm.expect(saleItems[index*10].brandName).to.equal(b);",
+									"        pm.expect(saleItems[index*10+9].brandName).to.equal(b);",
+									"    })",
+									"});",
+									"",
+									"if(round >= 2) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"FILTER-BY-BRAND-PAGINATION-SORTED-ASC\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"if (!pm.collectionVariables.has(\"rounds\")) {",
+									"    pm.collectionVariables.set(\"rounds\", 999);",
+									"}",
+									"",
+									"round = parseInt(pm.collectionVariables.get(\"rounds\"));",
+									"round = (isNaN(round) || round >= 2) ? 0 : round + 1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"filter = FILTER_BRAND_EXIST[Math.round(Math.random()*10) % 7];",
+									"PAGE_SIZE = filter.noOfItems;",
+									"pm.request.addQueryParams(filter.filter);",
+									"pm.request.addQueryParams(\"size=\"+ PAGE_SIZE);",
+									"pm.request.addQueryParams(\"page=0\");",
+									"pm.request.addQueryParams(\"sortDirection=AsC\");",
+									"pm.request.addQueryParams(\"sortField=brand.name\")"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER-BY-BRAND-PAGINATION-SORTED-DESC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"page = pm.response.json();",
+									"",
+									"pm.test(\"The Expected Status code is 200 #\"+ round, function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check the expected of Page/Content Info \", function () {",
+									"    pm.expect(page.content.length).to.be.eq(PAGE_SIZE);",
+									"    pm.expect(page.page).to.be.eq(0);",
+									"    pm.expect(page.size).to.be.eq(PAGE_SIZE);",
+									"    pm.expect(page.totalElements).to.be.eq(filter.noOfItems);",
+									"});",
+									"",
+									"// page.content[0].brandName = \"XXXXXX\";",
+									"",
+									"var unExpectedSaleItem = null;",
+									"saleItems = page.content;",
+									"saleItems.forEach((si, index) => {",
+									"    if (! filter.brandNames.includes(si.brandName)) {",
+									"        unExpectedSaleItem = si.brandName;",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"The UNEXPECTED Brand Name must be null \", function () {",
+									"    pm.expect(unExpectedSaleItem).to.be.eq(null);",
+									"});",
+									"",
+									"pm.test(\"The expected sale item order by Brand Name: DESC\", function () {",
+									"    filter.brandNames.forEach((b, index) => {",
+									"        pm.expect(saleItems[(filter.brandNames.length-index-1)*10].brandName).to.equal(b);",
+									"        pm.expect(saleItems[(filter.brandNames.length-index-1)*10+9].brandName).to.equal(b);",
+									"    })",
+									"});",
+									"",
+									"if(round >= 2) {",
+									"    pm.collectionVariables.set(\"rounds\", null);",
+									"    pm.execution.setNextRequest();",
+									"} else {",
+									"    pm.execution.setNextRequest(\"FILTER-BY-BRAND-PAGINATION-SORTED-DESC\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"if (!pm.collectionVariables.has(\"rounds\")) {",
+									"    pm.collectionVariables.set(\"rounds\", 999);",
+									"}",
+									"",
+									"round = parseInt(pm.collectionVariables.get(\"rounds\"));",
+									"round = (isNaN(round) || round >= 2) ? 0 : round + 1;",
+									"",
+									"pm.collectionVariables.set(\"rounds\", round);",
+									"",
+									"filter = FILTER_BRAND_EXIST[Math.round(Math.random()*10) % 7];",
+									"PAGE_SIZE = filter.noOfItems;",
+									"pm.request.addQueryParams(filter.filter);",
+									"pm.request.addQueryParams(\"size=\"+ PAGE_SIZE);",
+									"pm.request.addQueryParams(\"page=0\");",
+									"pm.request.addQueryParams(\"sortDirection=DEsc\");",
+									"pm.request.addQueryParams(\"sortField=brand.name\")"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v2/sale-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v2",
+								"sale-items"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": []
+				}
+			],
+			"description": "<img src=\"https://content.pstmn.io/24103360-0b2a-489c-a3cd-1ee429259a41/aW1hZ2UucG5n\" alt=\"\" height=\"133\" width=\"755\">",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"FILTER_BRAND_NOT_EXIST = [",
+					"    'filterBrands=Sony&filterBrands=LG',",
+					"    'filterBrands=Nokia&filterBrands=Vivo',",
+					"    'filterBrands=LG&filterBrands=Motorola',",
+					"    'filterBrands=Google&filterBrands=Realme', ",
+					"    'filterBrands=HTC&filterBrands=ZTE',",
+					"    'filterBrands=Honor&filterBrands=Nothing',",
+					"    'filterBrands=Galaxy'",
+					"];",
+					"",
+					"UNORDER_BRANDS = [\"Apple\", \"Samsung\", \"Xiaomi\", \"Huawei\", \"ASUS\", \"OPPO\"];",
+					"",
+					"FILTER_BRAND_EXIST = [",
+					"    {",
+					"        \"filter\" : \"filterBrands=Xiaomi&filterBrands=Samsung&filterBrands=Huawei\",",
+					"        \"brandNames\" : [\"Huawei\",\"Samsung\", \"Xiaomi\"],",
+					"        \"unOrderBrands\" : [\"Samsung\",\"Xiaomi\", \"Huawei\"],",
+					"        \"noOfItems\" : 30",
+					"    },",
+					"    {",
+					"        \"filter\" : \"filterBrands=Apple&filterBrands=Samsung&filterBrands=Huawei\",",
+					"        \"brandNames\" : [\"Apple\",\"Huawei\", \"Samsung\"],",
+					"        \"unOrderBrands\" : [\"Apple\", \"Samsung\",\"Huawei\"],",
+					"        \"noOfItems\" : 30",
+					"    },",
+					"    {",
+					"        \"filter\" : \"filterBrands=OPPO&filterBrands=ASUS&filterBrands=Xiaomi\",",
+					"        \"brandNames\" : [\"ASUS\",\"OPPO\", \"Xiaomi\"],",
+					"        \"unOrderBrands\" : [\"Xiaomi\",\"ASUS\",\"OPPO\"],",
+					"        \"noOfItems\" : 30",
+					"    },",
+					"        {",
+					"        \"filter\" : \"filterBrands=ASUS&filterBrands=Apple\",",
+					"        \"brandNames\" : [\"Apple\",\"ASUS\"],",
+					"        \"unOrderBrands\" : [\"Apple\",\"ASUS\"],",
+					"        \"noOfItems\" : 20",
+					"    },",
+					"        {",
+					"        \"filter\" : \"filterBrands=OPPO&filterBrands=Samsung&filterBrands=Huawei\",",
+					"        \"brandNames\" : [\"Huawei\",\"OPPO\", \"Samsung\"],",
+					"        \"unOrderBrands\" : [ \"Samsung\",\"Huawei\",\"OPPO\"],",
+					"        \"noOfItems\" : 30",
+					"    },",
+					"    {",
+					"        \"filter\" : \"filterBrands=Samsung\",",
+					"        \"brandNames\" : [\"Samsung\"],",
+					"        \"unOrderBrands\" : [\"Samsung\"],",
+					"        \"noOfItems\" : 10",
+					"    },",
+					"        {",
+					"        \"filter\" : \"filterBrands=OPPO&&filterBrands=Huawei\",",
+					"        \"brandNames\" : [\"Huawei\",\"OPPO\"],",
+					"        \"unOrderBrands\" : [\"Huawei\",\"OPPO\"],",
+					"        \"noOfItems\" : 20",
+					"    }",
+					"];",
+					"ORDER_NAME = [\"First\", \"Second\", \"Third\"]",
+					"ORDER_BRANDS = [\"Apple\", \"ASUS\", \"Huawei\", \"OPPO\", \"Samsung\", \"Xiaomi\"];"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"The response Content-type: \"+pm.response.headers.get('Content-type'), function() {",
+					"    if(pm.response.code != 204) {",
+					"    pm.expect(pm.response.headers.get('Content-type')).to.eql('application/json');",
+					"    }",
+					"});",
+					"",
+					"pm.test(\"Expected test server is intproject24.sit\",function() {    ",
+					"    pm.expect(pm.request.url.toString()).to.be.contains(\"intproj24.sit.kmutt.ac.th\");",
+					"});",
+					"",
+					"pm.test(\"Test Date : \"+ Date(),function() {    ",
+					"    // do nothing",
+					"});",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://intproj24.sit.kmutt.ac.th:8080/ft/itb-mshop",
+			"type": "string"
+		},
+		{
+			"key": "target_id",
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "original_data",
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "delete_id",
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "rounds",
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "rounds",
+			"value": ""
+		}
+	]
+}

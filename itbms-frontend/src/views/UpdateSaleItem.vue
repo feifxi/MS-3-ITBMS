@@ -25,13 +25,14 @@ const saleItem = ref({
     }
 })
 const brands = ref([])
-const isDataValid = ref(false)
 const isLoading = ref(false)
 const isSubmitting = ref(false)
 const statusMessageStore = useStatusMessageStore()
 let modelName 
 let originalSaleItem
 
+const currentFocusField = ref(null)
+const isFormValid = ref(false)
 const errorFormMessage = reactive({
     'model': '',
     'price': '',
@@ -42,7 +43,63 @@ const errorFormMessage = reactive({
     'color': '',
     'quantity': '',
 })
-const currentFocusField = ref(null)
+
+const fieldIntegrity = {
+    'model': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 60
+        },
+        errorMessage: 'Model must be 1-60 characters long.', 
+    },
+    'price': {
+        checkConstraint: (data) => {
+            return 0 < data && data.length !== 0
+        },
+        errorMessage: 'Price must be non-negative integer.', 
+    },
+    'description': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 65535
+        },
+        errorMessage: 'Description must be 1-65,535 characters long.', 
+    },
+    'ramGb': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data
+        },
+        errorMessage: 'RAM size must be positive integer or not specified.', 
+    },
+    'storageGb': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data
+        },
+        errorMessage: 'Storage size must be positive integer or not specified.', 
+    },
+    'screenSizeInch': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data && (Math.floor(data * 100) === data * 100)
+        },
+        errorMessage: 'Screen size must be positive number with at most 2 decimal points or not specified.', 
+    },
+    'color': {
+        checkConstraint: (data) => {
+            return data.length < 40
+        },
+        errorMessage: 'Color must be 1-40 characters long or not specified.', 
+    },
+    'quantity': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data 
+        },
+        errorMessage: 'Quantity must be non-negative integer.', 
+    },
+    'brand': {
+        checkConstraint: (data) => {
+            return  data.id > 0
+        },
+        errorMessage: 'Brand must be selected.', 
+    },
+}
 
 
 const fetchSaleItem = async () => {
@@ -66,8 +123,14 @@ const fetchBrands = async () => {
         statusMessageStore.setStatusMessage("Something went wrong")
         return router.push('/sale-items/' + id)
     }
-    brands.value = await res.json()
+    const brandData = await res.json()
+    const sortedBrand = brandData.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+    brands.value = sortedBrand
     isLoading.value = false
+}
+
+const handleChangeBrand = (e) => {
+    currentFocusField.value = e.target.name
 }
 
 const handleFocusIn = (e) => {
@@ -82,76 +145,23 @@ const handleFocusOut = (e) => {
     currentFocusField.value = null
 }
 
-const getErrorMessage = (field) => {
-    if (!checkFieldIntegrity(field)) {
-        switch (field) {
-        case "model": return "Model must be 1-60 characters long."
-        case "price": return "Price must be non-negative integer."
-        case "description": return "Description must be 1-65,535 characters long."
-        case "ramGb": return "RAM size must be positive integer or not specified."
-        case "storageGb": return "Storage size must be positive integer or not specified."
-        case "screenSizeInch": return "Screen size must be positive number with at most 2 decimal points or not specified."
-        case "color": return "Color must be 1-40 characters long or not specified."
-        case "quantity": return "Quantity must be non-negative integer."
-    }  
-    } else {
-        return ''
-    }   
-}
-
-const validateData = () => {
-    isDataValid.value = true
+const validateAllField = () => {
+    let isValid = true
     for (const field in saleItem.value) {
         if (!checkFieldIntegrity(field) || (JSON.stringify(saleItem.value) === originalSaleItem)){
-            isDataValid.value = false
+            isValid = false
+            break;
         }
     }
+    isFormValid.value = isValid
 }
 
-const checkFieldIntegrity = (formField) => {
-    switch (formField) {
-        case "model":
-            if (saleItem.value.model.length > 60 || saleItem.value.model.length === 0) {
-                return false
-            } 
-            else return true
-        case "price":
-            if (saleItem.value.price < 0 || saleItem.value.price.length === 0) {
-                return false
-            } 
-            else return true
-        case "description":
-            if (saleItem.value.description.length > 65535 || saleItem.value.description.length === 0) {
-                return false
-            } 
-            else return true
-        case "ramGb":
-            if (saleItem.value.ramGb < 0) {
-                return false
-            } 
-            else return true
-        case "storageGb":
-            if (saleItem.value.storageGb < 0) {
-                return false
-            } 
-            else return true
-        case "screenSizeInch":
-            if (saleItem.value.screenSizeInch < 0) {
-                return false
-            } 
-            else return true
-        case "color":
-            if (saleItem.value.color.length > 40) {
-                return false
-            } 
-            else return true
-        case "quantity":
-            if (saleItem.value.quantity < 0) {
-                return false
-            } 
-            else return true
-        default: return true;
-    }  
+const checkFieldIntegrity = (field) => {
+    if (fieldIntegrity[field]) {
+        return fieldIntegrity[field]?.checkConstraint(saleItem.value[field])
+    } else {
+        return true 
+    }
 } 
 
 const submitForm = async (e) => {
@@ -170,9 +180,6 @@ const submitForm = async (e) => {
     isSubmitting.value = false
 }
 
-const trimmedData = (e) => {
-    saleItem.value[e.target.name] = saleItem.value[e.target.name].trim()
-}
 
 const goBackHome = () => {
     router.push('/sale-items/' + id)
@@ -185,9 +192,13 @@ onMounted(async () => {
 
 watch(saleItem, () => {
     // Show error message
-    errorFormMessage[currentFocusField.value] = getErrorMessage(currentFocusField.value)
+    const field = currentFocusField.value
+    if (field) {
+        // console.log(field)
+        errorFormMessage[field] = checkFieldIntegrity(field) ? '' : fieldIntegrity[field]?.errorMessage
+    }
     // Disabled save button
-    validateData()
+    validateAllField()
 }, { deep: true })
 
 </script>
@@ -225,11 +236,17 @@ watch(saleItem, () => {
                                 <span class="text-red-500 text-xl">*</span>
                                 Brand
                             </label>
-                            <select class="itbms-brand input" v-model="saleItem.brand.id">
+                            <select name="brand" class="itbms-brand input" v-model="saleItem.brand.id" @change="handleChangeBrand">
+                                <option :value="0">
+                                    {{ 'Select brands' }}
+                                </option>
                                 <option v-for="brand of brands" :value="brand.id">
                                     {{ brand.name }}
                                 </option>
                             </select>
+                            <p class="text-red-500 pl-2">
+                                {{ errorFormMessage.brand }}
+                            </p>
                         </div>
 
                         <div class="flex flex-col gap-1">
@@ -354,7 +371,7 @@ watch(saleItem, () => {
                         </div>
 
                         <div class="flex gap-3 items-center mt-5">
-                            <Button variant="primary" :onclick="submitForm" :disabled="isSubmitting || !isDataValid"
+                            <Button variant="primary" :onclick="submitForm" :disabled="isSubmitting || !isFormValid"
                                 class-name="itbms-save-button" type="submit">
                                 {{ isSubmitting ? 'Loading...' : 'Save' }}
                             </Button>

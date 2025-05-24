@@ -23,12 +23,14 @@ const saleItem = reactive({
     },
 })
 const brands = ref([])
-const isDataValid = ref(false)
 const isLoading = ref(false)
 const isSubmitting = ref(false)
 const statusMessageStore = useStatusMessageStore()
 
+const currentFocusField = ref(null)
+const isFormValid = ref(false)
 const errorFormMessage = reactive({
+    'brand': '',
     'model': '',
     'price': '',
     'description': '',
@@ -38,7 +40,63 @@ const errorFormMessage = reactive({
     'color': '',
     'quantity': '',
 })
-const currentFocusField = ref(null)
+
+const fieldIntegrity = {
+    'model': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 60
+        },
+        errorMessage: 'Model must be 1-60 characters long.', 
+    },
+    'price': {
+        checkConstraint: (data) => {
+            return 0 < data && data.length !== 0
+        },
+        errorMessage: 'Price must be non-negative integer.', 
+    },
+    'description': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 65535
+        },
+        errorMessage: 'Description must be 1-65,535 characters long.', 
+    },
+    'ramGb': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data
+        },
+        errorMessage: 'RAM size must be positive integer or not specified.', 
+    },
+    'storageGb': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data
+        },
+        errorMessage: 'Storage size must be positive integer or not specified.', 
+    },
+    'screenSizeInch': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data && (Math.floor(data * 100) === data * 100)
+        },
+        errorMessage: 'Screen size must be positive number with at most 2 decimal points or not specified.', 
+    },
+    'color': {
+        checkConstraint: (data) => {
+            return data.length < 40
+        },
+        errorMessage: 'Color must be 1-40 characters long or not specified.', 
+    },
+    'quantity': {
+        checkConstraint: (data) => {
+            return (data === null || data === '') || 0 < data 
+        },
+        errorMessage: 'Quantity must be non-negative integer.', 
+    },
+    'brand': {
+        checkConstraint: (data) => {
+            return  data.id > 0
+        },
+        errorMessage: 'Brand must be selected.', 
+    },
+}
 
 const fetchBrands = async () => {
     isLoading.value = true
@@ -47,9 +105,14 @@ const fetchBrands = async () => {
         statusMessageStore.setStatusMessage("Something went wrong")
         return router.push('/sale-items')
     }
-    brands.value = await res.json()
-    saleItem.brand.id = brands.value[0].id
+    const brandData = await res.json()
+    const sortedBrand = brandData.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+    brands.value = sortedBrand
     isLoading.value = false
+}
+
+const handleChangeBrand = (e) => {
+    currentFocusField.value = e.target.name
 }
 
 const handleFocusIn = (e) => {
@@ -64,84 +127,31 @@ const handleFocusOut = (e) => {
     currentFocusField.value = null
 }
 
-const getErrorMessage = (field) => {
-    if (!checkFieldIntegrity(field)) {
-        switch (field) {
-        case "model": return "Model must be 1-60 characters long."
-        case "price": return "Price must be non-negative integer."
-        case "description": return "Description must be 1-65,535 characters long."
-        case "ramGb": return "RAM size must be positive integer or not specified."
-        case "storageGb": return "Storage size must be positive integer or not specified."
-        case "screenSizeInch": return "Screen size must be positive number with at most 2 decimal points or not specified."
-        case "color": return "Color must be 1-40 characters long or not specified."
-        case "quantity": return "Quantity must be non-negative integer."
-    }  
+const checkFieldIntegrity = (field) => {
+    if (fieldIntegrity[field]) {
+        return fieldIntegrity[field]?.checkConstraint(saleItem[field])
     } else {
-        return ''
-    }   
-}
+        return true 
+    }
+} 
 
-const validateData = () => {
-    isDataValid.value = true
+const validateAllField = () => {
+    let isValid = true
     for (const field in saleItem) {
         if (!checkFieldIntegrity(field)){
-            isDataValid.value = false
+            isValid = false
+            break;
         }
     }
+    isFormValid.value = isValid
 }
-
-const checkFieldIntegrity = (formField) => {
-    switch (formField) {
-        case "model":
-            if (saleItem.model.length > 60 || saleItem.model.length === 0) {
-                return false
-            } 
-            else return true
-        case "price":
-            if (saleItem.price < 0 || saleItem.price.length === 0) {
-                return false
-            } 
-            else return true
-        case "description":
-            if (saleItem.description.length > 65535 || saleItem.description.length === 0) {
-                return false
-            } 
-            else return true
-        case "ramGb":
-            if (saleItem.ramGb < 0) {
-                return false
-            } 
-            else return true
-        case "storageGb":
-            if (saleItem.storageGb < 0) {
-                return false
-            } 
-            else return true
-        case "screenSizeInch":
-            if (saleItem.screenSizeInch < 0) {
-                return false
-            } 
-            else return true
-        case "color":
-            if (saleItem.color.length > 40) {
-                return false
-            } 
-            else return true
-        case "quantity":
-            if (saleItem.quantity < 0) {
-                return false
-            } 
-            else return true
-        default: return true;
-    }  
-} 
 
 const submitForm = async (e) => {
     e.preventDefault()
     isSubmitting.value = true
     try {
         saleItem.brand.name = brands.value.find((brand)=> brand.id === saleItem.brand.id).name
-        console.log(saleItem)
+        // console.log(saleItem)
         const res = await createSaleItem(saleItem)
         if (!res.ok) throw new Error("Something went wrong")
         statusMessageStore.setStatusMessage("The sale item has been successfully added.")
@@ -154,7 +164,6 @@ const submitForm = async (e) => {
     isSubmitting.value = false
 }
 
-
 const goBackHome = () => {
     router.push('/sale-items')
 }
@@ -165,9 +174,13 @@ onMounted(() => {
 
 watch(saleItem, () => {
     // Show error message
-    errorFormMessage[currentFocusField.value] = getErrorMessage(currentFocusField.value)
+    const field = currentFocusField.value
+    if (field) {
+        // console.log(field)
+        errorFormMessage[field] = checkFieldIntegrity(field) ? '' : fieldIntegrity[field]?.errorMessage
+    }
     // Disabled save button
-    validateData()
+    validateAllField()
 })
 
 </script>
@@ -204,14 +217,17 @@ watch(saleItem, () => {
                                 <span class="text-red-500 text-xl">*</span>
                                 Brand
                             </label>
-                            <select class="itbms-brand input" v-model="saleItem.brand.id">
-                                <!-- <option :value="0">
+                            <select name="brand" class="itbms-brand input" v-model="saleItem.brand.id" @change="handleChangeBrand">
+                                <option :value="0">
                                     {{ 'Select brands' }}
-                                </option> -->
+                                </option>
                                 <option v-for="brand of brands" :value="brand.id">
                                     {{ brand.name }}
                                 </option>
                             </select>
+                            <p class="text-red-500 pl-2">
+                                {{ errorFormMessage.brand }}
+                            </p>
                         </div>
 
                         <div class="flex flex-col gap-1">
@@ -336,7 +352,7 @@ watch(saleItem, () => {
                         </div>
 
                         <div class="flex gap-3 items-center mt-5">
-                            <Button variant="primary" :onclick="submitForm" :disabled="isSubmitting || !isDataValid" 
+                            <Button variant="primary" :onclick="submitForm" :disabled="isSubmitting || !isFormValid" 
                                 class-name="itbms-save-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]" type="submit" >
                                 {{ isSubmitting ? 'Loading...' : 'Save' }}
                             </Button>

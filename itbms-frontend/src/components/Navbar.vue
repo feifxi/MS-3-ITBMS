@@ -8,10 +8,10 @@ import { RouterLink } from 'vue-router'
       <div class="container mx-auto px-4 py-3 flex items-center justify-between">
         <RouterLink to="/">
           <div class="flex items-center gap-2">
-            <div class="text-rose-500">
+            <div class="text-white">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
             </div>
-            <h1 class="font-bold text-xl">PhoneHub</h1>
+            <h1 class="font-bold text-xl">ITBMS-MS3</h1>
           </div>
         </RouterLink>
 

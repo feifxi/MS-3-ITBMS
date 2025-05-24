@@ -8,7 +8,6 @@ import ListSaelItem from '../views/SaleItemListView.vue'
 import BrandList from '../views/BrandList.vue'
 import BrandEdit from '../views/BrandEdit.vue'
 import BrandAdd from '../views/BrandAdd.vue'
-import MockUIView from '@/views/MockUIView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,12 +56,7 @@ const router = createRouter({
       path: '/brands/add',
       name: 'AddBrand',
       component: BrandAdd,
-    },
-    {
-      path: '/mock-ui',
-      name: 'Mockui',
-      component: MockUIView,
-    },
+    }
   ],
 })
 

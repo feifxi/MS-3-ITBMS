@@ -4,6 +4,30 @@ import { ref, computed, onMounted, reactive, watch } from 'vue'
 import CardSaleItem from '../components/CardSaleItem.vue'
 import Button from '@/components/Button.vue'
 import { ArrowDownWideNarrow, ArrowUpWideNarrow, List, X } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
+
+const persistSortOptions = sessionStorage.getItem('sortOptions')
+const persistFilterOptions = sessionStorage.getItem('filterOptions')
+const persistPaginationOptions = sessionStorage.getItem('paginationOptions')
+
+const sort = persistSortOptions 
+  ? JSON.parse(persistSortOptions) 
+  : {
+      sortField: 'createdOn',
+      sortDirection: null
+    }
+const filter = persistFilterOptions
+  ? JSON.parse(persistFilterOptions) 
+  : []
+
+const page = persistPaginationOptions
+  ? JSON.parse(persistPaginationOptions) 
+  : {
+      size: 10
+    } 
+
+const route = useRoute()
+const router = useRouter()
 
 const saleitems = ref([])
 const brands = ref([])
@@ -15,12 +39,12 @@ const pagination = reactive({
   totalPages: 0,
   totalElements: 0,
   page: 0,
-  size: 10
+  size: page.size
 })
-const filterBrands = reactive([])
+const filterBrands = reactive([...filter])
 const sortOptions = reactive({
-  sortField: 'createdOn',
-  sortDirection: null,
+  sortField: sort.sortField,
+  sortDirection: sort.sortDirection,
 })
 
 const paginatedPages = computed(() => {
@@ -76,7 +100,7 @@ const handleAddFilterByBrands = (e) => {
   const brandName = e.target.value
   if (brandName === 'All brands') return handleClearBrandFilter()
   pagination.page = 0
-  console.log(brandName)
+  // console.log(brandName)
   const existing = filterBrands.find((brand) => brand === brandName)
   if (existing) return
   filterBrands.push(brandName)
@@ -137,17 +161,50 @@ const handleClickPrev = () => {
   pagination.page -= 1
 }
 
+const saveSessionData = () => {
+  const sort = {
+    sortField: sortOptions.sortField,
+    sortDirection: sortOptions.sortDirection
+  }
+  const filter = [...filterBrands]
+  const page = {
+    size: pagination.size
+  }
+
+  sessionStorage.setItem('sortOptions', JSON.stringify(sort))
+  sessionStorage.setItem('filterOptions', JSON.stringify(filter))
+  sessionStorage.setItem('paginationOptions', JSON.stringify(page))
+
+  // console.log('Save : ', sort, filter, page)
+}
+
+const navigateToSelectedPage = () => {
+  const { page } = route.query
+  if (!page) {
+    pagination.page = 0
+    setNaviagatedPage()
+  } else {
+    pagination.page = page-1 
+  }
+}
+
+const setNaviagatedPage = () => {
+  router.push({ query: { page: pagination.page+1  }})
+}
 
 watch(()=> pagination.page, () => {
+  setNaviagatedPage()
   fetchSaleItems()
 })
 
 watch([()=> pagination.size, filterBrands, sortOptions], () => {
+  saveSessionData()
   pagination.page = 0
   fetchSaleItems()
 })
 
 onMounted(async () => {
+  navigateToSelectedPage()
   await fetchBrands()
   await fetchSaleItems()
 })
@@ -223,7 +280,11 @@ onMounted(async () => {
     <!-- Item -->
     <section v-else>
       <div class="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        <CardSaleItem v-for="saleItem in saleitems" :key="saleItem.id" :item="saleItem" />
+        <CardSaleItem v-for="saleItem in saleitems" 
+          :key="saleItem.id" 
+          :item="saleItem" 
+          :query="`fromPage=${pagination.page + 1}`"
+        />
       </div>
       
       <!-- Pagination -->

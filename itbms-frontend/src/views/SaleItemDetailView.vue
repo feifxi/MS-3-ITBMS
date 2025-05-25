@@ -19,6 +19,7 @@ const isNotFound = ref(false)
 const isDeleting = ref(false)
 const showConfirmDialog = ref(false)
 const statusMessageStore = useStatusMessageStore()
+const previousPage = route.query.fromPage || 0
 
 const fetchItem = async () => {
   isLoading.value = true
@@ -26,7 +27,7 @@ const fetchItem = async () => {
     const id = route.params.id
     const res = await fetchSaleItemById(id)
     if (!res.ok) throw new Error("Item not found")
-
+    
     item.value = await res.json()
   } catch (err) {
     console.log(err)
@@ -61,7 +62,10 @@ const confirmDelete = async () => {
   }
 }
 
-onMounted(fetchItem)
+
+onMounted(async () => {
+  await fetchItem()
+})
 </script>
 
 <template>
@@ -77,7 +81,7 @@ onMounted(fetchItem)
     />
     <main class="px-16 py-4">
       <BreadCrumb v-if="item" :links="[
-        { to: {name: 'SaleItemGallery'}, label: 'Home' },
+        { to: { name: 'SaleItemGallery', query: { page: previousPage }}, label: 'Home' },
         { to: '#', label: `${item.model}` },
       ]" />
 

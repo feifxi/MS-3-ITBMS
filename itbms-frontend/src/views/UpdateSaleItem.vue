@@ -217,7 +217,7 @@ watch(saleItem, () => {
                 Loading...
             </div>
 
-            <div v-else class="itbms-row flex max-lg:flex-col flex-wrap gap-12 bg-white rounded-lg shadow-lg p-6">
+            <div v-else class="itbms-row max-w-6xl mx-auto flex max-lg:flex-col flex-wrap gap-12 bg-white rounded-lg shadow-lg p-6">
                 <div class="flex-1">
                     <div class="mb-6 text-center overflow-hidden rounded-lg shadow-md">
                         <img :src="saleItem?.image || mockPhone" alt="sale item"

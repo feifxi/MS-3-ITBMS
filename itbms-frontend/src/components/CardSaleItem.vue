@@ -9,12 +9,20 @@ defineProps({
     item: {
         type: Object,
         required: true
+    },
+    query: {
+      type: String,
+      required: false
     }
 })
 </script>
     
 <template>
-    <RouterLink :to="`/sale-items/${item.id}`" class="itbms-row">
+    <RouterLink :to="query 
+      ? `/sale-items/${item.id}?${query}` 
+      : `/sale-items/${item.id}`" 
+      class="itbms-row"
+    >
         <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all    transform hover:-translate-y-1">
           <div class="relative">
             <img :src="item.image || (item.id % 2 === 0 ? mockPhone : mockPhone2)" :alt="item.model" class="w-full h-48 object-contain p-4" />

@@ -3,7 +3,7 @@ import { fetchAllBrands, fetchAllSaleItemsV2 } from '@/api/index.js'
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import CardSaleItem from '../components/CardSaleItem.vue'
 import Button from '@/components/Button.vue'
-import { ArrowDownWideNarrow, ArrowUpWideNarrow, List, X } from 'lucide-vue-next'
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, List, ListFilterPlus, X } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 
 const persistSortOptions = sessionStorage.getItem('sortOptions')
@@ -96,25 +96,21 @@ const fetchBrands = async () => {
 }
 
 // Filtering
-const handleAddFilterByBrands = (e) => {
-  const brandName = e.target.value
-  if (brandName === 'All brands') return handleClearBrandFilter()
-  pagination.page = 0
+const handleAddFilterByBrands = (brandName) => {
   // console.log(brandName)
-  const existing = filterBrands.find((brand) => brand === brandName)
-  if (existing) return
+  const existingIndex = filterBrands.findIndex((brand) => brand === brandName)
+  if (existingIndex >= 0) {
+    return filterBrands.splice(existingIndex, 1)
+  }
   filterBrands.push(brandName)
 }
 
 const handleRemoveBrandFilter = (brandName) => {
-  pagination.page = 0
   const removeIndex = filterBrands.findIndex((brand) => brand === brandName)
   filterBrands.splice(removeIndex, 1)
 }
 
 const handleClearBrandFilter = () => {
-  if (filterBrands.length === 0) return
-  pagination.page = 0
   filterBrands.splice(0, filterBrands.length)
 }
 
@@ -209,6 +205,8 @@ onMounted(async () => {
   await fetchSaleItems()
 })
 
+const isShowBrandFilters = ref(false)
+
 
 </script>
 
@@ -226,12 +224,18 @@ onMounted(async () => {
       <div class="flex">
         <!-- Filter -->
         <div class="flex-2">
-          <div class="flex gap-1">
-            <select @change="handleAddFilterByBrands" class="itbms-brand-filter itbms-brand-filter-button input !w-auto min-w-[100px]" >
-              <option :value="'All brands'" >{{ 'All brands' }}</option>
-              <option v-for="brand in brands" :value="brand.name">{{ brand.name }}</option>
-            </select>
+          <div class="flex gap-1 relative">
+            <button @click="isShowBrandFilters = !isShowBrandFilters" 
+              class="itbms-brand-filter itbms-brand-filter-button cursor-pointer p-2 hover:bg-neutral-200 transition-all duration-300 rounded">
+              <ListFilterPlus />
+            </button>
             <Button :class-name="'itbms-brand-filter-clear'" :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearBrandFilter" >clear</Button>
+          </div>
+          <div v-if="isShowBrandFilters" class="z-10 absolute border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-8 grid grid-cols-5">
+            <div v-for="brand in brands" class="flex items-center gap-2">
+              <input type="checkbox" class="size-5" :checked="filterBrands.includes(brand.name)" @click="() => handleAddFilterByBrands(brand.name)">
+              <label class="itbms-filter-item">{{ brand.name }}</label>
+            </div>
           </div>
         </div>
         <!-- Size & Sorting -->
@@ -268,8 +272,8 @@ onMounted(async () => {
       </div>
 
       <div class="flex flex-wrap gap-3 p-3" v-if="filterBrands.length > 0">
-        <Button v-for="brand in filterBrands" :class-name="'itbms-filter-item itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
-          <p>{{ brand }}</p>
+        <Button v-for="brand in filterBrands" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
+          <p class="">{{ brand }}</p>
           <X class="size-4" />
         </Button>
       </div>

@@ -231,11 +231,14 @@ onMounted(async () => {
         </div>
         <!-- Size & Sorting -->
         <div class="flex-1 flex justify-end gap-3">
-          <select v-model="pagination.size" class="input !w-auto">
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </select>
+          <div class="flex gap-2 items-center">
+            <h3>show</h3>
+            <select v-model="pagination.size" class="input !w-auto">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
 
           <div class="flex" >
             <button @click="handleSortDefault" :class="['paginationBtn !bg-rose-50 border border-white', {

@@ -1,7 +1,6 @@
 SELECT * FROM ms3_itbms_db.sale_items;
 SELECT * FROM ms3_itbms_db.brands;
 
-SELECT * FROM ms3_itbms_db.sale_items ORDER BY brand_id;
 DROP DATABASE `ms3_itbms_db`;
 
 SELECT @@global.time_zone, @@session.time_zone;

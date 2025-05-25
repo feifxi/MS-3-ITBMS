@@ -34,12 +34,12 @@ services:
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_general_ci
       LANG: C.UTF-8
-      # TZ: Asia/Bangkok
     networks:
       - itbms-network
     volumes:
       - itbms-data:/var/lib/mysql
       - ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./itbms-database/insert.sql:/app/insert.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s

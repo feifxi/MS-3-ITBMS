@@ -1,33 +1,5 @@
-SET GLOBAL time_zone = '+00:00';
-SET time_zone = '+00:00';
-
-CREATE SCHEMA IF NOT EXISTS `ms3_itbms_db` DEFAULT CHARACTER SET utf8 ;
-
-CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`brands` (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(30) NOT NULL UNIQUE,
-    website_url VARCHAR(40),	
-    is_active BOOLEAN,
-    country_of_origin VARCHAR(80),
-    created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_items` (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    model VARCHAR(60) NOT NULL,
-    brand_id INT NOT NULL,
-    description TEXT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    ram_Gb INT,
-    screen_size_inch DECIMAL(3,2),
-    storage_Gb INT,
-    color TEXT,
-    quantity INT NOT NULL DEFAULT 1,
-    created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	updated_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE CASCADE
-);
+DELETE FROM `ms3_itbms_db`.`sale_items`;
+DELETE FROM `ms3_itbms_db`.`brands`;
 
 INSERT INTO `ms3_itbms_db`.`brands` (`id`, `name`, `website_url`, `is_active`,`country_of_origin`) VALUES
 (1,"Samsung","https://www.samsung.com",1, "South Korea"),

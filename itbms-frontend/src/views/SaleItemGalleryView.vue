@@ -215,6 +215,9 @@ onMounted(async () => {
 
 <template>
   <main class="py-8 px-16 min-h-screen bg-gradient-to-br from-rose-50 to-purple-50">
+    <RouterLink to="/sale-items/add" >
+      <Button variant="primary" class="itbms-sale-item-add ">➕ Add Sale Item</Button>
+    </RouterLink>
     <h2 class="text-2xl font-bold mb-4">Sale Items</h2>
     <!-- Filtering & Sorting-->
     <div class="p-3 rounded-xl mb-4 bg-white">
@@ -222,18 +225,18 @@ onMounted(async () => {
         <!-- Filter -->
         <div class="flex-2">
           <div class="flex gap-1">
-            <select @change="handleAddFilterByBrands" class="input !w-auto min-w-[100px]" >
+            <select @change="handleAddFilterByBrands" class="itbms-brand-filter itbms-brand-filter-button input !w-auto min-w-[100px]" >
               <option :value="'All brands'" >{{ 'All brands' }}</option>
               <option v-for="brand in brands" :value="brand.name">{{ brand.name }}</option>
             </select>
-            <Button :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearBrandFilter" >clear</Button>
+            <Button :class-name="'itbms-brand-filter-clear'" :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearBrandFilter" >clear</Button>
           </div>
         </div>
         <!-- Size & Sorting -->
         <div class="flex-1 flex justify-end gap-3">
           <div class="flex gap-2 items-center">
             <h3>show</h3>
-            <select v-model="pagination.size" class="input !w-auto">
+            <select v-model="pagination.size" class="itbms-page-size input !w-auto">
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="20">20</option>
@@ -241,19 +244,19 @@ onMounted(async () => {
           </div>
 
           <div class="flex" >
-            <button @click="handleSortDefault" :class="['paginationBtn !bg-rose-50 border border-white', {
+            <button @click="handleSortDefault" :class="['itbms-brand-none paginationBtn !bg-rose-50 border border-white', {
               '!bg-rose-200': sortOptions.sortField === 'createdOn' 
               }]">
               <List />
             </button>
 
-            <button @click="handleSortAsc" :class="['paginationBtn !bg-rose-50 border border-white', {
+            <button @click="handleSortAsc" :class="['itbms-brand-asc paginationBtn !bg-rose-50 border border-white', {
               '!bg-rose-200': sortOptions.sortDirection === 'asc' && sortOptions.sortField === 'brand.name' 
               }]">
               <ArrowUpWideNarrow />
             </button>
 
-            <button @click="handleSortDesc" :class="['paginationBtn !bg-rose-50 border border-white', { 
+            <button @click="handleSortDesc" :class="['itbms-brand-desc paginationBtn !bg-rose-50 border border-white', { 
               '!bg-rose-200': sortOptions.sortDirection === 'desc' && sortOptions.sortField === 'brand.name' 
               }]">
               <ArrowDownWideNarrow />
@@ -263,7 +266,7 @@ onMounted(async () => {
       </div>
 
       <div class="flex flex-wrap gap-3 p-3" v-if="filterBrands.length > 0">
-        <Button v-for="brand in filterBrands" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
+        <Button v-for="brand in filterBrands" :class-name="'itbms-filter-item itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
           <p>{{ brand }}</p>
           <X class="size-4" />
         </Button>
@@ -292,15 +295,15 @@ onMounted(async () => {
       
       <!-- Pagination -->
       <div class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold">
-        <button @click="handleGoFirst" class='paginationBtn !px-4' :disabled="pagination.first">
+        <button @click="handleGoFirst" class='itbms-page-first paginationBtn !px-4' :disabled="pagination.first">
           First
         </button>
-        <button @click="handleClickPrev" class='paginationBtn !px-4' :disabled="pagination.first">
+        <button @click="handleClickPrev" class='itbms-page-prev paginationBtn !px-4' :disabled="pagination.first">
           Prev
         </button>
         
         <button v-for="pageIndex in paginatedPages"
-          :class="[`item-page-${pageIndex} paginationBtn w-10`, {
+          :class="[`itbms-page-${pageIndex-1} paginationBtn w-10`, {
             '!bg-rose-500': pagination.page + 1 === pageIndex
           }]"
           @click="() => handleChangePage(pageIndex-1)"
@@ -308,10 +311,10 @@ onMounted(async () => {
           {{ pageIndex }}
         </button>
 
-        <button @click="handleClickNext" class="paginationBtn !px-4" :disabled="pagination.last"> 
+        <button @click="handleClickNext" class="itbms-page-next paginationBtn !px-4" :disabled="pagination.last"> 
           Next
         </button>
-        <button @click="handleGoLast" class='paginationBtn !px-4' :disabled="pagination.last">
+        <button @click="handleGoLast" class='itbms-page-last paginationBtn !px-4' :disabled="pagination.last">
           Last
         </button>
       </div>

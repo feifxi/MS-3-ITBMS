@@ -215,10 +215,12 @@ onMounted(async () => {
 
 <template>
   <main class="py-8 px-16 min-h-screen bg-gradient-to-br from-rose-50 to-purple-50">
-    <RouterLink to="/sale-items/add" >
-      <Button variant="primary" class="itbms-sale-item-add ">➕ Add Sale Item</Button>
-    </RouterLink>
-    <h2 class="text-2xl font-bold mb-4">Sale Items</h2>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Sale Items</h2>
+      <RouterLink to="/sale-items/add" >
+        <Button variant="primary" class="itbms-sale-item-add ">➕ Add Sale Item</Button>
+      </RouterLink>
+    </div>
     <!-- Filtering & Sorting-->
     <div class="p-3 rounded-xl mb-4 bg-white">
       <div class="flex">

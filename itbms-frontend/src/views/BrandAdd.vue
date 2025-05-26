@@ -4,6 +4,11 @@ import { useRouter } from 'vue-router'
 import { createBrand } from '@/api/index.js'
 import { useStatusMessageStore } from '@/stores/statusMessage';
 import Button from '@/components/Button.vue'
+import { Flower } from 'lucide-vue-next';
+import { X } from 'lucide-vue-next';
+import { PrinterCheck } from 'lucide-vue-next';
+import { reactive } from 'vue';
+
 
 const statusMessageStore = useStatusMessageStore()
 
@@ -35,79 +40,168 @@ const submitBrand = async () => {
 const cancelEdit = () => {
   router.push('/brands')
 }
-const isFormValid = computed(() => {
-  return newBrand.value.name.trim() !== ''
-})
+// const isFormValid = computed(() => {
+//   return newBrand.value.name.trim() !== ''
+// })
 
-watch(newBrand.value, () => {
-  console.log(newBrand.value)
+
+// watch(newBrand.value, () => {
+//   console.log(newBrand.value)
+// })
+
+
+
+
+///////////////////////////////////////////////////////////////
+const currentFocusField = ref(null)
+const isFormValid = ref(false)
+const errorFormMessage = reactive({
+  name: '',
+  websiteUrl: '',
+  countryOfOrigin: ''
 })
+let originalBrand
+
+const isValidUrl = (url) => {
+  try {
+    new URL(url)
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+
+const fieldIntegrity = {
+    'name': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 30
+        },
+        errorMessage: 'Name must be 1-30 characters long.', 
+    },
+    'websiteUrl': {
+        checkConstraint: (data) => {
+            return 0 < data.length && isValidUrl(data)
+        },
+        errorMessage: 'Website must be only URL type.', 
+    },
+    'countryOfOrigin': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 80
+        },
+        errorMessage: 'countryOfOrigin must be 1-80 characters long.', 
+    }
+}
+
+const handleFocusIn = (e) => {
+    currentFocusField.value = e.target.name    
+}
+
+const handleFocusOut = (e) => {
+    const currentField = e.target.name
+    if (typeof newBrand.value[currentField] === 'string') {
+        newBrand.value[currentField] = newBrand.value[currentField].trim()
+    }   
+    currentFocusField.value = null
+}
+
+const validateAllField = () => {
+    let isValid = true
+    for (const field in newBrand.value) {
+        if (!checkFieldIntegrity(field) || (JSON.stringify(newBrand.value) === originalBrand)){
+            isValid = false
+            break;
+        }
+    }
+    isFormValid.value = isValid
+}
+
+const checkFieldIntegrity = (field) => {
+    if (fieldIntegrity[field]) {
+        return fieldIntegrity[field]?.checkConstraint(newBrand.value[field])
+    } else {
+        return true 
+    }
+} 
+
+
+watch(newBrand, () => {
+    // Show error message
+    const field = currentFocusField.value
+    console.log(field)
+    if (field) {
+        // console.log(field)
+        errorFormMessage[field] = checkFieldIntegrity(field) ? '' : fieldIntegrity[field]?.errorMessage
+    }
+    // Disabled save button
+    validateAllField()
+}, { deep: true })
 
 </script>
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100 flex justify-center items-center p-6">
     <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-10 w-full max-w-2xl border-4 border-pink-100 backdrop-blur-md">
-      <h2 class="text-4xl font-extrabold text-rose-500 mb-10 text-center tracking-widest drop-shadow-sm">🌸 Add New Brand 🌸</h2>
+      <h2 class="text-4xl font-extrabold text-rose-500 mb-10 text-center tracking-widest drop-shadow-sm">
+          <span class="inline-flex items-center gap-2"><Flower class="w-6 h-6" />Add New Brand<Flower class="w-6 h-6" />
+          </span>
+      </h2>
 
       <form @submit.prevent="submitBrand" class="itbms-manage-brand space-y-6">
 
         <!-- Brand Name -->
         <div>
-          <label class="block text-purple-700 font-semibold mb-1">🏷️ Brand Name *</label>
+          <label class="block text-purple-700 font-semibold mb-1"> Brand Name *</label>
           <input
+            name="name"
             v-model="newBrand.name"
+            @focusin="handleFocusIn"
+            @focusout="handleFocusOut"
             type="text"
             required
             placeholder="Enter brand name"
             class="itbms-name w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 
             transition shadow-inner"
           />
+            <p class="text-red-500 pl-2">{{ errorFormMessage.name }}</p>
         </div>
 
         <!-- Website -->
         <div class="">
-          <label class="block text-purple-700 font-semibold mb-1">🌐 Website</label>
+          <label class="block text-purple-700 font-semibold mb-1"> Website</label>
           <input
+            name="websiteUrl"
             v-model="newBrand.websiteUrl"
+            @focusin="handleFocusIn"
+            @focusout="handleFocusOut"
             type="url"
             placeholder="https://example.com"
             class="itbms-websiteUrl w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 
             focus:ring-purple-400 transition shadow-inner"
           />
+            <p class="text-red-500 pl-2">{{ errorFormMessage.websiteUrl }}</p>
         </div>
 
-        <!-- Active Toggle -->
-        <!-- <div class="flex items-center justify-between">
-          <label class="text-purple-800 font-semibold">✨ Active</label>
-          <button
-            type="button"
-            @click="newBrand.isActive = !newBrand.isActive"
-            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
-            :class="newBrand.isActive ? 'bg-pink-400' : 'bg-gray-300'"
-          >
-            <span
-              class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-              :class="newBrand.isActive ? 'translate-x-6' : 'translate-x-1'"
-            />
-          </button>
-          <input type="checkbox" class="itbms-isActive hidden" :checked="newBrand.isActive">
-        </div> -->
+        <!-- Is Active -->
         <div class="flex items-center justify-between">
-          <label class="text-purple-800 font-semibold">✨ Active</label>
+          <label class="text-purple-800 font-semibold"> Active</label>
           <input type="checkbox" class="itbms-isActive size-5" v-model="newBrand.isActive">
         </div>
 
         <!-- Country of Origin -->
         <div class="">
-          <label class="block text-purple-700 font-semibold mb-1">🏳️ Country of Origin</label>
+          <label class="block text-purple-700 font-semibold mb-1">Country of Origin</label>
           <input
+            name="countryOfOrigin"
             v-model="newBrand.countryOfOrigin"
+            @focusin="handleFocusIn"
+            @focusout="handleFocusOut"
             type="text"
             placeholder="Country"
             class="itbms-countryOfOrigin w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 
             focus:ring-rose-300 transition shadow-inner"
           />
+          <p class="text-red-500 pl-2">{{ errorFormMessage.countryOfOrigin }}</p>
         </div>
 
         <!-- Buttons -->
@@ -118,17 +212,17 @@ watch(newBrand.value, () => {
              transition font-medium shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]"
             @click="cancelEdit"
           >
-            ❌ Cancel
+            <X class="w-5 h-5 text-red-500 mr-1" /> Cancel
           </Button>
           <Button
             type="submit"
             :disabled="isSubmitting || !isFormValid"
-            :class="['itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]',
+            :class="['itbms-save-button disabled:hover:purple-400 bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]',
             {
               'cursor-not-allowed' : !isFormValid,
             }]"
           >
-            {{ isSubmitting ? "Saving..." : "💾 Save" }}
+            {{ isSubmitting ? "Saving..." : "Save" }}<PrinterCheck />
           </Button>
 
         </div>

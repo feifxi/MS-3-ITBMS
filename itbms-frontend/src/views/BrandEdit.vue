@@ -1,9 +1,12 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch , reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchAllBrands, fetchBrandById, updateBrand } from '@/api/index.js'
 import Button from '@/components/Button.vue'
 import { useStatusMessageStore } from '@/stores/statusMessage'
+import { PencilRuler } from 'lucide-vue-next'
+import { X } from 'lucide-vue-next'
+import { PrinterCheck } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -91,6 +94,79 @@ const cancelEdit = () => {
 watch(brand, validateForm, { deep: true })
 onMounted(fetchBrand)
 
+//////////////////////////////////////////////////////////////
+const currentFocusField = ref(null)
+const isFormValid = ref(false)
+const errorFormMessage = reactive({
+  name: '',
+  websiteUrl: '',
+  countryOfOrigin: ''
+})
+
+
+const fieldIntegrity = {
+    'name': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 30
+        },
+        errorMessage: 'Name must be 1-30 characters long.', 
+    },
+    'websiteUrl': {
+        checkConstraint: (data) => {
+            return 0 < data.length && isValidUrl(data)
+        },
+        errorMessage: 'Website must be only URL type.', 
+    },
+    'countryOfOrigin': {
+        checkConstraint: (data) => {
+            return 0 < data.length && data.length < 80
+        },
+        errorMessage: 'countryOfOrigin must be 1-80 characters long.', 
+    }
+}
+
+const handleFocusIn = (e) => {
+    currentFocusField.value = e.target.name    
+}
+
+const handleFocusOut = (e) => {
+    const currentField = e.target.name
+    if (typeof brand.value[currentField] === 'string') {
+        brand.value[currentField] = brand.value[currentField].trim()
+    }   
+    currentFocusField.value = null
+}
+
+const validateAllField = () => {
+    let isValid = true
+    for (const field in brand.value) {
+        if (!checkFieldIntegrity(field) || (JSON.stringify(brand.value) === originalBrand)){
+            isValid = false
+            break;
+        }
+    }
+    isFormValid.value = isValid
+}
+
+const checkFieldIntegrity = (field) => {
+    if (fieldIntegrity[field]) {
+        return fieldIntegrity[field]?.checkConstraint(brand.value[field])
+    } else {
+        return true 
+    }
+} 
+
+watch(brand, () => {
+    // Show error message
+    const field = currentFocusField.value
+    console.log(field)
+    if (field) {
+        // console.log(field)
+        errorFormMessage[field] = checkFieldIntegrity(field) ? '' : fieldIntegrity[field]?.errorMessage
+    }
+    // Disabled save button
+    validateAllField()
+}, { deep: true })
 
 </script>
 
@@ -104,8 +180,9 @@ onMounted(fetchBrand)
     >
       <h1
         class="text-4xl font-extrabold text-rose-500 mb-10 text-center tracking-widest drop-shadow-sm"
-      >
-        🔧 Edit Brand ID: {{ brandId }}
+      > 
+        <span class="inline-flex items-center gap-2"><PencilRuler class="w-6 h-6" />Edit Brand ID: {{ brandId }}<PencilRuler  class="w-6 h-6" />
+          </span>
       </h1>
 
       <div v-if="isLoading" class="text-center text-blue-500 text-xl animate-pulse">
@@ -116,60 +193,58 @@ onMounted(fetchBrand)
         <!-- Brand Name -->
         <div>
           <label class="block text-purple-700 font-semibold mb-1">
-            🏷️ Brand Name *
+             Brand Name *
           </label>
           <input
+            name="name"
             v-model="brand.name"
+            @focusin="handleFocusIn"
+            @focusout="handleFocusOut"
             type="text"
             class="itbms-name w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 
             transition shadow-inner"
           />
+          <p class="text-red-500 pl-2">{{ errorFormMessage.name }}</p>
         </div>
 
      <!-- Website URL -->
         <div class="">
-        <label class="block text-purple-700 font-semibold mb-1">🌐 Website</label>
+        <label class="block text-purple-700 font-semibold mb-1"> Website</label>
         <input
+          name="websiteUrl"
           v-model="brand.websiteUrl"
+          @focusin="handleFocusIn"
+          @focusout="handleFocusOut"
           type="url"
           placeholder="https://example.com"
           class="itbms-websiteUrl w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400
            transition shadow-inner"
           />
+          <p class="text-red-500 pl-2">{{ errorFormMessage.websiteUrl}}</p>
         </div>
 
 
         <!-- Active Toggle -->
-        <!-- <div class="itbms-isActive flex items-center justify-between">
-          <label class="text-purple-800 font-semibold">✨ Active</label>
-          <button
-            type="button"
-            @click="brand.isActive = !brand.isActive"
-            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
-            :class="brand.isActive ? 'bg-pink-400' : 'bg-gray-300'"
-          >
-            <span
-              class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-              :class="brand.isActive ? 'translate-x-6' : 'translate-x-1'"
-            />
-          </button>
-        </div> -->
         <div class="flex items-center justify-between">
-          <label class="text-purple-800 font-semibold">✨ Active</label>
+          <label class="text-purple-800 font-semibold"> Active</label>
           <input type="checkbox" class="itbms-isActive size-5" v-model="brand.isActive">
         </div>
 
         <!-- Country of Origin -->
         <div class="">
           <label class="block text-purple-700 font-semibold mb-1">
-            🏳️ Country of Origin
+            Country of Origin
           </label>
           <input
+            name="countryOfOrigin"
             v-model="brand.countryOfOrigin"
+            @focusin="handleFocusIn"
+            @focusout="handleFocusOut"
             type="text"
             class="itbms-countryOfOrigin w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 
             focus:ring-rose-300 transition shadow-inner"
           />
+          <p class="text-red-500 pl-2">{{ errorFormMessage.countryOfOrigin }}</p>
         </div>
 
         <!-- Buttons -->
@@ -179,7 +254,7 @@ onMounted(fetchBrand)
             class="itbms-cancel-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] "
             @click="cancelEdit"
           >
-            ❌ Cancel
+             <X class="w-5 h-5 text-red-500 mr-1" /> Cancel
           </Button>
           <Button
             type="submit"
@@ -189,7 +264,7 @@ onMounted(fetchBrand)
               'cursor-not-allowed' : !isModified,
             }]"
           >
-            {{ isSubmitting ? "Saving..." : "💾 Save" }}
+            {{ isSubmitting ? "Saving..." : " Save" }}<PrinterCheck />
           </Button>
         </div>
       </form>

@@ -19,7 +19,6 @@ const isNotFound = ref(false)
 const isDeleting = ref(false)
 const showConfirmDialog = ref(false)
 const statusMessageStore = useStatusMessageStore()
-const previousPage = route.query.fromPage || 0
 
 const fetchItem = async () => {
   isLoading.value = true
@@ -81,7 +80,7 @@ onMounted(async () => {
     />
     <main class="px-16 py-4">
       <BreadCrumb v-if="item" :links="[
-        { to: { name: 'SaleItemGallery', query: { page: previousPage }}, label: 'Home' },
+        { to: { name: 'SaleItemGallery'}, label: 'Home' },
         { to: '#', label: `${item.model}` },
       ]" />
 

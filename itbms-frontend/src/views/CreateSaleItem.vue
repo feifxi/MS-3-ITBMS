@@ -44,13 +44,13 @@ const errorFormMessage = reactive({
 const fieldIntegrity = {
     'model': {
         checkConstraint: (data) => {
-            return 0 < data.length && data.length < 60
+            return 0 < data.length && data.length <= 60
         },
         errorMessage: 'Model must be 1-60 characters long.', 
     },
     'price': {
         checkConstraint: (data) => {
-            return 0 < data && data.length !== 0
+            return 0 <= data && data.length !== 0
         },
         errorMessage: 'Price must be non-negative integer.', 
     },
@@ -80,13 +80,13 @@ const fieldIntegrity = {
     },
     'color': {
         checkConstraint: (data) => {
-            return data.length < 40
+            return data.length <= 40
         },
         errorMessage: 'Color must be 1-40 characters long or not specified.', 
     },
     'quantity': {
         checkConstraint: (data) => {
-            return (data === null || data === '') || 0 < data 
+            return (data === null || data === '') || 0 <= data 
         },
         errorMessage: 'Quantity must be non-negative integer.', 
     },
@@ -124,6 +124,7 @@ const handleFocusOut = (e) => {
     if (typeof saleItem[currentField] === 'string') {
         saleItem[currentField] = saleItem[currentField].trim()
     }   
+    showErrorToForm()
     currentFocusField.value = null
 }
 
@@ -168,17 +169,20 @@ const goBackHome = () => {
     router.push('/sale-items')
 }
 
-onMounted(() => {
-    fetchBrands()
-})
-
-watch(saleItem, () => {
-    // Show error message
+const showErrorToForm = () => {
     const field = currentFocusField.value
     if (field) {
         // console.log(field)
         errorFormMessage[field] = checkFieldIntegrity(field) ? '' : fieldIntegrity[field]?.errorMessage
     }
+}
+
+onMounted(() => {
+    fetchBrands()
+})
+
+watch(saleItem, () => {
+    showErrorToForm()
     // Disabled save button
     validateAllField()
 })
@@ -218,14 +222,14 @@ watch(saleItem, () => {
                                 Brand
                             </label>
                             <select name="brand" class="itbms-brand input" v-model="saleItem.brand.id" @change="handleChangeBrand">
-                                <option :value="0">
+                                <option :value="''">
                                     {{ 'Select brands' }}
                                 </option>
                                 <option v-for="brand of brands" :value="brand.id">
                                     {{ brand.name }}
                                 </option>
                             </select>
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.brand }}
                             </p>
                         </div>
@@ -242,7 +246,7 @@ watch(saleItem, () => {
                                 @focusin="handleFocusIn"
                                 @focusout="handleFocusOut"
                             >
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.model }}
                             </p>
                         </div>
@@ -259,7 +263,7 @@ watch(saleItem, () => {
                                 @focusin="handleFocusIn"
                                 @focusout="handleFocusOut"
                             >
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.price }}
                             </p>
                         </div>
@@ -276,7 +280,7 @@ watch(saleItem, () => {
                                 @focusout="handleFocusOut"
                             >
                             </textarea>
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.description }}
                             </p>
                         </div>
@@ -290,7 +294,7 @@ watch(saleItem, () => {
                                 @focusin="handleFocusIn"
                                 @focusout="handleFocusOut"
                             >
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.ramGb }}
                             </p>
                         </div>
@@ -304,7 +308,7 @@ watch(saleItem, () => {
                                 @focusin="handleFocusIn"
                                 @focusout="handleFocusOut"
                             >
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.screenSizeInch }}
                             </p>
                         </div>
@@ -318,7 +322,7 @@ watch(saleItem, () => {
                                 @focusin="handleFocusIn"
                                 @focusout="handleFocusOut"
                             >
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.storageGb }}
                             </p>
                         </div>
@@ -332,7 +336,7 @@ watch(saleItem, () => {
                                 @focusin="handleFocusIn"
                                 @focusout="handleFocusOut"
                             >
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.color }}
                             </p>
                         </div>
@@ -346,7 +350,7 @@ watch(saleItem, () => {
                                 @focusin="handleFocusIn"
                                 @focusout="handleFocusOut"
                             >
-                            <p class="text-red-500 pl-2">
+                            <p class="itbms-message text-red-500 pl-2">
                                 {{ errorFormMessage.quantity }}
                             </p>
                         </div>

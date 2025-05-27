@@ -1,6 +1,7 @@
 SET GLOBAL time_zone = '+00:00';
 SET time_zone = '+00:00';
 
+DROP DATABASE IF EXISTS `ms3_itbms_db` ;
 CREATE SCHEMA IF NOT EXISTS `ms3_itbms_db` DEFAULT CHARACTER SET utf8 ;
 
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`brands` (
@@ -18,9 +19,9 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_items` (
     model VARCHAR(60) NOT NULL,
     brand_id INT NOT NULL,
     description TEXT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
+    price DECIMAL(12,2) NOT NULL,
     ram_Gb INT,
-    screen_size_inch DECIMAL(3,2),
+    screen_size_inch DECIMAL(5,2),
     storage_Gb INT,
     color TEXT,
     quantity INT NOT NULL DEFAULT 1,

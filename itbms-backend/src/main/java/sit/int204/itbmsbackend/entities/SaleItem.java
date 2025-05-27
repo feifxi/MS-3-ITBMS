@@ -36,7 +36,7 @@ public class SaleItem {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "price", nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
     @Column(name = "ram_Gb")

@@ -23,7 +23,8 @@ const filter = persistFilterOptions
 const page = persistPaginationOptions
   ? JSON.parse(persistPaginationOptions) 
   : {
-      size: 10
+      size: 10,
+      pageNumber: 0
     } 
 
 const route = useRoute()
@@ -38,7 +39,7 @@ const pagination = reactive({
   first: false,
   totalPages: 0,
   totalElements: 0,
-  page: 0,
+  page: page.pageNumber,
   size: page.size
 })
 const filterBrands = reactive([...filter])
@@ -141,6 +142,7 @@ const handleChangePage = (pageNumber) => {
 
 const handleGoFirst = () => {
   pagination.page = 0
+  fetchSaleItems()
 }
 
 const handleGoLast = () => {
@@ -164,7 +166,8 @@ const saveSessionData = () => {
   }
   const filter = [...filterBrands]
   const page = {
-    size: pagination.size
+    pageNumber: pagination.page,
+    size: pagination.size,
   }
 
   sessionStorage.setItem('sortOptions', JSON.stringify(sort))
@@ -189,18 +192,19 @@ const setNaviagatedPage = () => {
 }
 
 watch(()=> pagination.page, () => {
-  setNaviagatedPage()
+  // setNaviagatedPage()
+  saveSessionData()
   fetchSaleItems()
 })
 
 watch([()=> pagination.size, filterBrands, sortOptions], () => {
-  saveSessionData()
   pagination.page = 0
+  saveSessionData()
   fetchSaleItems()
 })
 
 onMounted(async () => {
-  navigateToSelectedPage()
+  // navigateToSelectedPage()
   await fetchBrands()
   await fetchSaleItems()
 })
@@ -221,20 +225,28 @@ const isShowBrandFilters = ref(false)
     </div>
     <!-- Filtering & Sorting-->
     <div class="p-3 rounded-xl mb-4 bg-white">
-      <div class="flex">
-        <!-- Filter -->
+      <div class="flex items-start">
+        <!-- Filter Brands -->
         <div class="flex-2">
-          <div class="flex gap-1 relative">
-            <button @click="isShowBrandFilters = !isShowBrandFilters" 
-              class="itbms-brand-filter itbms-brand-filter-button cursor-pointer p-2 hover:bg-neutral-200 transition-all duration-300 rounded">
+          <div class="flex items-start gap-1 relative">
+            <div @click="isShowBrandFilters = !isShowBrandFilters" 
+              class="itbms-brand-filter itbms-brand-filter-button flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer min-w-36 rounded px-3 py-2 gap-2"
+            >
               <ListFilterPlus />
-            </button>
+              <p v-if="filterBrands.length === 0" class="text-neutral-400">Filter by brand(s)</p>
+              <div class="flex flex-wrap gap-3" v-if="filterBrands.length > 0">
+                <Button v-for="brand in filterBrands" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
+                  <p class="">{{ brand }}</p>
+                  <X class="size-4" />
+                </Button>
+              </div>
+            </div>
             <Button :class-name="'itbms-brand-filter-clear'" :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearBrandFilter" >clear</Button>
           </div>
-          <div v-if="isShowBrandFilters" class="z-10 absolute border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-8 grid grid-cols-5">
+          <div v-if="isShowBrandFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-40 overflow-y-scroll">
             <div v-for="brand in brands" class="flex items-center gap-2">
-              <input type="checkbox" class="size-5" :checked="filterBrands.includes(brand.name)" @click="() => handleAddFilterByBrands(brand.name)">
-              <label class="itbms-filter-item">{{ brand.name }}</label>
+              <input type="checkbox" class=" size-5" @click="() => handleAddFilterByBrands(brand.name)" :checked="filterBrands.includes(brand.name)" >
+              <label class="itbms-filter-item" @click="() => handleAddFilterByBrands(brand.name)">{{ brand.name }}</label>
             </div>
           </div>
         </div>
@@ -270,13 +282,6 @@ const isShowBrandFilters = ref(false)
           </div>
         </div> 
       </div>
-
-      <div class="flex flex-wrap gap-3 p-3" v-if="filterBrands.length > 0">
-        <Button v-for="brand in filterBrands" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
-          <p class="">{{ brand }}</p>
-          <X class="size-4" />
-        </Button>
-      </div>
     </div>
 
     <!-- Loading -->
@@ -295,12 +300,11 @@ const isShowBrandFilters = ref(false)
         <CardSaleItem v-for="saleItem in saleitems" 
           :key="saleItem.id" 
           :item="saleItem" 
-          :query="`fromPage=${pagination.page + 1}`"
         />
       </div>
       
       <!-- Pagination -->
-      <div class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold">
+      <div v-show="paginatedPages.length > 1" class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold">
         <button @click="handleGoFirst" class='itbms-page-first paginationBtn !px-4' :disabled="pagination.first">
           First
         </button>

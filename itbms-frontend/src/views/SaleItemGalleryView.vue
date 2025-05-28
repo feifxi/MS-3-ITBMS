@@ -138,11 +138,11 @@ const handleSortDesc = () => {
 // Pagination
 const handleChangePage = (pageNumber) => {
   pagination.page = pageNumber
+  fetchSaleItems()
 }
 
 const handleGoFirst = () => {
   pagination.page = 0
-  fetchSaleItems()
 }
 
 const handleGoLast = () => {
@@ -233,7 +233,7 @@ const isShowBrandFilters = ref(false)
               class="itbms-brand-filter itbms-brand-filter-button flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer min-w-36 rounded px-3 py-2 gap-2"
             >
               <ListFilterPlus />
-              <p v-if="filterBrands.length === 0" class="text-neutral-400">Filter by brand(s)</p>
+              <p v-if="filterBrands.length === 0" class="text-rose-300">Filter by brand(s)</p>
               <div class="flex flex-wrap gap-3" v-if="filterBrands.length > 0">
                 <Button v-for="brand in filterBrands" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
                   <p class="">{{ brand }}</p>

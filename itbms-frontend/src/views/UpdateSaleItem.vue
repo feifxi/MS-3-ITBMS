@@ -59,9 +59,9 @@ const fieldIntegrity = {
     },
     'description': {
         checkConstraint: (data) => {
-            return 0 < data.length && data.length < 65535
+            return 0 < data.length && data.length < 16385
         },
-        errorMessage: 'Description must be 1-65,535 characters long.', 
+        errorMessage: 'Description must be 1-16,384 characters long.', 
     },
     'ramGb': {
         checkConstraint: (data) => {

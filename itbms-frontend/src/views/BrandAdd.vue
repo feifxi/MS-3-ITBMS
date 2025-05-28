@@ -40,19 +40,7 @@ const submitBrand = async () => {
 const cancelEdit = () => {
   router.push('/brands')
 }
-// const isFormValid = computed(() => {
-//   return newBrand.value.name.trim() !== ''
-// })
 
-
-// watch(newBrand.value, () => {
-//   console.log(newBrand.value)
-// })
-
-
-
-
-///////////////////////////////////////////////////////////////
 const currentFocusField = ref(null)
 const isFormValid = ref(false)
 const errorFormMessage = reactive({
@@ -60,7 +48,6 @@ const errorFormMessage = reactive({
   websiteUrl: '',
   countryOfOrigin: ''
 })
-let originalBrand
 
 const isValidUrl = (url) => {
   try {
@@ -75,21 +62,21 @@ const isValidUrl = (url) => {
 const fieldIntegrity = {
     'name': {
         checkConstraint: (data) => {
-            return 0 < data.length && data.length < 30
+            return 0 < data.length && data.length <= 30
         },
-        errorMessage: 'Name must be 1-30 characters long.', 
+        errorMessage: 'Brand name must be 1-30 characters long.', 
     },
     'websiteUrl': {
         checkConstraint: (data) => {
-            return 0 < data.length && isValidUrl(data)
+            return (data === null || data === '') || (0 < data.length && isValidUrl(data))
         },
-        errorMessage: 'Website must be only URL type.', 
+        errorMessage: 'Brand URL must be a valid URL or not specified.', 
     },
     'countryOfOrigin': {
         checkConstraint: (data) => {
-            return 0 < data.length && data.length < 80
+            return (data === null || data === '') || (0 < data.length && data.length <= 80)
         },
-        errorMessage: 'countryOfOrigin must be 1-80 characters long.', 
+        errorMessage: 'Brand country of origin must be 1-80 characters long or not specified.', 
     }
 }
 
@@ -102,13 +89,14 @@ const handleFocusOut = (e) => {
     if (typeof newBrand.value[currentField] === 'string') {
         newBrand.value[currentField] = newBrand.value[currentField].trim()
     }   
+    showErrorToForm()
     currentFocusField.value = null
 }
 
 const validateAllField = () => {
     let isValid = true
     for (const field in newBrand.value) {
-        if (!checkFieldIntegrity(field) || (JSON.stringify(newBrand.value) === originalBrand)){
+        if (!checkFieldIntegrity(field)){
             isValid = false
             break;
         }
@@ -124,17 +112,20 @@ const checkFieldIntegrity = (field) => {
     }
 } 
 
-
-watch(newBrand, () => {
-    // Show error message
+const showErrorToForm = () => {
     const field = currentFocusField.value
-    console.log(field)
     if (field) {
         // console.log(field)
         errorFormMessage[field] = checkFieldIntegrity(field) ? '' : fieldIntegrity[field]?.errorMessage
     }
-    // Disabled save button
-    validateAllField()
+}
+
+
+watch(newBrand, () => {
+  // Show error message
+  showErrorToForm()
+  // Disabled save button
+  validateAllField()
 }, { deep: true })
 
 </script>
@@ -163,7 +154,7 @@ watch(newBrand, () => {
             class="itbms-name w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 
             transition shadow-inner"
           />
-            <p class="text-red-500 pl-2">{{ errorFormMessage.name }}</p>
+            <p class="itbms-message text-red-500 pl-2">{{ errorFormMessage.name }}</p>
         </div>
 
         <!-- Website -->
@@ -179,7 +170,7 @@ watch(newBrand, () => {
             class="itbms-websiteUrl w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 
             focus:ring-purple-400 transition shadow-inner"
           />
-            <p class="text-red-500 pl-2">{{ errorFormMessage.websiteUrl }}</p>
+            <p class="itbms-message text-red-500 pl-2">{{ errorFormMessage.websiteUrl }}</p>
         </div>
 
         <!-- Is Active -->
@@ -201,7 +192,7 @@ watch(newBrand, () => {
             class="itbms-countryOfOrigin w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 
             focus:ring-rose-300 transition shadow-inner"
           />
-          <p class="text-red-500 pl-2">{{ errorFormMessage.countryOfOrigin }}</p>
+          <p class="itbms-message text-red-500 pl-2">{{ errorFormMessage.countryOfOrigin }}</p>
         </div>
 
         <!-- Buttons -->
@@ -217,10 +208,7 @@ watch(newBrand, () => {
           <Button
             type="submit"
             :disabled="isSubmitting || !isFormValid"
-            :class="['itbms-save-button disabled:hover:purple-400 bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]',
-            {
-              'cursor-not-allowed' : !isFormValid,
-            }]"
+            :class="['itbms-save-button disabled:from-pink-100 disabled:to-rose-200 disabled:cursor-not-allowed bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-purple-400 hover:to-purple-400 transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]']"
           >
             {{ isSubmitting ? "Saving..." : "Save" }}<PrinterCheck />
           </Button>

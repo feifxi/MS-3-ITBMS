@@ -11,7 +11,6 @@ import { PrinterCheck } from 'lucide-vue-next'
 const route = useRoute()
 const router = useRouter()
 const statusMessageStore = useStatusMessageStore()
-const websiteError = ref('') 
 const isValidUrl = (url) => {
   try {
     new URL(url)
@@ -20,7 +19,6 @@ const isValidUrl = (url) => {
     return false
   }
 }
-
 
 const brandId = route.params.id
 const originalBrand = ref(null)
@@ -33,7 +31,6 @@ const brand = ref({
 })
 const isLoading = ref(true)
 const isSubmitting = ref(false)
-const isModified = ref(false)
 
 const fetchBrand = async () => {
   try {
@@ -48,18 +45,6 @@ const fetchBrand = async () => {
   } finally {
     isLoading.value = false
   }
-}
-
-const validateForm = () => {
-  const hasChanged = JSON.stringify(brand.value).trim() !== originalBrand.value
-    if (!isValidUrl(brand.value.websiteUrl?.trim())) {
-    websiteError.value = 'Please enter a valid URL.'
-  } else {
-    websiteError.value = ''
-  }
-  isModified.value =
-    brand.value.name.trim() !== '' &&
-    hasChanged
 }
 
 const saveChanges = async () => {
@@ -91,10 +76,7 @@ const cancelEdit = () => {
   router.push('/brands')
 }
 
-watch(brand, validateForm, { deep: true })
-onMounted(fetchBrand)
 
-//////////////////////////////////////////////////////////////
 const currentFocusField = ref(null)
 const isFormValid = ref(false)
 const errorFormMessage = reactive({
@@ -107,21 +89,21 @@ const errorFormMessage = reactive({
 const fieldIntegrity = {
     'name': {
         checkConstraint: (data) => {
-            return 0 < data.length && data.length < 30
+            return 0 < data.length && data.length <= 30
         },
-        errorMessage: 'Name must be 1-30 characters long.', 
+        errorMessage: 'Brand name must be 1-30 characters long.', 
     },
     'websiteUrl': {
         checkConstraint: (data) => {
-            return 0 < data.length && isValidUrl(data)
+            return (data === null || data === '') || (0 < data.length && isValidUrl(data))
         },
-        errorMessage: 'Website must be only URL type.', 
+        errorMessage: 'Brand URL must be a valid URL or not specified.', 
     },
     'countryOfOrigin': {
         checkConstraint: (data) => {
-            return 0 < data.length && data.length < 80
+            return (data === null || data === '') || (0 < data.length && data.length <= 80)
         },
-        errorMessage: 'countryOfOrigin must be 1-80 characters long.', 
+        errorMessage: 'Brand country of origin must be 1-80 characters long or not specified.', 
     }
 }
 
@@ -134,13 +116,14 @@ const handleFocusOut = (e) => {
     if (typeof brand.value[currentField] === 'string') {
         brand.value[currentField] = brand.value[currentField].trim()
     }   
+    showErrorToForm()
     currentFocusField.value = null
 }
 
 const validateAllField = () => {
     let isValid = true
     for (const field in brand.value) {
-        if (!checkFieldIntegrity(field) || (JSON.stringify(brand.value) === originalBrand)){
+        if (!checkFieldIntegrity(field) || (JSON.stringify(brand.value) === originalBrand.value)){
             isValid = false
             break;
         }
@@ -156,17 +139,22 @@ const checkFieldIntegrity = (field) => {
     }
 } 
 
-watch(brand, () => {
-    // Show error message
+const showErrorToForm = () => {
     const field = currentFocusField.value
-    console.log(field)
     if (field) {
         // console.log(field)
         errorFormMessage[field] = checkFieldIntegrity(field) ? '' : fieldIntegrity[field]?.errorMessage
     }
-    // Disabled save button
-    validateAllField()
+}
+
+watch(brand, () => {
+  // Show error message
+  showErrorToForm()
+  // Disabled save button
+  validateAllField()
 }, { deep: true })
+
+onMounted(fetchBrand)
 
 </script>
 
@@ -204,7 +192,7 @@ watch(brand, () => {
             class="itbms-name w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 focus:ring-rose-400 
             transition shadow-inner"
           />
-          <p class="text-red-500 pl-2">{{ errorFormMessage.name }}</p>
+          <p class="itbms-message text-red-500 pl-2">{{ errorFormMessage.name }}</p>
         </div>
 
      <!-- Website URL -->
@@ -220,7 +208,7 @@ watch(brand, () => {
           class="itbms-websiteUrl w-full p-3 border border-purple-200 rounded-full bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-400
            transition shadow-inner"
           />
-          <p class="text-red-500 pl-2">{{ errorFormMessage.websiteUrl}}</p>
+          <p class="itbms-message text-red-500 pl-2">{{ errorFormMessage.websiteUrl}}</p>
         </div>
 
 
@@ -244,7 +232,7 @@ watch(brand, () => {
             class="itbms-countryOfOrigin w-full p-3 border border-pink-200 rounded-full bg-pink-50 focus:outline-none focus:ring-2 
             focus:ring-rose-300 transition shadow-inner"
           />
-          <p class="text-red-500 pl-2">{{ errorFormMessage.countryOfOrigin }}</p>
+          <p class="itbms-message text-red-500 pl-2">{{ errorFormMessage.countryOfOrigin }}</p>
         </div>
 
         <!-- Buttons -->
@@ -258,11 +246,8 @@ watch(brand, () => {
           </Button>
           <Button
             type="submit"
-            :disabled="!isModified || isSubmitting"
-            :class="['itbms-save-button bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full  hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]',
-            {
-              'cursor-not-allowed' : !isModified,
-            }]"
+            :disabled="isSubmitting || !isFormValid"
+            :class="['itbms-save-button disabled:from-pink-100 disabled:to-rose-200 disabled:cursor-not-allowed  bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full  hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,1)]']"
           >
             {{ isSubmitting ? "Saving..." : " Save" }}<PrinterCheck />
           </Button>

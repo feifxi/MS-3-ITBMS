@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .input {
-    @apply w-full py-1.5 px-3 pr-8 rounded-xl text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all min-w-40
+    @apply w-full py-1.5 px-3 pr-8 rounded-xl text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all min-w-20
 }
 
 .paginationBtn {

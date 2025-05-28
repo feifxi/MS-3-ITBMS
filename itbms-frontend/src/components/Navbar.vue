@@ -1,10 +1,11 @@
 <script setup>
+import { Menu } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router'
 </script>
 
 <template>
   <header class="sticky top-0 z-50 bg-gradient-to-r from-purple-500 to-rose-500 text-white">
-    <nav class="px-16">
+    <nav class="px-8 sm:px-16">
       <div class="container mx-auto px-4 py-3 flex items-center justify-between">
         <RouterLink to="/">
           <div class="flex items-center gap-2">
@@ -15,7 +16,7 @@ import { RouterLink } from 'vue-router'
           </div>
         </RouterLink>
 
-        <div class="flex items-center gap-4">
+        <div class="max-sm:hidden flex items-center gap-4">
           <div class="relative">
             <input 
               type="text" 
@@ -33,6 +34,9 @@ import { RouterLink } from 'vue-router'
           <button class="cursor-pointer w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
           </button>
+        </div>
+        <div class="sm:hidden">
+          <Menu />
         </div>
       </div>
     </nav>

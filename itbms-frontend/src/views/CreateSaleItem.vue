@@ -191,7 +191,7 @@ watch(saleItem, () => {
 
 
 <template>
-    <main class="px-16 py-8">
+    <main class="px-4 sm:px-16 py-8">
         <BreadCrumb :links="[
             { to: '/sale-items', label: 'Home' },
             { to: '#', label: 'New Sale Item' },

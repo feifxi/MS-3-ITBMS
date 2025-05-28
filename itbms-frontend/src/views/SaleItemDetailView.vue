@@ -78,7 +78,7 @@ onMounted(async () => {
       @confirm="confirmDelete"
       @cancel="showConfirmDialog = false"
     />
-    <main class="px-16 py-4">
+    <main class="px-4 sm:px-16 py-8">
       <BreadCrumb v-if="item" :links="[
         { to: { name: 'SaleItemGallery'}, label: 'Home' },
         { to: '#', label: `${item.model}` },

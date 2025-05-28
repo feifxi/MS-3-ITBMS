@@ -216,7 +216,7 @@ const isShowBrandFilters = ref(false)
 
 
 <template>
-  <main class="py-8 px-16 min-h-screen bg-gradient-to-br from-rose-50 to-purple-50">
+  <main class="py-8 px-4 sm:px-16 min-h-screen bg-gradient-to-br from-rose-50 to-purple-50">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">Sale Items</h2>
       <RouterLink to="/sale-items/add" >
@@ -225,15 +225,16 @@ const isShowBrandFilters = ref(false)
     </div>
     <!-- Filtering & Sorting-->
     <div class="p-3 rounded-xl mb-4 bg-white">
-      <div class="flex items-start">
+      <div class="flex max-md:flex-col gap-5 md:items-start">
         <!-- Filter Brands -->
         <div class="flex-2">
           <div class="flex items-start gap-1 relative">
             <div @click="isShowBrandFilters = !isShowBrandFilters" 
-              class="itbms-brand-filter itbms-brand-filter-button flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer min-w-36 rounded px-3 py-2 gap-2"
+              class="itbms-brand-filter itbms-brand-filter-button flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer lg:min-w-100 rounded px-3 py-2 gap-2"
             >
               <ListFilterPlus />
               <p v-if="filterBrands.length === 0" class="text-rose-300">Filter by brand(s)</p>
+              <!-- Loop selected Brand -->
               <div class="flex flex-wrap gap-3" v-if="filterBrands.length > 0">
                 <Button v-for="brand in filterBrands" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
                   <p class="">{{ brand }}</p>
@@ -243,6 +244,7 @@ const isShowBrandFilters = ref(false)
             </div>
             <Button :class-name="'itbms-brand-filter-clear'" :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearBrandFilter" >clear</Button>
           </div>
+          <!-- Dropdown -->
           <div v-if="isShowBrandFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-40 overflow-y-scroll">
             <div v-for="brand in brands" class="flex items-center gap-2">
               <input type="checkbox" class=" size-5" @click="() => handleAddFilterByBrands(brand.name)" :checked="filterBrands.includes(brand.name)" >
@@ -254,7 +256,7 @@ const isShowBrandFilters = ref(false)
         <div class="flex-1 flex justify-end gap-3">
           <div class="flex gap-2 items-center">
             <h3>show</h3>
-            <select v-model="pagination.size" class="itbms-page-size input !w-auto">
+            <select v-model="pagination.size" class="itbms-page-size input sm:!w-30">
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="20">20</option>

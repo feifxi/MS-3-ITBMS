@@ -5,6 +5,8 @@ import CardItemList from '@/components/CardItemList.vue'
 import Button from '@/components/Button.vue'
 
 import { useRouter } from 'vue-router'
+import {CirclePlus,Package,ChartNoAxesGantt} from 'lucide-vue-next';
+
 
 const router = useRouter()
 
@@ -34,18 +36,32 @@ function handleDeleted(deletedItemId) {
 
 </script>
 
+
 <template>
   <main class="p-4 md:p-8 max-w-7xl mx-auto">
     <!-- Header Section -->
-    <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
-      <h1 class="text-2xl md:text-3xl font-bold text-gray-800">📦 All Sale Items</h1>
-      <div class="flex gap-2 flex-wrap">
-        <RouterLink to="/sale-items/add" >
-          <Button variant="primary" class="itbms-sale-item-add ">➕ Add Sale Item</Button>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <!-- Heading -->
+      <h1 class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-gray-800 justify-center md:justify-start">
+        <Package />
+        <span>All Brands</span>
+      </h1>
+
+      <!-- Buttons -->
+      <div class="flex gap-2 flex-wrap justify-center md:justify-end">
+        <RouterLink to="/sale-items/add">
+          <Button variant="primary" class="itbms-sale-item-add">
+            <CirclePlus />
+            Add Sale Item
+          </Button>
         </RouterLink>
-        <Button @click="goToManageBrand" variant="secondary" class="itbms-manage-brand ">⚙️ Manage Brand</Button>
+        <Button @click="goToManageBrand" variant="secondary" class="itbms-manage-brand">
+          <ChartNoAxesGantt />
+          Manage Brand
+        </Button>
       </div>
     </div>
+
 
     <!-- Loading / Empty / Table -->
     <div v-if="isLoading" class="text-center text-blue-500 text-xl animate-pulse">Loading...</div>
@@ -63,6 +79,12 @@ function handleDeleted(deletedItemId) {
         <div>Price</div>
         <div class="col-span-2">Actions</div>
       </div>
+
+      <!-- Mobile Header -->
+      <div class="md:hidden bg-gradient-to-r from-rose-200 to-rose-100 p-4 font-semibold text-gray-700 text-center">
+        Sale Items ({{ saleItems.length }})
+      </div>
+      
 
       <!-- Sale Item Rows -->
       <CardItemList

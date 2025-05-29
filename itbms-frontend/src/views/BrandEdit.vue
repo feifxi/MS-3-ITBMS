@@ -167,7 +167,7 @@ onMounted(fetchBrand)
       class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-10 w-full max-w-2xl border-4 border-pink-100 backdrop-blur-md"
     >
       <h1
-        class="text-4xl font-extrabold text-rose-500 mb-10 text-center tracking-widest drop-shadow-sm"
+        class="text-2xl sm:text-4xl font-extrabold text-rose-500 mb-8 sm:mb-10 text-center tracking-widest drop-shadow-sm"
       > 
         <span class="inline-flex items-center gap-2"><PencilRuler class="w-6 h-6" />Edit Brand ID: {{ brandId }}<PencilRuler  class="w-6 h-6" />
           </span>
@@ -236,10 +236,10 @@ onMounted(fetchBrand)
         </div>
 
         <!-- Buttons -->
-        <div class="flex justify-between pt-6">
+        <div class="flex jflex-col sm:flex-row justify-between gap-4 pt-6">
           <Button
             type="button"
-            class="itbms-cancel-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] "
+            class="itbms-cancel-button sm:w-auto text-sm sm:text-base bg-white text-gray-700 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] "
             @click="cancelEdit"
           >
              <X class="w-5 h-5 text-red-500 mr-1" /> Cancel
@@ -247,7 +247,7 @@ onMounted(fetchBrand)
           <Button
             type="submit"
             :disabled="isSubmitting || !isFormValid"
-            :class="['itbms-save-button disabled:from-pink-100 disabled:to-rose-200 disabled:cursor-not-allowed  bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full  hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,1)]']"
+            :class="['itbms-save-button sm:w-auto order-2 sm:order-none text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-2.5 disabled:from-pink-100 disabled:to-rose-200 disabled:cursor-not-allowed  bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 rounded-full hover:from-purple-400 hover:to-purple-400 shadow-lg transition font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,1)]']"
           >
             {{ isSubmitting ? "Saving..." : " Save" }}<PrinterCheck />
           </Button>

@@ -133,7 +133,7 @@ watch(newBrand, () => {
 <template>
   <div class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100 flex justify-center items-center p-6">
     <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-10 w-full max-w-2xl border-4 border-pink-100 backdrop-blur-md">
-      <h2 class="text-4xl font-extrabold text-rose-500 mb-10 text-center tracking-widest drop-shadow-sm">
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-rose-500 mb-8 sm:mb-10 text-center tracking-widest drop-shadow-sm">
           <span class="inline-flex items-center gap-2"><Flower class="w-6 h-6" />Add New Brand<Flower class="w-6 h-6" />
           </span>
       </h2>
@@ -196,21 +196,21 @@ watch(newBrand, () => {
         </div>
 
         <!-- Buttons -->
-        <div class="flex justify-between pt-6">
+        <div class="flex flex-row justify-between sm:justify-between pt-6 gap-4">
           <Button
             type="button"
-            class="itbms-cancel-button bg-white text-gray-700 px-6 py-2.5 rounded-full border border-gray-300 hover:bg-gray-100
+            class="itbms-cancel-button  order-1 sm:order-none text-sm sm:text-base bg-white text-gray-700 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full border border-gray-300 hover:bg-gray-100
              transition font-medium shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]"
             @click="cancelEdit"
           >
-            <X class="w-5 h-5 text-red-500 mr-1" /> Cancel
+            <X class="w-5 h-4 sm:w-5 sm:h-5 text-red-500 mr-1" /> Cancel
           </Button>
           <Button
             type="submit"
             :disabled="isSubmitting || !isFormValid"
-            :class="['itbms-save-button disabled:from-pink-100 disabled:to-rose-200 disabled:cursor-not-allowed bg-gradient-to-r from-pink-400 to-rose-400 text-white px-6 py-2.5 rounded-full hover:from-purple-400 hover:to-purple-400 transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]']"
+            :class="['itbms-save-button order-2 sm:order-none text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-2.5 disabled:from-pink-100 disabled:to-rose-200 disabled:cursor-not-allowed bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-full hover:from-purple-400 hover:to-purple-400 transition font-bold shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]']"
           >
-            {{ isSubmitting ? "Saving..." : "Save" }}<PrinterCheck />
+            {{ isSubmitting ? "Saving..." : "Save" }}<PrinterCheck class="w-4 h-4 sm:w-5 sm:h-5 ml-1" />
           </Button>
 
         </div>

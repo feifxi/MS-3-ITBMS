@@ -124,9 +124,9 @@
     <!-- Categories -->
     <div class="container mx-auto px-4 py-8">
       <h2 class="text-xl font-bold mb-4">Browse Categories</h2>
-      <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+      <div class="flex flex-wrap gap-4 pb-4 scrollbar-hide">
         <div v-for="category in categories" :key="category.id" 
-          class="flex-shrink-0 flex flex-col items-center justify-center p-4 rounded-xl bg-white shadow-sm border border-gray-100 w-24 h-24 hover:shadow-md transition-all cursor-pointer">
+          class="flex flex-col items-center justify-center p-4 rounded-xl bg-white shadow-sm border border-gray-100 w-24 h-24 hover:shadow-md transition-all cursor-pointer">
           <div :class="`text-${category.color}-500`">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
           </div>

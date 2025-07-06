@@ -18,6 +18,10 @@ services:
     build:
       context: ./itbms-backend
       dockerfile: dockerfile
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - "8080:8080"
     networks:
@@ -30,7 +34,7 @@ services:
     container_name: itbms-db-container
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_general_ci
       LANG: C.UTF-8
@@ -50,4 +54,4 @@ networks:
   itbms-network:
 
 volumes:
-  itbms-data:
+  itbms-mysql-data:

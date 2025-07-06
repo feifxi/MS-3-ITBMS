@@ -1,6 +1,11 @@
 package sit.int204.itbmsbackend.dtos.brand;
 
+import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -8,10 +13,6 @@ import lombok.Getter;
 import lombok.Setter;
 import sit.int204.itbmsbackend.entities.SaleItem;
 import sit.int204.itbmsbackend.utils.Utils;
-
-import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Data
 @Getter

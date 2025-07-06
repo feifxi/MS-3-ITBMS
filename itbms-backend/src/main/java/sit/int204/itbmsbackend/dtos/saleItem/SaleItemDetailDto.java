@@ -1,12 +1,13 @@
 package sit.int204.itbmsbackend.dtos.saleItem;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import sit.int204.itbmsbackend.entities.Brand;
-
-import java.math.BigDecimal;
 
 @Data
 @Getter

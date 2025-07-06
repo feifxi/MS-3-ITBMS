@@ -245,7 +245,7 @@ const isShowBrandFilters = ref(false)
             <Button :class-name="'itbms-brand-filter-clear'" :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearBrandFilter" >clear</Button>
           </div>
           <!-- Dropdown -->
-          <div v-if="isShowBrandFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-40 overflow-y-scroll">
+          <div v-if="isShowBrandFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-100 overflow-y-scroll">
             <div v-for="brand in brands" class="flex items-center gap-2">
               <input type="checkbox" class=" size-5" @click="() => handleAddFilterByBrands(brand.name)" :checked="filterBrands.includes(brand.name)" >
               <label class="itbms-filter-item" @click="() => handleAddFilterByBrands(brand.name)">{{ brand.name }}</label>

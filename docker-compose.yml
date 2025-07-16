@@ -6,8 +6,6 @@ services:
       dockerfile: dockerfile
     ports:
       - "80:80"
-    environment:
-      - NODE_ENV=production
     networks:
       - itbms-network
     depends_on:

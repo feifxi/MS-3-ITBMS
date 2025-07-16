@@ -41,7 +41,7 @@ services:
     networks:
       - itbms-network
     volumes:
-      - itbms-data:/var/lib/mysql
+      - itbms-mysql-data:/var/lib/mysql
       - ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./itbms-database/insert.sql:/app/insert.sql
     healthcheck:

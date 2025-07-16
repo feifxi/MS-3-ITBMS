@@ -1,7 +1,12 @@
 createdb: 
-	docker compose -f itbms-database/docker-compose-devdb.yml up -d
+	docker run \
+	--name itbms-dev-db \
+	-e MYSQL_ROOT_PASSWORD=rootpass \
+	-v ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql \
+	-p 3306:3306 \
+	-d mysql:latest
 
-dropdb:
-	docker compose -f itbms-database/docker-compose-devdb.yml down -v
+rmdb:
+	docker rm -f itbms-dev-db
 
-.PHONY: createdb dropdb
+.PHONY: createdb rmdb 

@@ -2,23 +2,15 @@ package sit.int204.itbmsbackend.entities;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -64,11 +56,28 @@ public class SaleItem {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @CreationTimestamp
-    @Column(name = "createdOn", updatable = false, nullable = false)
-    private Instant createdOn;
+//    @CreationTimestamp
+//    @Column(name = "createdOn", updatable = false, nullable = false)
+//    private Instant createdOn;
+//
+//    @UpdateTimestamp
+//    @Column(name = "updatedOn", nullable = false)
+//    private Instant updatedOn;
+//
 
-    @UpdateTimestamp
-    @Column(name = "updatedOn", nullable = false)
-    private Instant updatedOn;
+    @Column(name = "createdOn")
+    private LocalDateTime createdOn;
+
+    @Column(name = "updatedOn")
+    private LocalDateTime updatedOn;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdOn = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedOn = LocalDateTime.now();
+    }
 }

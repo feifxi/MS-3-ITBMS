@@ -30,6 +30,13 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_items` (
     FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_item_images` (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    image_name TEXT NOT NULL,
+    sale_item_id INT NOT NULL,
+    FOREIGN KEY (sale_item_id) REFERENCES sale_items(id) ON DELETE CASCADE
+);
+
 INSERT INTO `ms3_itbms_db`.`brands` (`id`, `name`, `website_url`, `is_active`,`country_of_origin`) VALUES
 (1,"Samsung","https://www.samsung.com",1, "South Korea"),
 (2,"Apple","https://www.apple.com",1, "United States"),

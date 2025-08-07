@@ -30,8 +30,11 @@ public class SaleItemControllerV2 {
             @RequestParam(required = true) Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "createdOn") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection
-    ) {
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(defaultValue = "1") Integer priceLower,
+            @RequestParam(defaultValue = "1") Integer priceUpper,
+            @RequestParam(required = false) List<String> storageSize
+            ) {
 //        System.out.println(filterBrands == null ? "null" : filterBrands.toString());
         return ResponseEntity.ok(saleItemService.findAll(filterBrands, page, size, sortField, sortDirection));
     }

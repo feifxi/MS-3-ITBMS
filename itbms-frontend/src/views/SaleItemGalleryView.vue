@@ -6,61 +6,91 @@ import Button from '@/components/Button.vue'
 import { ArrowDownWideNarrow, ArrowUpWideNarrow, List, ListFilterPlus, X } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 
-const persistSortOptions = sessionStorage.getItem('sortOptions')
-const persistFilterOptions = sessionStorage.getItem('filterOptions')
-const persistPaginationOptions = sessionStorage.getItem('paginationOptions')
+const route = useRoute()
+const router = useRouter()
 
-const sort = persistSortOptions 
-  ? JSON.parse(persistSortOptions) 
+const getSessionStorageItem = (key) => {
+  return sessionStorage.getItem(key)
+}
+
+// Retrive saved data from session storage
+const persistFilterPriceOptionJSON = getSessionStorageItem("filterPriceOption")
+const persistFilterPriceRangeOption = persistFilterPriceOptionJSON
+  ? JSON.parse(persistFilterPriceOptionJSON) 
+  : {
+      lower: 0,
+      upper: 5000
+    }
+
+const persistFilterStorageSizeOptionJOSN = getSessionStorageItem("filterStorageSizeOption")
+const persistFilterStorageSizeOption = persistFilterStorageSizeOptionJOSN
+  ? JSON.parse(persistFilterStorageSizeOptionJOSN) 
+  : []
+
+const persistFilterBrandsOptionJSON = getSessionStorageItem("filterBrandsOption")
+const persistFilterBrandsOption = persistFilterBrandsOptionJSON
+  ? JSON.parse(persistFilterBrandsOptionJSON) 
+  : []
+
+const persistSortOptionJSON = getSessionStorageItem("sortOption")
+const persistSortOption = persistSortOptionJSON  
+  ? JSON.parse(persistSortOptionJSON) 
   : {
       sortField: 'createdOn',
       sortDirection: null
     }
-const filter = persistFilterOptions
-  ? JSON.parse(persistFilterOptions) 
-  : []
 
-const page = persistPaginationOptions
-  ? JSON.parse(persistPaginationOptions) 
+const persistPaginationOptionJSON = getSessionStorageItem("paginationOption")
+const persistPaginationOption = persistPaginationOptionJSON 
+  ? JSON.parse(persistPaginationOptionJSON ) 
   : {
+      pageNumber: 0,
       size: 10,
-      pageNumber: 0
     } 
 
-const route = useRoute()
-const router = useRouter()
+
+const isShowBrandFilters = ref(false)
+const isShowStorageFilters = ref(false)
 
 const saleitems = ref([])
 const brands = ref([])
+const storageSizes = ref([])
 const loading = ref(false)
+
+// Set the saved data to the current state
+const filterBrands = reactive([...persistFilterBrandsOption])
+
+const filterPriceRange = reactive({
+  lower: persistFilterPriceRangeOption.lower,
+  upper: persistFilterPriceRangeOption.upper,
+})
+
+const filterStorageSizes = reactive([...persistFilterStorageSizeOption])
+
+const sortOption = reactive({
+  sortField: persistSortOption.sortField,
+  sortDirection: persistSortOption.sortDirection,
+})
 
 const pagination = reactive({
   last: false,
   first: false,
   totalPages: 0,
   totalElements: 0,
-  page: page.pageNumber,
-  size: page.size
-})
-const filterBrands = reactive([...filter])
-const sortOptions = reactive({
-  sortField: sort.sortField,
-  sortDirection: sort.sortDirection,
+  page: persistPaginationOption.pageNumber,
+  size: persistPaginationOption.size
 })
 
 const paginatedPages = computed(() => {
   const current = pagination.page
   const total = pagination.totalPages
   const maxVisible = 10
-
   let start = Math.max(current - Math.floor(maxVisible / 2), 1)
   let end = start + maxVisible - 1
-
   if (end > total) {
     end = total
     start = Math.max(end - maxVisible + 1, 1)
   }
-
   return Array.from({ length: end - start + 1 }, (_, i) => start + i)
 })
 
@@ -68,7 +98,7 @@ const paginatedPages = computed(() => {
 const fetchSaleItems = async () => {
   loading.value = true
   try {
-      const res = await fetchAllSaleItemsV2(pagination.page, pagination.size, filterBrands, sortOptions.sortField, sortOptions.sortDirection)
+      const res = await fetchAllSaleItemsV2(pagination.page, pagination.size, filterBrands, sortOption.sortField, sortOption.sortDirection)
       if (!res.ok) throw new Error("Something went wrong")
       const data = await res.json()
       const { content, first, last, totalPages } = data
@@ -76,10 +106,11 @@ const fetchSaleItems = async () => {
       pagination.first = first
       pagination.last = last
       pagination.totalPages = totalPages
-    } catch (err) {
-      console.error('Failed to fetch item: ', err)
-    } 
+  } catch (err) {
+    console.error('Failed to fetch item: ', err)
+  } finally {
     loading.value = false
+  }
 }
 
 const fetchBrands = async () => {
@@ -90,10 +121,26 @@ const fetchBrands = async () => {
       const brandData = await res.json()
       const sortedBrand = brandData.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
       brands.value = sortedBrand
-    } catch (err) {
+  } catch (err) {
       console.error('Failed to fetch brand: ', err)
-    } 
+  } finally {
     loading.value = false
+  }
+}
+
+const fetchStorageSize = async () => {
+  loading.value = true
+  try {
+    const MOCK_STORAGE = [8, 32 ,124, 256]
+      const res = await fetchAllBrands()
+      if (!res.ok) throw new Error("Something went wrong")
+      const brandData = await res.json()
+      storageSizes.value = MOCK_STORAGE
+  } catch (err) {
+      console.error('Failed to fetch brand: ', err)
+  } finally {
+    loading.value = false
+  }
 }
 
 // Filtering
@@ -111,27 +158,35 @@ const handleRemoveBrandFilter = (brandName) => {
   filterBrands.splice(removeIndex, 1)
 }
 
-const handleClearBrandFilter = () => {
+const handlePriceRangeChange = () => {
+
+}
+
+const handleAddFilterByStorageSize = () => {
+  
+}
+
+const handleClearFilter = () => {
   filterBrands.splice(0, filterBrands.length)
 }
 
 // Sorting 
 const handleSortDefault = () => {
   pagination.page = 0
-  sortOptions.sortField = 'createdOn'
-  sortOptions.sortDirection = null
+  sortOption.sortField = 'createdOn'
+  sortOption.sortDirection = null
 }
 
 const handleSortAsc = () => {
   pagination.page = 0
-  sortOptions.sortField = 'brand.name'
-  sortOptions.sortDirection = 'asc'
+  sortOption.sortField = 'brand.name'
+  sortOption.sortDirection = 'asc'
 }
 
 const handleSortDesc = () => {
   pagination.page = 0
-  sortOptions.sortField = 'brand.name'
-  sortOptions.sortDirection = 'desc'
+  sortOption.sortField = 'brand.name'
+  sortOption.sortDirection = 'desc'
 }
 
 
@@ -160,57 +215,36 @@ const handleClickPrev = () => {
 }
 
 const saveSessionData = () => {
-  const sort = {
-    sortField: sortOptions.sortField,
-    sortDirection: sortOptions.sortDirection
-  }
-  const filter = [...filterBrands]
-  const page = {
+  sessionStorage.setItem('sortOption', JSON.stringify({
+    sortField: sortOption.sortField,
+    sortDirection: sortOption.sortDirection
+  }))
+  sessionStorage.setItem('filterBrandsOption', JSON.stringify(
+    [...filterBrands]
+  ))
+
+  sessionStorage.setItem('paginationOption', JSON.stringify({
     pageNumber: pagination.page,
     size: pagination.size,
-  }
-
-  sessionStorage.setItem('sortOptions', JSON.stringify(sort))
-  sessionStorage.setItem('filterOptions', JSON.stringify(filter))
-  sessionStorage.setItem('paginationOptions', JSON.stringify(page))
-
-  // console.log('Save : ', sort, filter, page)
+  }))
 }
 
-const navigateToSelectedPage = () => {
-  const { page } = route.query
-  if (!page) {
-    pagination.page = 0
-    setNaviagatedPage()
-  } else {
-    pagination.page = page-1 
-  }
-}
-
-const setNaviagatedPage = () => {
-  router.push({ query: { page: pagination.page+1  }})
-}
+onMounted(async () => {
+  await fetchBrands()
+  await fetchSaleItems()
+  await fetchStorageSize()
+})
 
 watch(()=> pagination.page, () => {
-  // setNaviagatedPage()
   saveSessionData()
   fetchSaleItems()
 })
 
-watch([()=> pagination.size, filterBrands, sortOptions], () => {
+watch([()=> pagination.size, filterBrands, sortOption], () => {
   pagination.page = 0
   saveSessionData()
   fetchSaleItems()
 })
-
-onMounted(async () => {
-  // navigateToSelectedPage()
-  await fetchBrands()
-  await fetchSaleItems()
-})
-
-const isShowBrandFilters = ref(false)
-
 
 </script>
 
@@ -223,15 +257,14 @@ const isShowBrandFilters = ref(false)
         <Button variant="primary" class="itbms-sale-item-add ">➕ Add Sale Item</Button>
       </RouterLink>
     </div>
-    <!-- Filtering & Sorting-->
+
+    <!-- Filter Brands & Price & Storage Size-->
     <div class="p-3 rounded-xl mb-4 bg-white">
-      <div class="flex max-md:flex-col gap-5 md:items-start">
+      <div class="flex max-md:flex-col gap-5">
         <!-- Filter Brands -->
-        <div class="flex-2">
+        <div class="relative">
           <div class="flex items-start gap-1 relative">
-            <div @click="isShowBrandFilters = !isShowBrandFilters" 
-              class="itbms-brand-filter itbms-brand-filter-button flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer lg:min-w-100 rounded px-3 py-2 gap-2"
-            >
+            <div @click="isShowBrandFilters = !isShowBrandFilters" class="itbms-brand-filter itbms-brand-filter-button flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer rounded px-3 py-2 gap-2">
               <ListFilterPlus />
               <p v-if="filterBrands.length === 0" class="text-rose-300">Filter by brand(s)</p>
               <!-- Loop selected Brand -->
@@ -242,9 +275,9 @@ const isShowBrandFilters = ref(false)
                 </Button>
               </div>
             </div>
-            <Button :class-name="'itbms-brand-filter-clear'" :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearBrandFilter" >clear</Button>
           </div>
-          <!-- Dropdown -->
+
+          <!-- Dropdown Brands Filter -->
           <div v-if="isShowBrandFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-100 overflow-y-scroll">
             <div v-for="brand in brands" class="flex items-center gap-2">
               <input type="checkbox" class=" size-5" @click="() => handleAddFilterByBrands(brand.name)" :checked="filterBrands.includes(brand.name)" >
@@ -252,8 +285,42 @@ const isShowBrandFilters = ref(false)
             </div>
           </div>
         </div>
-        <!-- Size & Sorting -->
-        <div class="flex-1 flex justify-end gap-3">
+
+        <!-- Filter Storage Size -->
+        <div class="relative">
+          <div class="flex items-start gap-1 relative">
+            <div @click="isShowStorageFilters = !isShowStorageFilters" class="itbms-brand-filter itbms-brand-filter-button flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer rounded px-3 py-2 gap-2">
+              <ListFilterPlus />
+              <p v-if="filterStorageSizes.length === 0" class="text-rose-300">Filter Storage Size</p>
+              <!-- Loop selected storage size -->
+              <div class="flex flex-wrap gap-3" v-if="filterStorageSizes.length > 0">
+                <Button v-for="storageSize in filterStorageSizes" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
+                  <p class="">{{ storageSize }}</p>
+                  <X class="size-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dropdown storage size Filter -->
+          <div v-if="isShowStorageFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-100 overflow-y-scroll">
+            <div v-for="storageSize in storageSizes" class="flex items-center gap-2">
+              <input type="checkbox" class=" size-5" @click="() => handleAddFilterByStorageSize(storageSize)" :checked="filterBrands.includes(storageSize)" >
+              <label class="itbms-filter-item" @click="() => handleAddFilterByStorageSize(storageSize)">{{ storageSize }}</label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <Button :class-name="'itbms-brand-filter-clear'" :variant="filterBrands.length > 0 ? 'primary' :'ghost'" @click="handleClearFilter" >clear</Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Size & Sorting Option -->
+    <div class="p-3 rounded-xl mb-4 bg-white">
+      <div class="flex max-md:flex-col gap-5 md:items-start">       
+        <div class="flex-1 flex justify-start gap-3">
           <div class="flex gap-2 items-center">
             <h3>show</h3>
             <select v-model="pagination.size" class="itbms-page-size input sm:!w-30">
@@ -265,19 +332,19 @@ const isShowBrandFilters = ref(false)
 
           <div class="flex" >
             <button @click="handleSortDefault" :class="['itbms-brand-none paginationBtn !bg-rose-50 border border-white', {
-              '!bg-rose-200': sortOptions.sortField === 'createdOn' 
+              '!bg-rose-200': sortOption.sortField === 'createdOn' 
               }]">
               <List />
             </button>
 
             <button @click="handleSortAsc" :class="['itbms-brand-asc paginationBtn !bg-rose-50 border border-white', {
-              '!bg-rose-200': sortOptions.sortDirection === 'asc' && sortOptions.sortField === 'brand.name' 
+              '!bg-rose-200': sortOption.sortDirection === 'asc' && sortOption.sortField === 'brand.name' 
               }]">
               <ArrowUpWideNarrow />
             </button>
 
             <button @click="handleSortDesc" :class="['itbms-brand-desc paginationBtn !bg-rose-50 border border-white', { 
-              '!bg-rose-200': sortOptions.sortDirection === 'desc' && sortOptions.sortField === 'brand.name' 
+              '!bg-rose-200': sortOption.sortDirection === 'desc' && sortOption.sortField === 'brand.name' 
               }]">
               <ArrowDownWideNarrow />
             </button>

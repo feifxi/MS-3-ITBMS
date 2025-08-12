@@ -146,6 +146,9 @@ const validateAllField = () => {
             break;
         }
     }
+    if (saleItemImageFiles.value.length == 0) {
+        isValid = false;
+    }
     isFormValid.value = isValid
 }
 
@@ -166,7 +169,7 @@ const submitForm = async (e) => {
         formData.append("brandId", saleItem.brand.id)
         // parse image of saleitem to formdata
         for (const image of saleItemImageFiles.value) {
-            formData.append("pictures", image.file);
+            formData.append("images", image.file);
         }
         // formData.forEach((value, key) => {
         //   console.log(key, " : ", value);
@@ -255,7 +258,7 @@ onMounted(() => {
     fetchBrands()
 })
 
-watch(saleItem, () => {
+watch([saleItem, saleItemImageFiles], () => {
     showErrorToForm()
     // Disabled save button
     validateAllField()
@@ -322,7 +325,7 @@ watch(saleItem, () => {
                                 <ChevronDown v-if="index != saleItemImageFiles.length - 1"  class="cursor-pointer" @click="() => handleChangeOrderDown(index)"/>
                             </div>
                         </div>
-                     </div>
+                    </div>
                 </div>
 
                 <div class="flex-1 p-3">

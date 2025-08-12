@@ -1,6 +1,9 @@
 package sit.int204.itbmsbackend.dtos.saleItem;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -8,6 +11,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import sit.int204.itbmsbackend.entities.Brand;
+import sit.int204.itbmsbackend.entities.SaleItemImage;
 
 @Data
 @Getter
@@ -24,6 +28,13 @@ public class SaleItemDetailDto {
     private Integer quantity;
     @JsonIgnore
     private Brand brand;
+
+    @JsonIgnore
+    private List<SaleItemImage> saleItemImages = new ArrayList<>();
+
+    public List<String> getImageNames() {
+        return saleItemImages.stream().map(SaleItemImage::getImageName).collect(Collectors.toList());
+    }
 
     public String getBrandName() {
         return brand.getName();

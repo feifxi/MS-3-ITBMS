@@ -11,6 +11,9 @@ import Button from '@/components/Button.vue';
 import DeleteConfirmModal from '@/components/ConfirmModal.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 
+const BASE_API = import.meta.env.VITE_BASE_API
+const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
+
 const route = useRoute()
 const router = useRouter()
 const item = ref(null)
@@ -19,6 +22,8 @@ const isNotFound = ref(false)
 const isDeleting = ref(false)
 const showConfirmDialog = ref(false)
 const statusMessageStore = useStatusMessageStore()
+
+const selectedImageIndex = ref(0)
 
 const fetchItem = async () => {
   isLoading.value = true
@@ -61,6 +66,9 @@ const confirmDelete = async () => {
   }
 }
 
+const handleChangeSelectedImage = (index) => {
+    selectedImageIndex.value = index
+}
 
 onMounted(async () => {
   await fetchItem()
@@ -91,10 +99,22 @@ onMounted(async () => {
           <section v-else-if="isLoading" class="text-center text-blue-500 animate-pulse text-3xl font-bold">Loading...</section>
 
           <section v-else class="itbms-row flex flex-wrap gap-12 bg-white rounded-lg shadow-lg p-6">
-            <div class="flex-1 min-w-[300px]">
+            <div class="flex-1 min-w-[300px] flex flex-col">
               <div class="mb-6 text-center overflow-hidden rounded-lg shadow-md">
-                <img :src="item.image || mockPhone" alt="product"
-                  class="w-full h-auto hover:scale-105 transition-transform duration-300" />
+                <img 
+                  :src="IMAGE_ENDPOINT + item.imageNames[selectedImageIndex] || '/placeholder.svg'"
+                  alt="product"
+                  class="w-full h-auto hover:scale-105 transition-transform duration-300" 
+                />
+              </div>
+              <div class="grid grid-cols-4 gap-1">
+                <img 
+                    v-for="(imageName, i) of item.imageNames" 
+                    @click="() => handleChangeSelectedImage(i)"
+                    :src="IMAGE_ENDPOINT + imageName || '/placeholder.svg'" 
+                    alt="sale item" 
+                    :class="'shadow-md ' + (i == selectedImageIndex ? 'border-5 cursor-pointer border-purple-600' : '') " 
+                />
               </div>
             </div>
 

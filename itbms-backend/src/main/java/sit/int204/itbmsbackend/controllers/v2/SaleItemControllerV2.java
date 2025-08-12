@@ -1,5 +1,6 @@
 package sit.int204.itbmsbackend.controllers.v2;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,38 @@ public class SaleItemControllerV2 {
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "createdOn") String sortField,
             @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) Integer priceLower,
+            @RequestParam(required = false) Integer priceUpper,
+            @RequestParam(required = false) List<Integer> storageSizes
+    ) {
+        return ResponseEntity.ok(
+                saleItemService.findAll(
+                        filterBrands,
+                        page,
+                        size,
+                        sortField,
+                        sortDirection,
+                        priceLower != null ? BigDecimal.valueOf(priceLower) : null,
+                        priceUpper != null ? BigDecimal.valueOf(priceUpper) : null,
+                        storageSizes
+                )
+        );
+    }
+}
+
+
+/*    @GetMapping
+    public ResponseEntity<PageDTO<SaleItemListDto>> getAllSaleItems(
+            @RequestParam(required = false) List<String> filterBrands,
+            @RequestParam(required = true) Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "createdOn") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection,
             @RequestParam(defaultValue = "1") Integer priceLower,
             @RequestParam(defaultValue = "1") Integer priceUpper,
             @RequestParam(required = false) List<String> storageSize
             ) {
 //        System.out.println(filterBrands == null ? "null" : filterBrands.toString());
         return ResponseEntity.ok(saleItemService.findAll(filterBrands, page, size, sortField, sortDirection));
-    }
-}
+    }*/
+

@@ -59,4 +59,6 @@ public class SaleItemControllerV1 {
         saleItemService.removeSaleItem(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
 }

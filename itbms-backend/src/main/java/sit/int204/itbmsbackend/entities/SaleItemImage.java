@@ -23,9 +23,18 @@ public class SaleItemImage {
     private String imageName;
 
     @NotNull
+    @Lob
+    @Column(name = "original_image_name", nullable = false)
+    private String originalImageName;
+
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "sale_item_id", nullable = false)
     private SaleItem saleItem;
+
+    @NotNull
+    @Column(name = "order_index", nullable = false)
+    private Integer orderIndex;
 
 }

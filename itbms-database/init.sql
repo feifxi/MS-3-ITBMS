@@ -33,7 +33,9 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_items` (
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_item_images` (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     image_name TEXT NOT NULL,
+    original_image_name TEXT NOT NULL,
     sale_item_id INT NOT NULL,
+    order_index INT NOT NULL,
     FOREIGN KEY (sale_item_id) REFERENCES sale_items(id) ON DELETE CASCADE
 );
 

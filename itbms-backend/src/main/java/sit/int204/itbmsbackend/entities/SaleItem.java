@@ -1,18 +1,20 @@
 package sit.int204.itbmsbackend.entities;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-
-import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.*;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.*;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,25 +26,30 @@ public class SaleItem {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @Size(max = 60)
+    @NotNull
     @Column(name = "model", nullable = false, length = 60)
     private String model;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "brand_id", nullable = false)
-    @JsonIgnore
     private Brand brand;
 
+    @NotNull
     @Lob
     @Column(name = "description", nullable = false)
     private String description;
 
+    @NotNull
     @Column(name = "price", nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
     @Column(name = "ram_Gb")
     private Integer ramGb;
 
-    @Column(name = "screen_size_inch", precision = 3, scale = 1)
+    @Column(name = "screen_size_inch", precision = 5, scale = 2)
     private BigDecimal screenSizeInch;
 
     @Column(name = "storage_Gb")
@@ -52,32 +59,19 @@ public class SaleItem {
     @Column(name = "color")
     private String color;
 
+    @NotNull
     @ColumnDefault("1")
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-//    @CreationTimestamp
-//    @Column(name = "createdOn", updatable = false, nullable = false)
-//    private Instant createdOn;
-//
-//    @UpdateTimestamp
-//    @Column(name = "updatedOn", nullable = false)
-//    private Instant updatedOn;
-//
+    @CreationTimestamp
+    @Column(name = "createdOn", updatable = false, nullable = false)
+    private Instant createdOn;
 
-    @Column(name = "createdOn")
-    private LocalDateTime createdOn;
+    @UpdateTimestamp
+    @Column(name = "updatedOn", nullable = false)
+    private Instant updatedOn;
 
-    @Column(name = "updatedOn")
-    private LocalDateTime updatedOn;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdOn = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedOn = LocalDateTime.now();
-    }
+    @OneToMany(mappedBy = "saleItem")
+    private List<SaleItemImage> saleItemImages = new ArrayList<>();
 }

@@ -26,8 +26,9 @@ export const fetchSaleItemById = async (id) => {
 export const createSaleItem = async (saleItem) => {
     return await fetch(`${BASE_API}/v1/sale-items`,{
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(saleItem),
+        // headers: { "Content-Type": "application/json" }, // change to form data
+        // body: JSON.stringify(saleItem),
+        body: saleItem,
     })
 }
 

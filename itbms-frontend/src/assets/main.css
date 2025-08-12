@@ -7,3 +7,7 @@
 .paginationBtn {
     @apply p-2 bg-rose-300 rounded cursor-pointer disabled:text-gray-400 disabled:bg-neutral-100 disabled:cursor-auto
 }
+
+.primary-btn {
+    @apply cursor-pointer py-2 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-rose-500 px-6 to-purple-600 text-white hover:opacity-90 transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100
+}

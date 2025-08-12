@@ -12,6 +12,49 @@ const router = useRouter()
 const getSessionStorageItem = (key) => {
   return sessionStorage.getItem(key)
 }
+const isShowPriceFilters = ref(false)
+
+// เพิ่ม price options
+const priceOptions = ref([
+  { label: '0 - 5,000', value: { lower: 0, upper: 5000 } },
+  { label: '5,001-10,000', value: { lower: 5001, upper: 10000 } },
+  { label: '10,001-20,000', value: { lower: 10001, upper: 20000 } },
+  { label: '20,001-30,000', value: { lower: 20001, upper: 30000 } },
+  { label: '30,001-40,000', value: { lower: 30001, upper: 40000 } },
+  { label: '40,001-50,000', value: { lower: 40001, upper: 50000 } },
+  { label: '50,001', value: { lower: 50001, upper: 999999 } }
+])
+const filterPriceOptions = reactive([])
+const handleAddFilterByPrice = (priceOption) => {
+  const existingIndex = filterPriceOptions.findIndex((option) => 
+    option.lower === priceOption.lower && option.upper === priceOption.upper)
+  if (existingIndex >= 0) {
+    return filterPriceOptions.splice(existingIndex, 1)
+  }
+  filterPriceOptions.push(priceOption)
+}
+
+const handleRemovePriceFilter = (priceOption) => {
+  const removeIndex = filterPriceOptions.findIndex((option) => 
+    option.lower === priceOption.lower && option.upper === priceOption.upper)
+  if (removeIndex >= 0) {
+    filterPriceOptions.splice(removeIndex, 1)
+  }
+}
+
+// ฟังก์ชันสำหรับหา label จาก value
+const getPriceLabelFromValue = (priceValue) => {
+  const option = priceOptions.value.find(option => 
+    option.value.lower === priceValue.lower && option.value.upper === priceValue.upper)
+  return option ? option.label : `${priceValue.lower} - ${priceValue.upper}`
+}
+
+
+
+
+
+
+
 
 // Retrive saved data from session storage
 const persistFilterPriceOptionJSON = getSessionStorageItem("filterPriceOption")
@@ -98,7 +141,8 @@ const paginatedPages = computed(() => {
 const fetchSaleItems = async () => {
   loading.value = true
   try {
-      const res = await fetchAllSaleItemsV2(pagination.page, pagination.size, filterBrands, sortOption.sortField, sortOption.sortDirection)
+      const res = await fetchAllSaleItemsV2(pagination.page, pagination.size, filterBrands, filterPriceRange, 
+      filterStorageSizes, sortOption.sortField, sortOption.sortDirection)
       if (!res.ok) throw new Error("Something went wrong")
       const data = await res.json()
       const { content, first, last, totalPages } = data
@@ -128,18 +172,28 @@ const fetchBrands = async () => {
   }
 }
 
+// const fetchStorageSize = async () => {
+//   loading.value = true
+//   try {
+//     const MOCK_STORAGE = [8, 32 ,124, 256]
+//       const res = await fetchAllBrands()
+//       if (!res.ok) throw new Error("Something went wrong")
+//       const brandData = await res.json()
+//       storageSizes.value = MOCK_STORAGE
+//   } catch (err) {
+//       console.error('Failed to fetch brand: ', err)
+//   } finally {
+//     loading.value = false
+//   }
+// }
+
+// แก้ไข fetchStorageSize function
 const fetchStorageSize = async () => {
-  loading.value = true
   try {
-    const MOCK_STORAGE = [8, 32 ,124, 256]
-      const res = await fetchAllBrands()
-      if (!res.ok) throw new Error("Something went wrong")
-      const brandData = await res.json()
-      storageSizes.value = MOCK_STORAGE
+    const STORAGE_OPTIONS = ['32Gb', '64Gb', '128Gb', '256Gb', '512Gb', '1Tb +']
+    storageSizes.value = STORAGE_OPTIONS
   } catch (err) {
-      console.error('Failed to fetch brand: ', err)
-  } finally {
-    loading.value = false
+    console.error('Failed to fetch storage sizes: ', err)
   }
 }
 
@@ -158,12 +212,23 @@ const handleRemoveBrandFilter = (brandName) => {
   filterBrands.splice(removeIndex, 1)
 }
 
-const handlePriceRangeChange = () => {
-
+const handlePriceRangeChange = (lower, upper) => {
+  filterPriceRange.lower = lower
+  filterPriceRange.upper = upper
 }
 
-const handleAddFilterByStorageSize = () => {
-  
+const handleAddFilterByStorageSize = (size) => {
+  const existingIndex = filterStorageSizes.findIndex((s) => s === size) 
+  if (existingIndex >= 0){
+    return filterStorageSizes.splice(existingIndex,1)
+  }
+  filterStorageSizes.push(size)
+}
+const handleRemoveStorangeFilter = (size) => {
+  const removeIndex = filterStorageSizes.findIndex((s) => s === size)
+  if (removeIndex >= 0){
+    filterStorageSizes.splice(removeIndex,1)
+  }
 }
 
 const handleClearFilter = () => {
@@ -227,6 +292,12 @@ const saveSessionData = () => {
     pageNumber: pagination.page,
     size: pagination.size,
   }))
+  sessionStorage.setItem('filterPriceOption', JSON.stringify({
+  lower: filterPriceRange.lower,
+  upper: filterPriceRange.upper
+  }))
+  sessionStorage.setItem('filterStorageSizeOption', JSON.stringify([...filterStorageSizes]))
+
 }
 
 onMounted(async () => {
@@ -245,6 +316,14 @@ watch([()=> pagination.size, filterBrands, sortOption], () => {
   saveSessionData()
   fetchSaleItems()
 })
+watch(
+  [() => pagination.size, filterBrands, filterPriceRange, filterStorageSizes, sortOption], 
+  () => {
+    pagination.page = 0
+    saveSessionData()
+    fetchSaleItems()
+  }
+)
 
 </script>
 
@@ -277,6 +356,67 @@ watch([()=> pagination.size, filterBrands, sortOption], () => {
             </div>
           </div>
 
+
+
+
+
+
+
+         
+<!-- Filter Price -->
+<div class="relative">
+  <div class="flex items-start gap-1 relative">
+    <div @click="isShowPriceFilters = !isShowPriceFilters" class="itbms-price-filter flex items-center border-2 border-rose-300 bg-rose-50 cursor-pointer rounded px-3 py-2 gap-2">
+      <ListFilterPlus />
+      <p v-if="filterPriceOptions.length === 0" class="text-rose-300">Filter by price</p>
+      <!-- Loop selected Price Options -->
+      <div class="flex flex-wrap gap-3" v-if="filterPriceOptions.length > 0">
+        <Button v-for="priceOption in filterPriceOptions" 
+          :key="`${priceOption.lower}-${priceOption.upper}`" 
+          :class-name="'itbms-price-item-clear'" 
+          variant="secondary" 
+          @click="() => handleRemovePriceFilter(priceOption)">
+          <p class="">{{ getPriceLabelFromValue(priceOption) }}</p>
+          <X class="size-4" />
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dropdown Price Filter -->
+  <div v-if="isShowPriceFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl rounded-xl p-5 gap-5 max-h-100 overflow-y-scroll">
+    <div v-for="priceOption in priceOptions" :key="`${priceOption.value.lower}-${priceOption.value.upper}`" class="flex items-center gap-2">
+      <input type="checkbox" class="size-5" 
+        @click="() => handleAddFilterByPrice(priceOption.value)" 
+        :checked="filterPriceOptions.some(option => option.lower === priceOption.value.lower && option.upper === priceOption.value.upper)" >
+      <label class="itbms-price-item" @click="() => handleAddFilterByPrice(priceOption.value)">{{ priceOption.label }}</label>
+    </div>
+  </div>
+</div>
+
+
+<!-- ในส่วน Filter Storage Size แก้ไข button -->
+<Button v-for="storageSize in filterStorageSizes" 
+  :key="storageSize" 
+  :class-name="'itbms-storage-size-item-clear'" 
+  variant="secondary" 
+  @click="() => handleRemoveStorangeFilter(storageSize)">
+  <p class="">{{ storageSize }}</p>
+  <X class="size-4" />
+</Button>
+
+
+
+
+
+
+
+
+
+
+
+
+
           <!-- Dropdown Brands Filter -->
           <div v-if="isShowBrandFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-100 overflow-y-scroll">
             <div v-for="brand in brands" class="flex items-center gap-2">
@@ -294,7 +434,7 @@ watch([()=> pagination.size, filterBrands, sortOption], () => {
               <p v-if="filterStorageSizes.length === 0" class="text-rose-300">Filter Storage Size</p>
               <!-- Loop selected storage size -->
               <div class="flex flex-wrap gap-3" v-if="filterStorageSizes.length > 0">
-                <Button v-for="storageSize in filterStorageSizes" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(brand)">
+                <Button v-for="storageSize in filterStorageSizes" :key="storageSize" :class-name="'itbms-filter-item-clear'" variant="secondary" @click="() => handleRemoveBrandFilter(storageSize)">
                   <p class="">{{ storageSize }}</p>
                   <X class="size-4" />
                 </Button>
@@ -305,7 +445,7 @@ watch([()=> pagination.size, filterBrands, sortOption], () => {
           <!-- Dropdown storage size Filter -->
           <div v-if="isShowStorageFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-100 overflow-y-scroll">
             <div v-for="storageSize in storageSizes" class="flex items-center gap-2">
-              <input type="checkbox" class=" size-5" @click="() => handleAddFilterByStorageSize(storageSize)" :checked="filterBrands.includes(storageSize)" >
+              <input type="checkbox" class=" size-5" @click="() => handleAddFilterByStorageSize(storageSize)" :checked="filterStorageSizes.includes(storageSize)" >
               <label class="itbms-filter-item" @click="() => handleAddFilterByStorageSize(storageSize)">{{ storageSize }}</label>
             </div>
           </div>

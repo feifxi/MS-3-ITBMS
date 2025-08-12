@@ -6,6 +6,7 @@ import mockPhone from '@/assets/image/mockPhone.webp'
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import Button from '@/components/Button.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
+import { ChevronDown, ChevronUp, X } from 'lucide-vue-next';
 
 const router = useRouter()
 const saleItem = reactive({
@@ -22,6 +23,7 @@ const saleItem = reactive({
         name: ''
     },
 })
+
 const brands = ref([])
 const isLoading = ref(false)
 const isSubmitting = ref(false)
@@ -153,7 +155,26 @@ const submitForm = async (e) => {
     try {
         saleItem.brand.name = brands.value.find((brand)=> brand.id === saleItem.brand.id).name
         // console.log(saleItem)
-        const res = await createSaleItem(saleItem)
+
+        // parse sale item filed to formdata. - brandId is temporary for testing !!!!
+        const formData = new FormData();
+        for (const field in saleItem) {
+            if (field != "brand") {
+                formData.append(field, saleItem[field]);
+            }
+        }
+        formData.append("brandId", saleItem.brand.id)
+        // parse image of saleitem to formdata
+        for (const image of saleItemImageFiles.value) {
+            formData.append("pictures", image.file);
+        }
+        // formData.forEach((value, key) => {
+        //   console.log(key, " : ", value);
+        // });
+
+        const res = await createSaleItem(formData)
+        const result = await res.json()
+        console.log(result)
         if (!res.ok) throw new Error("Something went wrong")
         statusMessageStore.setStatusMessage("The sale item has been successfully added.")
         router.push('/sale-items/list')
@@ -177,6 +198,59 @@ const showErrorToForm = () => {
     }
 }
 
+// Image Upload
+const selectedImageIndex = ref(0)
+const saleItemImageFiles = ref([])
+
+const handleFileSelect = (e) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+
+    const validFileSize = files.every((f) => f.size <=  2 * 1024 * 1024);
+    if (!validFileSize) {
+      alert("Some files exceed 2MB");
+      return
+    }
+
+    let updatedImages = [
+      ...saleItemImageFiles.value,
+      ...files.map((file) => ({
+        file: file,
+        preview: URL.createObjectURL(file) 
+      })),
+    ];
+
+    if (updatedImages.length > 4) {
+      alert("You can only upload up to 4 files.");
+      updatedImages = updatedImages.slice(0, 4)
+    }
+
+    saleItemImageFiles.value = updatedImages
+    e.target.value = "";
+    // console.log(saleItemImageFiles.value)
+};
+
+const handleRemoveImage = (filename) => {
+saleItemImageFiles.value = saleItemImageFiles.value.filter((image) => image.file.name != filename)
+}
+
+const handleChangeOrderUp = (index) => {
+if (index == 0) return
+const prevFile = saleItemImageFiles.value[index - 1]
+saleItemImageFiles.value[index - 1] = saleItemImageFiles.value[index]
+saleItemImageFiles.value[index] = prevFile
+}
+
+const handleChangeOrderDown = (index) => {
+if (index == saleItemImageFiles.length - 1) return
+const nextFile = saleItemImageFiles.value[index + 1]
+saleItemImageFiles.value[index + 1] = saleItemImageFiles.value[index]
+saleItemImageFiles.value[index] = nextFile
+}
+
+const handleChangeSelectedImage = (index) => {
+    selectedImageIndex.value = index
+}
+
 onMounted(() => {
     fetchBrands()
 })
@@ -186,6 +260,7 @@ watch(saleItem, () => {
     // Disabled save button
     validateAllField()
 })
+
 
 </script>
 
@@ -203,15 +278,51 @@ watch(saleItem, () => {
             </div>
 
             <div v-else class="itbms-row flex max-lg:flex-col flex-wrap gap-12 bg-white rounded-lg shadow-lg p-6">
-                <div class="flex-1">
-                    <div class="mb-6 text-center overflow-hidden rounded-lg shadow-md">
-                        <img :src="saleItem?.image || mockPhone" alt="sale item"
+                <div class="flex-1 flex flex-col gap-4">
+                    <div class="text-center overflow-hidden rounded-lg shadow-md">
+                        <img 
+                            :src="saleItemImageFiles[selectedImageIndex]?.preview || '/placeholder.svg'" 
+                            alt="sale item"
                             class="w-full h-auto hover:scale-105 transition-transform duration-300" />
                     </div>
                     <div class="grid grid-cols-4 gap-1">
-                        <img v-for="image of [1, 2, 3, 4]" :src="saleItem?.image || mockPhone" alt="sale item"
-                            class="shadow-md" />
+                        <img 
+                            v-for="i of [0,1,2,3]" 
+                            @click="() => handleChangeSelectedImage(i)"
+                            :src="saleItemImageFiles[i]?.preview || '/placeholder.svg'" 
+                            alt="sale item" 
+                            :class="'shadow-md ' + (saleItemImageFiles.length > 0 && i == selectedImageIndex ? 'border-5 cursor-pointer border-purple-600' : '') " 
+                        />
                     </div>
+                    <div>
+                        <label htmlFor="image-upload" className="primary-btn max-w-[150px]">
+                            upload image
+                        </label>
+                        <input
+                            id="image-upload"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            @change="handleFileSelect"
+                            className="hidden"
+                        />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div 
+                            v-for="(image, index) in saleItemImageFiles" 
+                            class="py-2 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-purple-100 text-purple-600 px-6"
+                        >
+                            <p class="">{{ image.file.name }}</p>
+                            <X 
+                                @click="() => handleRemoveImage(image.file.name)"
+                                class="hover:text-white ml-auto size-6 cursor-pointer hover:bg-purple-600 transition-all rounded-full" 
+                            />
+                            <div class="flex flex-col">
+                                <ChevronUp v-if="index != 0" class="cursor-pointer" @click="() => handleChangeOrderUp(index)"/>
+                                <ChevronDown v-if="index != saleItemImageFiles.length - 1"  class="cursor-pointer" @click="() => handleChangeOrderDown(index)"/>
+                            </div>
+                        </div>
+                     </div>
                 </div>
 
                 <div class="flex-1 p-3">

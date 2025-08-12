@@ -1,9 +1,10 @@
 <script setup>
 import { formatNumber } from "../libs/utils.js";
 import { RouterLink } from 'vue-router'
-import mockPhone from '@/assets/image/mockPhone.webp'
-import mockPhone2 from '@/assets/image/mock2.png'
 import { Heart, Plus } from "lucide-vue-next";
+
+const BASE_API = import.meta.env.VITE_BASE_API
+const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
 
 defineProps({
     item: {
@@ -25,7 +26,11 @@ defineProps({
     >
         <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all    transform hover:-translate-y-1">
           <div class="relative">
-            <img :src="item.image || (item.id % 2 === 0 ? mockPhone : mockPhone2)" :alt="item.model" class="w-full h-48 object-contain p-4" />
+            <img 
+              :src="item.imageNames[0] ? IMAGE_ENDPOINT + item.imageNames[0] : '/placeholder.svg'" 
+              :alt="item.model" 
+              class="w-full h-48 object-contain p-4" 
+            />
             <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white transition-colors">
               <Heart class="size-4" />
             </button>

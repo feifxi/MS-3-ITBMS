@@ -8,31 +8,38 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import sit.int204.itbmsbackend.configs.FileStorageProperties;
 import sit.int204.itbmsbackend.dtos.PageDTO;
 import sit.int204.itbmsbackend.dtos.saleItem.*;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.entities.SaleItem;
+import sit.int204.itbmsbackend.entities.SaleItemImage;
+import sit.int204.itbmsbackend.repositories.SaleItemImageRepository;
 import sit.int204.itbmsbackend.repositories.SaleItemRepository;
 import sit.int204.itbmsbackend.utils.ListMapper;
 
+import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class SaleItemService {
-    private final SaleItemRepository saleItemRepository;
-    private final BrandService brandService;
-    private final ModelMapper modelMapper;
-    private final ListMapper listMapper;
-
     @Autowired
-    public SaleItemService(SaleItemRepository saleItemRepository, ModelMapper modelMapper, ListMapper listMapper, BrandService brandService) {
-        this.saleItemRepository = saleItemRepository;
-        this.brandService = brandService;
-        this.modelMapper = modelMapper;
-        this.listMapper = listMapper;
-    }
+    private SaleItemRepository saleItemRepository;
+    @Autowired
+    private SaleItemImageRepository saleItemImageRepository;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private FileStorageProperties fileProperties;
+    @Autowired
+    private SaleItemImageService imageService;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private ListMapper listMapper;
 
     public List<SaleItemListDto> findAll() {
         List <SaleItem> saleItems = saleItemRepository.findAll();
@@ -116,11 +123,36 @@ public class SaleItemService {
     }
 
     public SaleItemResponseDto addSaleItem(SaleItemCreateDto saleItemDto) {
-        Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
+        // Save sale item image
+        List<MultipartFile> images = saleItemDto.getImages();
+        List<String> originalFilenames = new ArrayList<>();
+        List<String> newFilenames = new ArrayList<>();
+        for (MultipartFile image : images) {
+            if (!imageService.isValidFileSize(image)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"File size exceeds limit (" + fileProperties.getMaxSize() + ")");
+            }
+            if (!imageService.isValidFileType(image)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Unsupported file type: " + image.getContentType() );
+            }
+            String newFilename = imageService.saveImage(image);
+            originalFilenames.add(image.getOriginalFilename());
+            newFilenames.add(newFilename);
+        }
+        // Save sale item
+        Brand brand = brandService.getBrandById(saleItemDto.getBrandId());
         saleItemDto.setBrand(brand);
         SaleItem newSaleItem = saleItemRepository.save(
                 modelMapper.map(saleItemDto, SaleItem.class)
         );
+        // Save sale item image info to database
+        for (int i = 0; i < originalFilenames.size(); i++) {
+            SaleItemImage saleItemImage = new SaleItemImage();
+            saleItemImage.setImageName(newFilenames.get(i));
+            saleItemImage.setOriginalImageName(originalFilenames.get(i));
+            saleItemImage.setSaleItem(newSaleItem);
+            saleItemImage.setOrderIndex(i);
+            saleItemImageRepository.save(saleItemImage);
+        }
         return modelMapper.map(newSaleItem, SaleItemResponseDto.class);
     }
 

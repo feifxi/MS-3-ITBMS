@@ -102,9 +102,10 @@ onMounted(async () => {
             <div class="flex-1 min-w-[300px] flex flex-col">
               <div class="mb-6 text-center overflow-hidden rounded-lg shadow-md">
                 <img 
-                  :src="IMAGE_ENDPOINT + item.imageNames[selectedImageIndex] || '/placeholder.svg'"
+                  :src="IMAGE_ENDPOINT + item.imageNames[selectedImageIndex]"
                   alt="product"
                   class="w-full h-auto hover:scale-105 transition-transform duration-300" 
+                  @error="event => event.target.src = '/placeholder.svg'"
                 />
               </div>
               <div class="grid grid-cols-4 gap-1">

@@ -6,8 +6,10 @@ import sit.int204.itbmsbackend.entities.SaleItem;
 import sit.int204.itbmsbackend.entities.SaleItemImage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SaleItemImageRepository extends JpaRepository<SaleItemImage, Integer> {
     List<SaleItemImage> findAllBySaleItemOrderByOrderIndex(SaleItem saleItem);
+    Optional<SaleItemImage> findByImageName(String imageName);
 }

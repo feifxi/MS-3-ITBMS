@@ -21,7 +21,8 @@ public class DevCorsConfig {
                         )
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true)
+                        .exposedHeaders("Content-Disposition");
             }
         };
     }

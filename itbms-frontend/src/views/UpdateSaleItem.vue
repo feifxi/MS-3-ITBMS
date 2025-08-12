@@ -34,6 +34,7 @@ const isSubmitting = ref(false)
 const statusMessageStore = useStatusMessageStore()
 let modelName 
 let originalSaleItem
+let originalSaleItemImages
 
 const currentFocusField = ref(null)
 const isFormValid = ref(false)
@@ -155,7 +156,10 @@ const handleFocusOut = (e) => {
 const validateAllField = () => {
     let isValid = true
     for (const field in saleItem.value) {
-        if (!checkFieldIntegrity(field) || (JSON.stringify(saleItem.value) === originalSaleItem)){
+        if (
+            !checkFieldIntegrity(field) || 
+            (JSON.stringify(saleItem.value) === originalSaleItem) && (JSON.stringify(saleItemImageFiles.value) === originalSaleItemImages)
+        ){
             isValid = false
             break;
         }
@@ -164,7 +168,7 @@ const validateAllField = () => {
 }
 
 const checkFieldIntegrity = (field) => {
-    if (fieldIntegrity[field]) {
+    if (fieldIntegrity[field] && saleItem.value[field]) {
         return fieldIntegrity[field]?.checkConstraint(saleItem.value[field])
     } else {
         return true 
@@ -200,6 +204,17 @@ const goBackHome = () => {
     router.push('/sale-items/' + id)
 }
 
+const extractFilenameFromHeader = (res, initValue) => {
+    const contentDisposition = res.headers.get("Content-Disposition");
+    let orifinalFilename = initValue;
+    if (contentDisposition && contentDisposition.includes("filename=")) {
+        orifinalFilename = contentDisposition
+        .split("filename=")[1]
+        .replace(/"/g, ""); // remove quotes
+    }
+    return orifinalFilename
+}
+
 // Image Upload
 const selectedImageIndex = ref(0)
 const saleItemImageFiles = ref([])
@@ -207,17 +222,22 @@ const saleItemImageFiles = ref([])
 const fetchImageFile = async (filenames) => {
   for (let filename of filenames) {
     const res = await fetch(IMAGE_ENDPOINT + filename);
-    
+    if (!res.ok) {
+    throw new Error(`Failed to fetch image: ${response.statusText}`);
+    }
+    // extract file name from header
+    const originalFilename = extractFilenameFromHeader(res, filename)
+
     const blob = await res.blob();
     // Create File object from Blob
-    const file = new File([blob], filename, { type: blob.type });
+    const file = new File([blob], originalFilename, { type: blob.type });
     saleItemImageFiles.value = [...saleItemImageFiles.value, {
         file: file,
         preview: URL.createObjectURL(file) 
     }]
-    // console.log(filename)
+
   }
-//   console.log(saleItemImageFiles.value)
+    originalSaleItemImages = JSON.stringify(saleItemImageFiles.value)
 }
 
 const handleFileSelect = (e) => {

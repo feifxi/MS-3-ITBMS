@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.configs.FileStorageProperties;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemCreateDto;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemDetailDto;
@@ -93,6 +94,10 @@ public class SaleItemControllerV1 {
     @GetMapping("/pictures/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) throws IOException {
         Resource resourceFile = imageService.getImage(filename);
+        SaleItemImage saleItemImageInfo = saleItemImageRepository.findByImageName(filename).orElseThrow(
+                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, resourceFile.getFilename() +  "not found")
+        );
+        String originalImageName = saleItemImageInfo.getOriginalImageName();
 
         Path filePath = Paths.get(properties.getUploadDir()).resolve(filename).normalize();
         String contentType = Files.probeContentType(filePath);
@@ -102,7 +107,7 @@ public class SaleItemControllerV1 {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"") // <-- force download
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originalImageName + "\"") // <-- force download
                 .body(resourceFile);
     }
 

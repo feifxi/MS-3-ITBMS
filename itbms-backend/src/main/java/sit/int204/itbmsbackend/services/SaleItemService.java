@@ -38,6 +38,8 @@ public class SaleItemService {
     private ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
+    @Autowired
+    private SaleItemImageService saleItemImageService;
 
     public List<SaleItemListDto> findAll() {
         List <SaleItem> saleItems = saleItemRepository.findAll();
@@ -150,13 +152,6 @@ public class SaleItemService {
     }
 
     public SaleItemResponseDto updateSaleItem(SaleItemUpdateDto saleItemDto) {
-//        System.out.println("======");
-//        for (int i = 0; i < saleItemDto.getImages().size(); i++) {
-//            System.out.println("images: " + saleItemDto.getImages().get(i).getOriginalFilename());
-//            System.out.println("is new: " + saleItemDto.getIsNewImageList().get(i));
-//        }
-//        System.out.println("======");
-
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())
         );
@@ -226,9 +221,14 @@ public class SaleItemService {
     }
 
     public void removeSaleItem(Integer id) {
-        if (!saleItemRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "SaleItem not found for this id :: " + id);
+        SaleItem existingSaleItem = saleItemRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
+        );
+        List<SaleItemImage> saleItemImages = saleItemImageRepository.findAllBySaleItemOrderByOrderIndex(existingSaleItem);
+        for (SaleItemImage img : saleItemImages) {
+            saleItemImageService.deleteImage(img.getImageName());   // remove image from storage
         }
-        saleItemRepository.deleteById(id);
+        saleItemImageRepository.deleteAll(saleItemImages);  // remove image data from db
+        saleItemRepository.deleteById(id);  // remove sale item data
     }
 }

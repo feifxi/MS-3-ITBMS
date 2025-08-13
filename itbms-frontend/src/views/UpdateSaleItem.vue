@@ -164,6 +164,9 @@ const validateAllField = () => {
             break;
         }
     }
+    if (saleItemImageFiles.value.length == 0) {
+        isValid = false;
+    }
     isFormValid.value = isValid
 }
 
@@ -292,21 +295,21 @@ const handleFileSelect = (e) => {
 };
 
 const handleRemoveImage = (filename) => {
-saleItemImageFiles.value = saleItemImageFiles.value.filter((image) => image.file.name != filename)
+    saleItemImageFiles.value = saleItemImageFiles.value.filter((image) => image.file.name != filename)
 }
 
 const handleChangeOrderUp = (index) => {
-if (index == 0) return
-const prevFile = saleItemImageFiles.value[index - 1]
-saleItemImageFiles.value[index - 1] = saleItemImageFiles.value[index]
-saleItemImageFiles.value[index] = prevFile
+    if (index == 0) return
+    const prevFile = saleItemImageFiles.value[index - 1]
+    saleItemImageFiles.value[index - 1] = saleItemImageFiles.value[index]
+    saleItemImageFiles.value[index] = prevFile
 }
 
 const handleChangeOrderDown = (index) => {
-if (index == saleItemImageFiles.length - 1) return
-const nextFile = saleItemImageFiles.value[index + 1]
-saleItemImageFiles.value[index + 1] = saleItemImageFiles.value[index]
-saleItemImageFiles.value[index] = nextFile
+    if (index == saleItemImageFiles.length - 1) return
+    const nextFile = saleItemImageFiles.value[index + 1]
+    saleItemImageFiles.value[index + 1] = saleItemImageFiles.value[index]
+    saleItemImageFiles.value[index] = nextFile
 }
 
 const handleChangeSelectedImage = (index) => {

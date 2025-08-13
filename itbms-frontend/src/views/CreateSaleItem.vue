@@ -157,12 +157,10 @@ const submitForm = async (e) => {
     isSubmitting.value = true
     try {
         saleItem.brand.name = brands.value.find((brand)=> brand.id === saleItem.brand.id).name
-        // console.log(saleItem)
-
         // parse sale item filed to formdata. - brandId is temporary for testing !!!!
         const formData = new FormData();
         for (const field in saleItem) {
-            if (field != "brand") {
+            if (field != "brand" && saleItem[field] !== "" && saleItem[field] != null) {
                 formData.append(field, saleItem[field]);
             }
         }
@@ -177,13 +175,13 @@ const submitForm = async (e) => {
 
         const res = await createSaleItem(formData)
         const result = await res.json()
-        console.log(result)
+        // console.log(result)
         if (!res.ok) throw new Error("Something went wrong")
         statusMessageStore.setStatusMessage("The sale item has been successfully added.")
         router.push('/sale-items/list')
     } catch (err) {
         console.log(err)
-        alert("Something went wrong")
+        statusMessageStore.setStatusMessage("Something went wrong.", false)
         router.push('/sale-items')
     }
     isSubmitting.value = false
@@ -223,7 +221,7 @@ const handleFileSelect = (e) => {
     ];
 
     if (updatedImages.length > 4) {
-      alert("You can only upload up to 4 files.");
+      statusMessageStore.setStatusMessage("Maximum 4 pictures are allowed.", false)
       updatedImages = updatedImages.slice(0, 4)
     }
 
@@ -233,21 +231,21 @@ const handleFileSelect = (e) => {
 };
 
 const handleRemoveImage = (filename) => {
-saleItemImageFiles.value = saleItemImageFiles.value.filter((image) => image.file.name != filename)
+    saleItemImageFiles.value = saleItemImageFiles.value.filter((image) => image.file.name != filename)
 }
 
 const handleChangeOrderUp = (index) => {
-if (index == 0) return
-const prevFile = saleItemImageFiles.value[index - 1]
-saleItemImageFiles.value[index - 1] = saleItemImageFiles.value[index]
-saleItemImageFiles.value[index] = prevFile
+    if (index == 0) return
+    const prevFile = saleItemImageFiles.value[index - 1]
+    saleItemImageFiles.value[index - 1] = saleItemImageFiles.value[index]
+    saleItemImageFiles.value[index] = prevFile
 }
 
 const handleChangeOrderDown = (index) => {
-if (index == saleItemImageFiles.length - 1) return
-const nextFile = saleItemImageFiles.value[index + 1]
-saleItemImageFiles.value[index + 1] = saleItemImageFiles.value[index]
-saleItemImageFiles.value[index] = nextFile
+    if (index == saleItemImageFiles.length - 1) return
+    const nextFile = saleItemImageFiles.value[index + 1]
+    saleItemImageFiles.value[index + 1] = saleItemImageFiles.value[index]
+    saleItemImageFiles.value[index] = nextFile
 }
 
 const handleChangeSelectedImage = (index) => {
@@ -294,7 +292,7 @@ watch([saleItem, saleItemImageFiles], () => {
                             @click="() => handleChangeSelectedImage(i)"
                             :src="saleItemImageFiles[i]?.preview || '/placeholder.svg'" 
                             alt="sale item" 
-                            :class="'shadow-md ' + (saleItemImageFiles.length > 0 && i == selectedImageIndex ? 'border-5 cursor-pointer border-purple-600' : '') " 
+                            :class="'shadow-md cursor-pointer ' + (saleItemImageFiles.length > 0 && i == selectedImageIndex ? 'border-5 border-purple-600' : '') " 
                         />
                     </div>
                     <div>

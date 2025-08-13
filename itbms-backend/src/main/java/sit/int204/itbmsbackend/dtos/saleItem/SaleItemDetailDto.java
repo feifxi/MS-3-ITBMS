@@ -2,6 +2,7 @@ package sit.int204.itbmsbackend.dtos.saleItem;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,10 @@ public class SaleItemDetailDto {
     private List<SaleItemImage> saleItemImages = new ArrayList<>();
 
     public List<String> getImageNames() {
-        return saleItemImages.stream().map(SaleItemImage::getImageName).collect(Collectors.toList());
+        return saleItemImages.stream()
+                .sorted(Comparator.comparing(SaleItemImage::getOrderIndex))
+                .map(SaleItemImage::getImageName)
+                .collect(Collectors.toList());
     }
 
     public String getBrandName() {

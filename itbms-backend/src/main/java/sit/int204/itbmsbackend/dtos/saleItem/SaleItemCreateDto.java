@@ -41,7 +41,6 @@ public class SaleItemCreateDto {
 
     private String color;
 
-    @NotNull(message = "Quantity is required")
     @Min(value = 0, message = "quantity must be greater than 0")
     private Integer quantity;
 

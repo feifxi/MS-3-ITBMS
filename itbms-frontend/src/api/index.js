@@ -35,8 +35,9 @@ export const createSaleItem = async (saleItem) => {
 export const updateSaleItem = async (id, saleItem) => {
     return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(saleItem),
+        // headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify(saleItem),
+        body: saleItem,
     })
 }
 

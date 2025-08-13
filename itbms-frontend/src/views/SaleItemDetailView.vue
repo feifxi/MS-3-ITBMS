@@ -114,7 +114,7 @@ onMounted(async () => {
                     @click="() => handleChangeSelectedImage(i)"
                     :src="IMAGE_ENDPOINT + imageName || '/placeholder.svg'" 
                     alt="sale item" 
-                    :class="'shadow-md ' + (i == selectedImageIndex ? 'border-5 cursor-pointer border-purple-600' : '') " 
+                    :class="'shadow-md cursor-pointer ' + (i == selectedImageIndex ? 'border-5 border-purple-600' : '') " 
                 />
               </div>
             </div>

@@ -65,13 +65,24 @@ public class SaleItemControllerV1 {
         return ResponseEntity.ok(saleItemService.findById(id));
     }
 
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(
+            consumes = {"multipart/form-data"},
+            produces = {"application/json"}
+    )
     public ResponseEntity<SaleItemResponseDto> addSaleItem(@Valid @ModelAttribute SaleItemCreateDto saleItem) {
         return ResponseEntity.status(HttpStatus.CREATED).body(saleItemService.addSaleItem(saleItem));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SaleItemResponseDto> updateProduct(@Valid @PathVariable Integer id, @RequestBody SaleItemUpdateDto saleItem) {
+    @PutMapping(
+            value = "/{id}",
+            consumes = {"multipart/form-data", "application/json"},
+            produces = {"application/json"}
+    )
+    public ResponseEntity<SaleItemResponseDto> updateProduct(
+            @Valid
+            @PathVariable Integer id,
+            @ModelAttribute SaleItemUpdateDto saleItem
+    ) {
         saleItem.setId(id);
         return ResponseEntity.ok(saleItemService.updateSaleItem(saleItem));
     }
@@ -82,19 +93,10 @@ public class SaleItemControllerV1 {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{id}/pictures")
-    public ResponseEntity<List<SaleItemImage>> listSaleItemImages(@PathVariable Integer id) {
-        SaleItemDetailDto saleItem = saleItemService.findById(id);
-        SaleItem saleitem = modelMapper.map(saleItem, SaleItem.class);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                saleItemImageRepository.findAllBySaleItemOrderByOrderIndex(saleitem)
-        );
-    }
-
     @GetMapping("/pictures/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) throws IOException {
         Resource resourceFile = imageService.getImage(filename);
-        SaleItemImage saleItemImageInfo = saleItemImageRepository.findByImageName(filename).orElseThrow(
+        SaleItemImage saleItemImageInfo = saleItemImageRepository.findOneByImageName(filename).orElseThrow(
                  () -> new ResponseStatusException(HttpStatus.NOT_FOUND, resourceFile.getFilename() +  "not found")
         );
         String originalImageName = saleItemImageInfo.getOriginalImageName();
@@ -107,13 +109,7 @@ public class SaleItemControllerV1 {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originalImageName + "\"") // <-- force download
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"") // <-- force download
                 .body(resourceFile);
-    }
-
-    @DeleteMapping("/pictures/{filename:.+}")
-    public ResponseEntity<String> deleteImage(@PathVariable String filename) {
-        imageService.deleteImage(filename);
-        return ResponseEntity.ok("Deleted: " + filename);
     }
 }

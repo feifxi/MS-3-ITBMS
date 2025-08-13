@@ -33,8 +33,6 @@ public class SaleItemService {
     @Autowired
     private BrandService brandService;
     @Autowired
-    private FileStorageProperties fileProperties;
-    @Autowired
     private SaleItemImageService imageService;
     @Autowired
     private ModelMapper modelMapper;
@@ -125,16 +123,9 @@ public class SaleItemService {
 
     public SaleItemResponseDto addSaleItem(SaleItemCreateDto saleItemDto) {
         // Save sale item image
-        List<MultipartFile> images = saleItemDto.getImages();
         List<String> originalFilenames = new ArrayList<>();
         List<String> newFilenames = new ArrayList<>();
-        for (MultipartFile image : images) {
-            if (!imageService.isValidFileSize(image)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"File size exceeds limit (" + fileProperties.getMaxSize() + ")");
-            }
-            if (!imageService.isValidFileType(image)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Unsupported file type: " + image.getContentType() );
-            }
+        for (MultipartFile image : saleItemDto.getImages()) {
             String newFilename = imageService.saveImage(image);
             originalFilenames.add(image.getOriginalFilename());
             newFilenames.add(newFilename);
@@ -142,6 +133,7 @@ public class SaleItemService {
         // Save sale item
         Brand brand = brandService.getBrandById(saleItemDto.getBrandId());
         saleItemDto.setBrand(brand);
+        saleItemDto.setQuantity(saleItemDto.getQuantity() != null ? saleItemDto.getQuantity() : 1);
         SaleItem newSaleItem = saleItemRepository.save(
                 modelMapper.map(saleItemDto, SaleItem.class)
         );
@@ -158,10 +150,68 @@ public class SaleItemService {
     }
 
     public SaleItemResponseDto updateSaleItem(SaleItemUpdateDto saleItemDto) {
+//        System.out.println("======");
+//        for (int i = 0; i < saleItemDto.getImages().size(); i++) {
+//            System.out.println("images: " + saleItemDto.getImages().get(i).getOriginalFilename());
+//            System.out.println("is new: " + saleItemDto.getIsNewImageList().get(i));
+//        }
+//        System.out.println("======");
+
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())
         );
-        Brand brand = brandService.getBrandById(saleItemDto.getBrand().getId());
+
+        // Update sale item image
+        List<MultipartFile> images = saleItemDto.getImages();
+        List<Boolean> isNewImageList = saleItemDto.getIsNewImageList();
+        List<String> keptImageNames = saleItemDto.getKeptImageNames();
+
+        if (images.size() != isNewImageList.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Images size does not match isNewImageList size");
+        }
+
+        // Fetch existing images from DB
+        List<SaleItemImage> existingImages = saleItemImageRepository.findAllBySaleItemOrderByOrderIndex(existingSaleItem);
+
+        // --- Remove deleted images ---
+        for (SaleItemImage img : existingImages) {
+            if (!keptImageNames.contains(img.getImageName())) {
+                imageService.deleteImage(img.getImageName());
+                saleItemImageRepository.delete(img);
+            }
+        }
+
+        // --- Handle new or updated images ---
+        for (int i = 0; i < images.size(); i++) {
+            MultipartFile uploadedImage = images.get(i);
+            Boolean isNewImage = isNewImageList.get(i);
+
+            if (isNewImage) {
+                // Save as a completely new image
+                String newFilename = imageService.saveImage(uploadedImage);
+                SaleItemImage newImgEntity = new SaleItemImage();
+                newImgEntity.setImageName(newFilename);
+                newImgEntity.setOriginalImageName(uploadedImage.getOriginalFilename());
+                newImgEntity.setOrderIndex(i);
+                newImgEntity.setSaleItem(existingSaleItem);
+                saleItemImageRepository.save(newImgEntity);
+            } else {
+                // This image already exists, just update order
+                String imgName = uploadedImage.getOriginalFilename();
+                SaleItemImage existingImg = existingImages.stream()
+                        .filter(e -> e.getImageName().equals(imgName))
+                        .findFirst()
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST, "Existing image not found for image name: " + imgName
+                        ));
+                existingImg.setOrderIndex(i);
+
+                SaleItemImage s = saleItemImageRepository.save(existingImg);
+            }
+        }
+
+        // --- Update Sale Item core fields ---
+        Brand brand = brandService.getBrandById(saleItemDto.getBrandId());
         existingSaleItem.setModel(saleItemDto.getModel());
         existingSaleItem.setPrice(saleItemDto.getPrice());
         existingSaleItem.setColor(saleItemDto.getColor());

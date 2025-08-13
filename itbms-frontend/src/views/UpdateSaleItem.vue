@@ -188,14 +188,36 @@ const submitForm = async (e) => {
     isSubmitting.value = true
     try {
         saleItem.value.brand.name = brands.value.find((brand)=> brand.id === saleItem.value.brand.id)?.name
-        const res = await updateSaleItem(id , saleItem.value)
+        // parse sale item filed to formdata.
+        const formData = new FormData();
+        for (const field in saleItem.value) {
+            if (field != "brand" && saleItem.value[field] !== "" && saleItem.value[field] != null) {
+                formData.append(field, saleItem.value[field]);
+            }
+        }
+        formData.append("brandId", saleItem.value.brand.id)
+        // parse image of saleitem to formdata
+        for (const image of saleItemImageFiles.value) {
+            formData.append("images", image.file);
+            formData.append("isNewImageList", image.newImage);
+            if (!image.newImage) {
+                formData.append("keptImageNames", image.file.name);  // keep the old image
+            }
+        }
+        // formData.forEach((value, key) => {
+        //   console.log(key, " : ", value);
+        // });
+
+        const res = await updateSaleItem(id, formData)
+        const result = await res.json()
+        // console.log(result)
         if (!res.ok) throw new Error("Something went wrong")
         statusMessageStore.setStatusMessage("The sale item has been updated.")
     } catch (err) {
         console.log(err)
-        alert("Something went wrong")
+        statusMessageStore.setStatusMessage("Something went wrong.", false)
     }
-    router.push('/sale-items/' + id)
+    router.push('/sale-items/' + id) 
     isSubmitting.value = false
 }
 
@@ -233,7 +255,8 @@ const fetchImageFile = async (filenames) => {
     const file = new File([blob], originalFilename, { type: blob.type });
     saleItemImageFiles.value = [...saleItemImageFiles.value, {
         file: file,
-        preview: URL.createObjectURL(file) 
+        preview: URL.createObjectURL(file),
+        newImage: false,
     }]
 
   }
@@ -253,13 +276,14 @@ const handleFileSelect = (e) => {
       ...saleItemImageFiles.value,
       ...files.map((file) => ({
         file: file,
-        preview: URL.createObjectURL(file) 
+        preview: URL.createObjectURL(file),
+        newImage: true,
       })),
     ];
 
     if (updatedImages.length > 4) {
-      alert("You can only upload up to 4 files.");
-      updatedImages = updatedImages.slice(0, 4)
+        statusMessageStore.setStatusMessage("Maximum 4 pictures are allowed.", false)
+        updatedImages = updatedImages.slice(0, 4)
     }
 
     saleItemImageFiles.value = updatedImages

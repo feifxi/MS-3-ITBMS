@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface SaleItemImageRepository extends JpaRepository<SaleItemImage, Integer> {
+    Optional<SaleItemImage> findOneByImageName(String imageName);
     List<SaleItemImage> findAllBySaleItemOrderByOrderIndex(SaleItem saleItem);
-    Optional<SaleItemImage> findByImageName(String imageName);
 }

@@ -41,6 +41,9 @@ public class SaleItemImageService {
     }
 
     public String saveImage(MultipartFile file) {
+        if (!isValidFileSize(file)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"File size exceeds limit (" + properties.getMaxSize() + ")");
+        }
         if (!isValidFileType(file)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid file type");
         }

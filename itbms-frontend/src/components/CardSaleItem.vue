@@ -27,7 +27,7 @@ defineProps({
         <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all    transform hover:-translate-y-1">
           <div class="relative">
             <img 
-              :src="item.imageNames[0] ? IMAGE_ENDPOINT + item.imageNames[0] : '/placeholder.svg'" 
+              :src="item.saleItemImages[0] ? `${IMAGE_ENDPOINT}${item.saleItemImages[0].fileName}` : '/placeholder.svg'" 
               :alt="item.model" 
               class="w-full h-48 object-contain p-4" 
             />

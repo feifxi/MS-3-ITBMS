@@ -205,13 +205,12 @@ const saleItemImageFiles = ref([])
 
 const handleFileSelect = (e) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
-
-    const validFileSize = files.every((f) => f.size <=  2 * 1024 * 1024);
+    const MAX_MB_UNIT = 2 * 1024 * 1024
+    const validFileSize = files.every((f) => f.size <= MAX_MB_UNIT);
     if (!validFileSize) {
-      alert("Some files exceed 2MB");
-      return
+        statusMessageStore.setStatusMessage("Some files exceed 2MB.", false)
+        return
     }
-
     let updatedImages = [
       ...saleItemImageFiles.value,
       ...files.map((file) => ({
@@ -296,7 +295,7 @@ watch([saleItem, saleItemImageFiles], () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="image-upload" className="primary-btn max-w-[150px]">
+                        <label htmlFor="image-upload" className="itbms-upload-button primary-btn max-w-[150px]">
                             upload image
                         </label>
                         <input
@@ -313,14 +312,19 @@ watch([saleItem, saleItemImageFiles], () => {
                             v-for="(image, index) in saleItemImageFiles" 
                             class="py-2 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-purple-100 text-purple-600 px-6"
                         >
-                            <p class="">{{ image.file.name }}</p>
-                            <X 
-                                @click="() => handleRemoveImage(image.file.name)"
-                                class="hover:text-white ml-auto size-6 cursor-pointer hover:bg-purple-600 transition-all rounded-full" 
-                            />
+                            <p :class="`itbms-picture-file${index+1}`">{{ image.file.name }}</p>
+                            <X  @click="() => handleRemoveImage(image.file.name)"
+                                :class="`itbms-picture-file${index+1}-clear hover:text-white ml-auto size-6 cursor-pointer hover:bg-purple-600 transition-all rounded-full`" 
+                            /> 
                             <div class="flex flex-col">
-                                <ChevronUp v-if="index != 0" class="cursor-pointer" @click="() => handleChangeOrderUp(index)"/>
-                                <ChevronDown v-if="index != saleItemImageFiles.length - 1"  class="cursor-pointer" @click="() => handleChangeOrderDown(index)"/>
+                                <ChevronUp 
+                                    v-if="index != 0" 
+                                    :class="`itbms-picture-file${index+1}-up cursor-pointer`" 
+                                    @click="() => handleChangeOrderUp(index)"/>
+                                <ChevronDown 
+                                    v-if="index != saleItemImageFiles.length - 1"  
+                                    :class="`itbms-picture-file${index+1}-down cursor-pointer`"
+                                    @click="() => handleChangeOrderDown(index)"/>
                             </div>
                         </div>
                     </div>

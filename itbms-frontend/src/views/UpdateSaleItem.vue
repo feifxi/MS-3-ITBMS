@@ -119,7 +119,10 @@ const fetchSaleItem = async () => {
     delete saleItem.value.brandName
     modelName = saleItem.value.model
     originalSaleItem = JSON.stringify(saleItem.value)
-    await fetchImageFile(saleItemData.imageNames)
+    // fetch image
+    await fetchImageFile(saleItemData.saleItemImages)
+    saleItemImageNames.value = saleItemData.saleItemImages
+    // console.log(saleItemImageNames.value)
     isLoading.value = false
 }
 
@@ -229,52 +232,42 @@ const goBackHome = () => {
     router.push('/sale-items/' + id)
 }
 
-const extractFilenameFromHeader = (res, initValue) => {
-    const contentDisposition = res.headers.get("Content-Disposition");
-    let orifinalFilename = initValue;
-    if (contentDisposition && contentDisposition.includes("filename=")) {
-        orifinalFilename = contentDisposition
-        .split("filename=")[1]
-        .replace(/"/g, ""); // remove quotes
-    }
-    return orifinalFilename
-}
 
 // Image Upload
-const selectedImageIndex = ref(0)
-const saleItemImageFiles = ref([])
+const selectedImageIndex = ref(0)   // current selected image 
+const saleItemImageFiles = ref([])  // store list of fetched file and upload file object
+const saleItemImageNames = ref([])  // store list of filename and original filename
 
-const fetchImageFile = async (filenames) => {
-  for (let filename of filenames) {
-    const res = await fetch(IMAGE_ENDPOINT + filename);
-    if (!res.ok) {
-    throw new Error(`Failed to fetch image: ${response.statusText}`);
+const fetchImageFile = async (images) => {
+    for (let image of images) {
+        const filename = image.fileName
+        const res = await fetch(IMAGE_ENDPOINT + filename);
+        if (!res.ok) {
+        throw new Error(`Failed to fetch image: ${response.statusText}`);
+        }
+        const blob = await res.blob();
+        // Create File object from Blob
+        const file = new File([blob], filename, { type: blob.type });
+        saleItemImageFiles.value = [
+            ...saleItemImageFiles.value, 
+            {
+                file: file,
+                preview: URL.createObjectURL(file),
+                newImage: false,
+            }
+        ]
     }
-    // extract file name from header
-    const originalFilename = extractFilenameFromHeader(res, filename)
-
-    const blob = await res.blob();
-    // Create File object from Blob
-    const file = new File([blob], originalFilename, { type: blob.type });
-    saleItemImageFiles.value = [...saleItemImageFiles.value, {
-        file: file,
-        preview: URL.createObjectURL(file),
-        newImage: false,
-    }]
-
-  }
     originalSaleItemImages = JSON.stringify(saleItemImageFiles.value)
 }
 
 const handleFileSelect = (e) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
-
-    const validFileSize = files.every((f) => f.size <=  2 * 1024 * 1024);
+    const MAX_MB_UNIT = 2 * 1024 * 1024
+    const validFileSize = files.every((f) => f.size <= MAX_MB_UNIT);
     if (!validFileSize) {
-      alert("Some files exceed 2MB");
+      statusMessageStore.setStatusMessage("Some files exceed 2MB.", false)
       return
     }
-
     let updatedImages = [
       ...saleItemImageFiles.value,
       ...files.map((file) => ({
@@ -314,6 +307,11 @@ const handleChangeOrderDown = (index) => {
 
 const handleChangeSelectedImage = (index) => {
     selectedImageIndex.value = index
+}
+
+const mappedToOriginalFileName = (fileName) => {
+    const image = saleItemImageNames.value.find((image) => image.fileName === fileName)
+    return image?.originalFileName || fileName
 }
 
 onMounted(async () => {
@@ -361,7 +359,7 @@ watch([saleItem, saleItemImageFiles], () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="image-upload" className="primary-btn max-w-[150px]">
+                        <label htmlFor="image-upload" className="itbms-upload-button primary-btn max-w-[150px]">
                             upload image
                         </label>
                         <input
@@ -378,14 +376,19 @@ watch([saleItem, saleItemImageFiles], () => {
                             v-for="(image, index) in saleItemImageFiles" 
                             class="py-2 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-purple-100 text-purple-600 px-6"
                         >
-                            <p class="">{{ image.file.name }}</p>
-                            <X 
-                                @click="() => handleRemoveImage(image.file.name)"
-                                class="hover:text-white ml-auto size-6 cursor-pointer hover:bg-purple-600 transition-all rounded-full" 
+                            <p :class="`itbms-picture-file${index+1}`">{{ image.newImage ? image.file.name : mappedToOriginalFileName(image.file.name) }}</p>
+                            <X  @click="() => handleRemoveImage(image.file.name)"
+                                :class="`itbms-picture-file${index+1}-clear hover:text-white ml-auto size-6 cursor-pointer hover:bg-purple-600 transition-all rounded-full`" 
                             />
                             <div class="flex flex-col">
-                                <ChevronUp v-if="index != 0" class="cursor-pointer" @click="() => handleChangeOrderUp(index)"/>
-                                <ChevronDown v-if="index != saleItemImageFiles.length - 1"  class="cursor-pointer" @click="() => handleChangeOrderDown(index)"/>
+                                <ChevronUp 
+                                    v-if="index != 0" 
+                                    :class="`itbms-picture-file${index+1}-up cursor-pointer`" 
+                                    @click="() => handleChangeOrderUp(index)"/>
+                                <ChevronDown 
+                                    v-if="index != saleItemImageFiles.length - 1"  
+                                    :class="`itbms-picture-file${index+1}-down cursor-pointer`"
+                                    @click="() => handleChangeOrderDown(index)"/>
                             </div>
                         </div>
                     </div>

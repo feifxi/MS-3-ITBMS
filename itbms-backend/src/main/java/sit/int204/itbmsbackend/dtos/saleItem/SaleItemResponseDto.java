@@ -12,12 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import sit.int204.itbmsbackend.dtos.saleItemImage.SaleItemImageDTO;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.entities.SaleItemImage;
 
 @Data
-@Getter
-@Setter
 public class SaleItemResponseDto {
     private Integer id;
     private String model;
@@ -33,13 +32,18 @@ public class SaleItemResponseDto {
     public String getBrandName() {
         return brand.getName();
     }
-    @JsonIgnore
     private List<SaleItemImage> saleItemImages = new ArrayList<>();
 
-    public List<String> getImageNames() {
+    public List<SaleItemImageDTO> getSaleItemImages() {
         return saleItemImages.stream()
-                .sorted(Comparator.comparing(SaleItemImage::getOrderIndex))
-                .map(SaleItemImage::getImageName)
+                .sorted(Comparator.comparing(SaleItemImage::getImageViewOrder))
+                .map((saleItemImage -> {
+                    SaleItemImageDTO dto = new SaleItemImageDTO();
+                    dto.setImageName(saleItemImage.getImageName());
+                    dto.setOriginalImageName(saleItemImage.getOriginalImageName());
+                    dto.setImageViewOrder(saleItemImage.getImageViewOrder());
+                    return dto;
+                }))
                 .collect(Collectors.toList());
     }
 

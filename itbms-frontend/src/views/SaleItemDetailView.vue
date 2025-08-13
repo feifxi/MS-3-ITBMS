@@ -102,7 +102,7 @@ onMounted(async () => {
             <div class="flex-1 min-w-[300px] flex flex-col">
               <div class="mb-6 text-center overflow-hidden rounded-lg shadow-md">
                 <img 
-                  :src="IMAGE_ENDPOINT + item.imageNames[selectedImageIndex]"
+                  :src="item.saleItemImages[selectedImageIndex] ? `${IMAGE_ENDPOINT}${item.saleItemImages[selectedImageIndex].fileName}` : '/placeholder.svg'" 
                   alt="product"
                   class="w-full h-auto hover:scale-105 transition-transform duration-300" 
                   @error="event => event.target.src = '/placeholder.svg'"
@@ -110,9 +110,9 @@ onMounted(async () => {
               </div>
               <div class="grid grid-cols-4 gap-1">
                 <img 
-                    v-for="(imageName, i) of item.imageNames" 
+                    v-for="(image, i) of item.saleItemImages" 
                     @click="() => handleChangeSelectedImage(i)"
-                    :src="IMAGE_ENDPOINT + imageName || '/placeholder.svg'" 
+                    :src="IMAGE_ENDPOINT + image.fileName || '/placeholder.svg'" 
                     alt="sale item" 
                     :class="'shadow-md cursor-pointer ' + (i == selectedImageIndex ? 'border-5 border-purple-600' : '') " 
                 />

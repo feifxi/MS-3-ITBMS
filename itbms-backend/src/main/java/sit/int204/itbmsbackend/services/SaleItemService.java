@@ -145,7 +145,7 @@ public class SaleItemService {
             saleItemImage.setImageName(newFilenames.get(i));
             saleItemImage.setOriginalImageName(originalFilenames.get(i));
             saleItemImage.setSaleItem(newSaleItem);
-            saleItemImage.setOrderIndex(i);
+            saleItemImage.setImageViewOrder(i);
             saleItemImageRepository.save(saleItemImage);
         }
         return modelMapper.map(newSaleItem, SaleItemResponseDto.class);
@@ -166,7 +166,7 @@ public class SaleItemService {
         }
 
         // Fetch existing images from DB
-        List<SaleItemImage> existingImages = saleItemImageRepository.findAllBySaleItemOrderByOrderIndex(existingSaleItem);
+        List<SaleItemImage> existingImages = saleItemImageRepository.findAllBySaleItemOrderByImageViewOrder(existingSaleItem);
 
         // --- Remove deleted images ---
         for (SaleItemImage img : existingImages) {
@@ -187,7 +187,7 @@ public class SaleItemService {
                 SaleItemImage newImgEntity = new SaleItemImage();
                 newImgEntity.setImageName(newFilename);
                 newImgEntity.setOriginalImageName(uploadedImage.getOriginalFilename());
-                newImgEntity.setOrderIndex(i);
+                newImgEntity.setImageViewOrder(i);
                 newImgEntity.setSaleItem(existingSaleItem);
                 saleItemImageRepository.save(newImgEntity);
             } else {
@@ -199,9 +199,8 @@ public class SaleItemService {
                         .orElseThrow(() -> new ResponseStatusException(
                                 HttpStatus.BAD_REQUEST, "Existing image not found for image name: " + imgName
                         ));
-                existingImg.setOrderIndex(i);
-
-                SaleItemImage s = saleItemImageRepository.save(existingImg);
+                existingImg.setImageViewOrder(i);
+                saleItemImageRepository.save(existingImg);
             }
         }
 
@@ -224,7 +223,7 @@ public class SaleItemService {
         SaleItem existingSaleItem = saleItemRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
         );
-        List<SaleItemImage> saleItemImages = saleItemImageRepository.findAllBySaleItemOrderByOrderIndex(existingSaleItem);
+        List<SaleItemImage> saleItemImages = saleItemImageRepository.findAllBySaleItemOrderByImageViewOrder(existingSaleItem);
         for (SaleItemImage img : saleItemImages) {
             saleItemImageService.deleteImage(img.getImageName());   // remove image from storage
         }

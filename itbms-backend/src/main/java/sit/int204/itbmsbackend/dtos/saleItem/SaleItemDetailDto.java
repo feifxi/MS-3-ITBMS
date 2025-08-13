@@ -11,12 +11,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import sit.int204.itbmsbackend.dtos.saleItemImage.SaleItemImageDTO;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.entities.SaleItemImage;
 
 @Data
-@Getter
-@Setter
 public class SaleItemDetailDto {
     private Integer id;
     private String model;
@@ -29,21 +28,24 @@ public class SaleItemDetailDto {
     private Integer quantity;
     @JsonIgnore
     private Brand brand;
-
-    @JsonIgnore
+    private String createdOn;
+    private String updatedOn;
     private List<SaleItemImage> saleItemImages = new ArrayList<>();
-
-    public List<String> getImageNames() {
-        return saleItemImages.stream()
-                .sorted(Comparator.comparing(SaleItemImage::getOrderIndex))
-                .map(SaleItemImage::getImageName)
-                .collect(Collectors.toList());
-    }
 
     public String getBrandName() {
         return brand.getName();
     }
 
-    private String createdOn;
-    private String updatedOn;
+    public List<SaleItemImageDTO> getSaleItemImages() {
+        return saleItemImages.stream()
+                .sorted(Comparator.comparing(SaleItemImage::getImageViewOrder))
+                .map((saleItemImage -> {
+                    SaleItemImageDTO dto = new SaleItemImageDTO();
+                    dto.setImageName(saleItemImage.getImageName());
+                    dto.setOriginalImageName(saleItemImage.getOriginalImageName());
+                    dto.setImageViewOrder(saleItemImage.getImageViewOrder());
+                    return dto;
+                }))
+                .collect(Collectors.toList());
+    }
 }

@@ -34,7 +34,7 @@ public class SaleItemImage {
     private SaleItem saleItem;
 
     @NotNull
-    @Column(name = "order_index", nullable = false)
-    private Integer orderIndex;
+    @Column(name = "image_view_order", nullable = false)
+    private Integer imageViewOrder;
 
 }

@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import sit.int204.itbmsbackend.configs.FileStorageProperties;
 import sit.int204.itbmsbackend.dtos.PageDTO;
 import sit.int204.itbmsbackend.dtos.saleItem.*;
 import sit.int204.itbmsbackend.entities.Brand;
@@ -62,37 +61,57 @@ public class SaleItemService {
 
         Specification<SaleItem> spec = Specification.where(null);
 
+        // Filter by brand
         if (brands != null && !brands.isEmpty()) {
             spec = spec.and((root, query, cb) -> root.get("brand").get("name").in(brands));
         }
 
-        // แก้ไข price filter logic
+        // Filter by price (ตาม requirement ใหม่)
         if (priceLower != null && priceUpper != null) {
-            // ถ้ามีทั้ง lower และ upper
-            spec = spec.and((root, query, cb) ->
-                    cb.between(root.get("price"), priceLower, priceUpper));
+            if (priceLower.compareTo(priceUpper) == 0) {
+                // ถ้าสองค่ามีค่าเท่ากัน → เท่ากับค่านั้นเลย
+                spec = spec.and((root, query, cb) ->
+                        cb.equal(root.get("price"), priceLower));
+            } else {
+                // ค่าต่างกัน → ใช้ between
+                spec = spec.and((root, query, cb) ->
+                        cb.between(root.get("price"), priceLower, priceUpper));
+            }
         } else if (priceLower != null) {
-            // ถ้ามีแค่ lower bound
+            // มีแค่ lower → เท่ากับค่านี้
             spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("price"), priceLower));
+                    cb.equal(root.get("price"), priceLower));
         } else if (priceUpper != null) {
-            // ถ้ามีแค่ upper bound
+            // มีแค่ upper → เท่ากับค่านี้
             spec = spec.and((root, query, cb) ->
-                    cb.lessThanOrEqualTo(root.get("price"), priceUpper));
+                    cb.equal(root.get("price"), priceUpper));
         }
 
-        // แก้ไข storage filter logic
+        // Filter by storage size (ตาม requirement)
         if (storageSizes != null && !storageSizes.isEmpty()) {
-            // ตรวจสอบว่ามี -1 ใน list หรือไม่
             if (storageSizes.contains(-1)) {
-                // ถ้ามี -1 ให้แสดงเฉพาะ storage ที่เป็น null
-                spec = spec.and((root, query, cb) -> cb.isNull(root.get("storageGb")));
+                // มี -1 → รวม null และค่าที่เลือก (ยกเว้น -1)
+                List<Integer> validSizes = storageSizes.stream()
+                        .filter(s -> s != -1) // <-- แก้ชื่อที่นี่
+                        .toList();
+                spec = spec.and((root, query, cb) -> {
+                    if (validSizes.isEmpty()) {
+                        // ถ้าเลือกเฉพาะ -1 → null เท่านั้น
+                        return cb.isNull(root.get("storageGb"));
+                    } else {
+                        // null หรืออยู่ใน validSizes
+                        return cb.or(
+                                cb.isNull(root.get("storageGb")),
+                                root.get("storageGb").in(validSizes)
+                        );
+                    }
+                });
             } else {
-                // ถ้าไม่มี -1 ให้ filter ตามค่าที่ส่งมา
-                spec = spec.and((root, query, cb) -> root.get("storageGb").in(storageSizes));
+                // ไม่มี -1 → filter ตามค่าที่เลือก
+                spec = spec.and((root, query, cb) ->
+                        root.get("storageGb").in(storageSizes));
             }
         }
-
         return listMapper.toPageDTO(
                 saleItemRepository.findAll(spec, pageable),
                 SaleItemListDto.class,
@@ -115,6 +134,11 @@ public class SaleItemService {
                 SaleItemListDto.class, modelMapper
         );
     }*/
+        public List<Integer> getDistinctStorageSizes() {
+            return saleItemRepository.findDistinctStorageGb();
+        }
+
+
 
     public SaleItemDetailDto findById(Integer id) {
         SaleItem saleItem =  saleItemRepository.findById(id).orElseThrow(

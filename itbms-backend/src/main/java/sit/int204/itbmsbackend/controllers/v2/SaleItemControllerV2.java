@@ -26,16 +26,22 @@ public class SaleItemControllerV2 {
     }
 
     @GetMapping
-    public ResponseEntity<PageDTO<SaleItemListDto>> getAllSaleItems(
+    public ResponseEntity<?> getAllSaleItems(
             @RequestParam(required = false) List<String> filterBrands,
-            @RequestParam(required = true) Integer page,
-            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "createdOn") String sortField,
             @RequestParam(defaultValue = "asc") String sortDirection,
             @RequestParam(required = false) Integer priceLower,
             @RequestParam(required = false) Integer priceUpper,
-            @RequestParam(required = false) List<Integer> storageSizes
+            @RequestParam(required = false) List<Integer> storageSizes,
+            @RequestParam(required = false, defaultValue = "false") boolean distinctStorage
     ) {
+        if (distinctStorage) {
+            List<Integer> storages = saleItemService.getDistinctStorageSizes();
+            return ResponseEntity.ok(storages);
+        }
+
         return ResponseEntity.ok(
                 saleItemService.findAll(
                         filterBrands,
@@ -50,7 +56,6 @@ public class SaleItemControllerV2 {
         );
     }
 }
-
 
 /*    @GetMapping
     public ResponseEntity<PageDTO<SaleItemListDto>> getAllSaleItems(

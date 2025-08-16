@@ -29,10 +29,13 @@ public class SaleItemResponseDto {
     private Integer quantity;
     @JsonIgnore
     private Brand brand;
+    private Instant createdOn;
+    private Instant updatedOn;
+    private List<SaleItemImage> saleItemImages = new ArrayList<>();
+
     public String getBrandName() {
         return brand.getName();
     }
-    private List<SaleItemImage> saleItemImages = new ArrayList<>();
 
     public List<SaleItemImageDTO> getSaleItemImages() {
         return saleItemImages.stream()
@@ -46,7 +49,4 @@ public class SaleItemResponseDto {
                 }))
                 .collect(Collectors.toList());
     }
-
-    private Instant createdOn;
-    private Instant updatedOn;
 }

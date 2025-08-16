@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.dtos.PageDTO;
 import sit.int204.itbmsbackend.dtos.saleItem.*;
+import sit.int204.itbmsbackend.dtos.saleItemImage.SaleItemImageDTO;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.entities.SaleItem;
 import sit.int204.itbmsbackend.entities.SaleItemImage;
@@ -134,11 +135,9 @@ public class SaleItemService {
                 SaleItemListDto.class, modelMapper
         );
     }*/
-        public List<Integer> getDistinctStorageSizes() {
-            return saleItemRepository.findDistinctStorageGb();
-        }
-
-
+    public List<Integer> getDistinctStorageSizes() {
+        return saleItemRepository.findDistinctStorageGb();
+    }
 
     public SaleItemDetailDto findById(Integer id) {
         SaleItem saleItem =  saleItemRepository.findById(id).orElseThrow(
@@ -172,6 +171,8 @@ public class SaleItemService {
             saleItemImage.setImageViewOrder(i);
             saleItemImageRepository.save(saleItemImage);
         }
+        List<SaleItemImage> saleItemImages  = saleItemImageRepository.findAllBySaleItemOrderByImageViewOrder(newSaleItem);
+        newSaleItem.setSaleItemImages(saleItemImages);  // fetch new image data because of lazy loading
         return modelMapper.map(newSaleItem, SaleItemResponseDto.class);
     }
 

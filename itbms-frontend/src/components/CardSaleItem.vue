@@ -30,7 +30,7 @@ defineProps({
             <img 
               :src="item.saleItemImages[0] ? `${IMAGE_ENDPOINT}${item.saleItemImages[0].fileName}` : placeHolder" 
               :alt="item.model" 
-              class="w-full h-48 object-contain p-4" 
+              class="w-full h-48 object-cover p-4" 
             />
             <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white transition-colors">
               <Heart class="size-4" />

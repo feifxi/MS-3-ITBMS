@@ -1,5 +1,4 @@
 const BASE_API = import.meta.env.VITE_BASE_API
-
 function cleanObject(obj) {
   return Object.fromEntries(
     Object.entries(obj)
@@ -18,6 +17,62 @@ export const fetchAllSaleItemsV2 = async (page, size, filterBrands, sortField, s
     // console.log(query)
     return await fetch(`${BASE_API}/v2/sale-items` + query)
 }
+
+// fetch sale items 
+export const fetchAllSaleItemsV3 = async (page, size, filterBrands, filterPriceRange, filterStorageSizes, sortField, sortDirection) => {
+    const params = new URLSearchParams({
+        page: page.toString(),
+        size: size.toString()
+    });
+    
+    if (filterBrands && filterBrands.length > 0) {
+        filterBrands.forEach(brand => params.append('filterBrands', brand));
+    }
+
+    if (filterPriceRange && filterPriceRange.selectedRanges.length > 0) {
+         const allRanges = filterPriceRange.selectedRanges
+        if (allRanges.length > 0) {
+            const minPrice = Math.min(...allRanges.map(r => r.min))
+            const maxPrice = Math.max(...allRanges.map(r => r.max))
+            params.append('priceLower', minPrice.toString())
+            params.append('priceUpper', maxPrice.toString())
+        }
+    }
+
+    if (filterStorageSizes && filterStorageSizes.length > 0) {
+        filterStorageSizes.forEach(size => {
+            if (typeof size === 'number') {
+                params.append('storageSizes', size.toString())
+                } else if (size === '1 TB') {
+                params.append('storageSizes', '1024') 
+            } else if (size === 'Not specified') {
+                params.append('storageSizes', 'null') 
+            }
+        })
+    }
+    
+    if (sortField) {
+        params.append('sortField', sortField);
+        if (sortDirection) {
+            params.append('sortDirection', sortDirection);
+        }
+    }
+    
+    
+    return await fetch(`${BASE_API}/v2/sale-items?${params.toString()}`);
+}
+
+export const fetchAllStorageSizes = async () => {
+    return await fetch(`${BASE_API}/v2/sale-items/storage-sizes`);
+}
+
+export const fetchPriceRanges = async () => {
+    return await fetch(`${BASE_API}/v1/price-ranges`);
+}
+
+
+
+
 
 export const fetchSaleItemById = async (id) => {
     return await fetch(`${BASE_API}/v1/sale-items/${id}`)

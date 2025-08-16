@@ -2,6 +2,7 @@
 import { formatNumber } from "../libs/utils.js";
 import { RouterLink } from 'vue-router'
 import { Heart, Plus } from "lucide-vue-next";
+import placeHolder from '@/assets/placeholder.svg' 
 
 const BASE_API = import.meta.env.VITE_BASE_API
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
@@ -27,7 +28,7 @@ defineProps({
         <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all    transform hover:-translate-y-1">
           <div class="relative">
             <img 
-              :src="item.saleItemImages[0] ? `${IMAGE_ENDPOINT}${item.saleItemImages[0].fileName}` : '/placeholder.svg'" 
+              :src="item.saleItemImages[0] ? `${IMAGE_ENDPOINT}${item.saleItemImages[0].fileName}` : placeHolder" 
               :alt="item.model" 
               class="w-full h-48 object-contain p-4" 
             />

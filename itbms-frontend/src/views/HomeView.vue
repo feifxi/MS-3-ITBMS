@@ -3,7 +3,8 @@
   import { RouterLink } from 'vue-router'
   import mockPhone from '@/assets/image/mockPhone.webp'
   import mockPhone2 from '@/assets/image/mock2.png' 
-
+  import placeHolder from '@/assets/placeholder.svg' 
+  
   
   const categories = ref([
     { id: 1, name: 'iPhone', color: 'rose' },
@@ -95,7 +96,6 @@
     <!-- Hero Section -->
     <div class="container mx-auto px-4 py-8">
       <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-500 to-purple-600 h-80 md:h-96">
-        <div class="absolute inset-0 bg-[url('/placeholder.svg?height=600&width=800')] bg-cover opacity-10"></div>
         <div class="relative z-10 h-full flex flex-col md:flex-row items-center justify-between p-8">
           <div class="text-white max-w-md">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">iPhone 15 Pro</h2>
@@ -115,7 +115,7 @@
             </div>
           </div>
           <div class="mt-6 md:mt-0 transform rotate-12 drop-shadow-2xl">
-            <img src="/placeholder.svg?height=400&width=200" alt="iPhone 15 Pro" class="h-48 md:h-64 object-contain" />
+            <img :src="placeHolder" alt="iPhone 15 Pro" class="h-48 md:h-64 object-contain" />
           </div>
         </div>
       </div>
@@ -181,7 +181,7 @@
     <div class="container mx-auto px-4 py-8">
       <h2 class="text-xl font-bold mb-6">New Arrivals</h2>
       <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 p-6">
-        <div class="absolute inset-0 bg-[url('/placeholder.svg?height=600&width=800')] bg-cover opacity-10"></div>
+        <!-- <div class="absolute inset-0 bg-[url('/placeholder.svg?height=600&width=800')] bg-cover opacity-10"></div> -->
         <div class="relative z-10 flex flex-col md:flex-row items-center justify-between">
           <div class="text-white max-w-md">
             <h3 class="text-2xl font-bold mb-2">Samsung Galaxy Z Fold 5</h3>

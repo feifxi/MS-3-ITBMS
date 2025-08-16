@@ -7,6 +7,7 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
 import Button from '@/components/Button.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 import { ChevronDown, ChevronUp, X } from 'lucide-vue-next';
+import placeHolder from '@/assets/placeholder.svg' 
 
 const BASE_API = import.meta.env.VITE_BASE_API
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
@@ -345,7 +346,7 @@ watch([saleItem, saleItemImageFiles], () => {
                 <div class="flex-1 flex flex-col gap-4">
                     <div class="text-center overflow-hidden rounded-lg shadow-md">
                         <img 
-                            :src="saleItemImageFiles[selectedImageIndex]?.preview || '/placeholder.svg'" 
+                            :src="saleItemImageFiles[selectedImageIndex]?.preview || placeHolder" 
                             alt="sale item"
                             class="w-full h-auto hover:scale-105 transition-transform duration-300" />
                     </div>
@@ -353,7 +354,7 @@ watch([saleItem, saleItemImageFiles], () => {
                         <img 
                             v-for="i of [0,1,2,3]" 
                             @click="() => handleChangeSelectedImage(i)"
-                            :src="saleItemImageFiles[i]?.preview || '/placeholder.svg'" 
+                            :src="saleItemImageFiles[i]?.preview || placeHolder" 
                             alt="sale item" 
                             :class="'shadow-md ' + (saleItemImageFiles.length > 0 && i == selectedImageIndex ? 'border-5 cursor-pointer border-purple-600' : '') " 
                         />

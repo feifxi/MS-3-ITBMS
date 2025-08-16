@@ -10,6 +10,7 @@ import BreadCrumb from '@/components/BreadCrumb.vue';
 import Button from '@/components/Button.vue';
 import DeleteConfirmModal from '@/components/ConfirmModal.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
+import placeHolder from '@/assets/placeholder.svg' 
 
 const BASE_API = import.meta.env.VITE_BASE_API
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
@@ -102,10 +103,10 @@ onMounted(async () => {
             <div class="flex-1 min-w-[300px] flex flex-col">
               <div class="mb-6 text-center overflow-hidden rounded-lg shadow-md">
                 <img 
-                  :src="item.saleItemImages[selectedImageIndex] ? `${IMAGE_ENDPOINT}${item.saleItemImages[selectedImageIndex].fileName}` : '/placeholder.svg'" 
+                  :src="item.saleItemImages[selectedImageIndex] ? `${IMAGE_ENDPOINT}${item.saleItemImages[selectedImageIndex].fileName}` : placeHolder" 
                   alt="product"
                   class="w-full h-auto hover:scale-105 transition-transform duration-300" 
-                  @error="event => event.target.src = '/placeholder.svg'"
+                  @error="event => event.target.src = placeHolder"
                 />
               </div>
               <div class="grid grid-cols-4 gap-1">

@@ -1,5 +1,5 @@
 services:
-  fe:
+  frontend:
     container_name: itbms-fe-container
     build:
       context: ./itbms-frontend
@@ -9,9 +9,9 @@ services:
     networks:
       - itbms-network
     depends_on:
-      - be
+      - backend
 
-  be:
+  backend:
     container_name: itbms-be-container
     build:
       context: ./itbms-backend
@@ -25,10 +25,10 @@ services:
     networks:
       - itbms-network
     depends_on:
-      db:
+      database:
         condition: service_healthy
 
-  db:
+  database:
     container_name: itbms-db-container
     image: mysql:latest
     environment:

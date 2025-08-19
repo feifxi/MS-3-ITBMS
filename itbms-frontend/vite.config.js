@@ -18,7 +18,4 @@ export default defineConfig({
     },
   },
   base: '/ms3/',
-  define: {
-    global: 'window',
-  },
 })

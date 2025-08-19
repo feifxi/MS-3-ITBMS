@@ -109,6 +109,12 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Web Socket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

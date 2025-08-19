@@ -19,3 +19,4 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Integer>, Jp
     @Query("SELECT DISTINCT s.storageGb FROM SaleItem s ORDER BY s.storageGb ASC")
     List<Integer> findDistinctStorageGb();
 }
+

@@ -55,6 +55,15 @@ public class SaleItemService {
             BigDecimal priceUpper,
             List<Integer> storageSizes
     ) {
+        // ======= validate price range =======
+        // ส่ง priceLower หรือ priceUpper มา "อย่างใดอย่างหนึ่ง" → ไม่อนุญาต
+        if ((priceLower != null && priceUpper == null) ||
+                (priceLower == null && priceUpper != null)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "ต้องส่ง priceLower และ priceUpper มาพร้อมกัน หรือไม่ส่งเลย");
+        }
+
         Sort sort = "desc".equalsIgnoreCase(sortDirection)
                 ? Sort.by(sortField).descending().and(Sort.by("id").ascending())
                 : Sort.by(sortField).ascending().and(Sort.by("id").ascending());
@@ -67,40 +76,29 @@ public class SaleItemService {
             spec = spec.and((root, query, cb) -> root.get("brand").get("name").in(brands));
         }
 
-        // Filter by price (ตาม requirement ใหม่)
+        // Filter by price
         if (priceLower != null && priceUpper != null) {
             if (priceLower.compareTo(priceUpper) == 0) {
-                // ถ้าสองค่ามีค่าเท่ากัน → เท่ากับค่านั้นเลย
+                // ถ้าเท่ากัน → เท่ากับค่านั้น
                 spec = spec.and((root, query, cb) ->
                         cb.equal(root.get("price"), priceLower));
             } else {
-                // ค่าต่างกัน → ใช้ between
+                // ไม่เท่ากัน → between
                 spec = spec.and((root, query, cb) ->
                         cb.between(root.get("price"), priceLower, priceUpper));
             }
-        } else if (priceLower != null) {
-            // มีแค่ lower → เท่ากับค่านี้
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("price"), priceLower));
-        } else if (priceUpper != null) {
-            // มีแค่ upper → เท่ากับค่านี้
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("price"), priceUpper));
         }
 
-        // Filter by storage size (ตาม requirement)
+        // Filter by storage size
         if (storageSizes != null && !storageSizes.isEmpty()) {
             if (storageSizes.contains(-1)) {
-                // มี -1 → รวม null และค่าที่เลือก (ยกเว้น -1)
                 List<Integer> validSizes = storageSizes.stream()
-                        .filter(s -> s != -1) // <-- แก้ชื่อที่นี่
+                        .filter(s -> s != -1)
                         .toList();
                 spec = spec.and((root, query, cb) -> {
                     if (validSizes.isEmpty()) {
-                        // ถ้าเลือกเฉพาะ -1 → null เท่านั้น
                         return cb.isNull(root.get("storageGb"));
                     } else {
-                        // null หรืออยู่ใน validSizes
                         return cb.or(
                                 cb.isNull(root.get("storageGb")),
                                 root.get("storageGb").in(validSizes)
@@ -108,11 +106,11 @@ public class SaleItemService {
                     }
                 });
             } else {
-                // ไม่มี -1 → filter ตามค่าที่เลือก
                 spec = spec.and((root, query, cb) ->
                         root.get("storageGb").in(storageSizes));
             }
         }
+
         return listMapper.toPageDTO(
                 saleItemRepository.findAll(spec, pageable),
                 SaleItemListDto.class,

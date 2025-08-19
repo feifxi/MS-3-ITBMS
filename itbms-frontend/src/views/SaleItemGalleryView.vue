@@ -148,10 +148,11 @@ const fetchStorageSize = async () => {
     const res = await fetchAllStorageSizes()
       if (!res.ok) throw new Error("Something went wrong")
       const storageData = await res.json()
-      storageSizes.value = [...storageData,'1 TB', 'Not specified']
+      storageSizes.value = storageData 
+      // storageSizes.value = [...storageData,'1 TB', 'Not specified']
   } catch (err) {
       console.error('Failed to fetch storage sizes: ', err)
-       storageSizes.value = [32, 64, 128, 256, 512,'1 TB', 'Not specified']
+      // storageSizes.value = [32, 64, 128, 256, 512,'1 TB', 'Not specified']
   } finally {
     loading.value = false
   }
@@ -204,51 +205,86 @@ const handleRemovePriceRange = (range) => {
   filterPriceRange.selectedRanges.splice(removeIndex, 1)
 }
 
-const handleCustomPriceRange = () => {
-  const min = parseInt(filterPriceRange.customMin) || 0
-  const max = parseInt(filterPriceRange.customMax) || 999999
+// const handleCustomPriceRange = () => {
+//   const min = parseInt(filterPriceRange.customMin) || 0
+//   const max = parseInt(filterPriceRange.customMax) || 999999
   
-  if (min >= max) {
-    alert('Minimum price must be less than maximum price')
-    return
-  }
+//   if (min >= max) {
+//     alert('Minimum price must be less than maximum price')
+//     return
+//   }
   
-  const customRange = {
-    label: `${min} - ${max} Baht`,
-    min: min,
-    max: max
-  }
+//   const customRange = {
+//     label: `${min} - ${max} Baht`,
+//     min: min,
+//     max: max
+//   }
 
-   // Remove any existing custom range
-  filterPriceRange.selectedRanges = filterPriceRange.selectedRanges.filter(r => !r.label.includes('Custom'))
-  filterPriceRange.selectedRanges.push({ ...customRange, label: `Custom: ${customRange.label}` })
+//    // Remove any existing custom range
+//   filterPriceRange.selectedRanges = filterPriceRange.selectedRanges.filter(r => !r.label.includes('Custom'))
+//   filterPriceRange.selectedRanges.push({ ...customRange, label: `Custom: ${customRange.label}` })
   
-  // Clear custom inputs
-  filterPriceRange.customMin = ''
-  filterPriceRange.customMax = ''
-}
+//   // Clear custom inputs
+//   filterPriceRange.customMin = ''
+//   filterPriceRange.customMax = ''
+// }
 
 // Storage size filtering
-const handleAddFilterByStorageSize = (storageSize) => {
-  const existingIndex = filterStorageSizes.findIndex((size) => size === storageSize)
-  if (existingIndex >= 0) {
-    return filterStorageSizes.splice(existingIndex, 1)
+
+const handleCustomPriceRange = () => {
+  const min = parseInt(filterPriceRange.customMin)
+  const max = parseInt(filterPriceRange.customMax)
+
+  if (!isNaN(min) && !isNaN(max)) {
+    filterPriceRange.selectedRanges = [{
+      label: `${min} - ${max} Baht`,
+      min,
+      max
+    }]
+  } else if (!isNaN(min)) {
+    filterPriceRange.selectedRanges = [{
+      label: `${min} Baht`,
+      min,
+      max: min
+    }]
+  } else if (!isNaN(max)) {
+    filterPriceRange.selectedRanges = [{
+      label: `${max} Baht`,
+      min: max,
+      max
+    }]
   }
-  filterStorageSizes.push(storageSize)
+}
+
+const handleAddFilterByStorageSize = (storageSize) => {
+  const value = storageSize === null || storageSize === 'Not specified' ? -1 : storageSize
+  if (!filterStorageSizes.includes(value)) {
+    filterStorageSizes.push(value)
+  } else {
+    filterStorageSizes.splice(filterStorageSizes.indexOf(value), 1)
+  }
 }
 
 const handleRemoveStorageSizeFilter = (storageSize) => {
-  const removeIndex = filterStorageSizes.findIndex((size) => size === storageSize)
-  filterStorageSizes.splice(removeIndex, 1)
+  const value = storageSize === null || storageSize === 'Not specified' ? -1 : storageSize
+  const index = filterStorageSizes.indexOf(value)
+  if (index !== -1) {
+    filterStorageSizes.splice(index, 1)
+  }
 }
-
 const handleClearFilter = () => {
+  // clear values
   filterBrands.splice(0, filterBrands.length)
   filterPriceRange.selectedRanges.splice(0, filterPriceRange.selectedRanges.length)
   filterStorageSizes.splice(0, filterStorageSizes.length)
   filterPriceRange.customMin = ''
   filterPriceRange.customMax = ''
+
+  // กลับไปหน้าแรกและ fetch ข้อมูลใหม่
+  pagination.page = 0
+  fetchSaleItems()
 }
+
 
 // Sorting 
 const handleSortDefault = () => {
@@ -433,6 +469,8 @@ watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges
                 >
                 <span>Baht</span>
                 <!-- <Button variant="primary" @click="handleCustomPriceRange" class="px-3 py-1 text-sm">Apply</Button> -->
+                <Button variant="primary" @click="handleCustomPriceRange" class="px-3 py-1 text-sm">Apply</Button>
+
               </div>
             </div>
           </div>
@@ -447,7 +485,10 @@ watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges
               <!-- Loop selected storage size -->
               <div class="flex flex-wrap gap-3" v-if="filterStorageSizes.length > 0">
                 <div v-for="storageSize in filterStorageSizes" :key="storageSize" class="itbms-storage-size-item flex items-center gap-1 bg-rose-100 px-2 py-1 rounded">
-                  <span>{{ storageSize }}{{ typeof storageSize === 'number' ? 'GB' : '' }}</span>
+                  <span>
+                    {{ storageSize === -1 ? 'Not specified' 
+                                          : (typeof storageSize === 'number' ? storageSize + 'GB' : storageSize) }}
+                  </span>
                   <X class="size-4 cursor-pointer itbms-storage-size-item-clear" @click.stop="() => handleRemoveStorageSizeFilter(storageSize)" />
                 </div>
               </div>
@@ -457,9 +498,16 @@ watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges
           <!-- Dropdown storage size Filter -->
           <div v-if="isShowStorageFilters" class="z-10 absolute flex flex-col border border-neutral-100 bg-white shadow-xl  rounded-xl p-5 gap-5 max-h-100 overflow-y-scroll">
             <h4 class="font-semibold">Storage Size</h4>
+
             <div v-for="storageSize in storageSizes" :key="storageSize" class="flex items-center gap-2">
-              <input type="checkbox" class=" size-5" @click="() => handleAddFilterByStorageSize(storageSize)" :checked="filterStorageSizes.includes(storageSize)" >
-              <label class="itbms-filter-item cursor-pointer" @click="() => handleAddFilterByStorageSize(storageSize)">{{ typeof storageSize === 'number' ? storageSize + 'GB' : storageSize }}
+              <input
+                type="checkbox"
+                class="size-5"
+                @click="() => handleAddFilterByStorageSize(storageSize)"
+                :checked="filterStorageSizes.includes(storageSize === null ? -1 : storageSize)"
+              >
+              <label @click="() => handleAddFilterByStorageSize(storageSize)">
+                {{ typeof storageSize === 'number' ? storageSize + 'GB' : (storageSize === null ? 'Not specified' : storageSize) }}
               </label>
             </div>
           </div>

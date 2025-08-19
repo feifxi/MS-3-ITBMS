@@ -6,7 +6,7 @@ createdb:
 	-p 3306:3306 \
 	-d mysql:latest
 
-rmdb:
+dropdb:
 	docker rm -f itbms-dev-db
 
 .PHONY: createdb rmdb 

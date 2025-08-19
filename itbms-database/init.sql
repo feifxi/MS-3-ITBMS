@@ -3,6 +3,7 @@ SET time_zone = '+00:00';
 
 DROP DATABASE IF EXISTS `ms3_itbms_db` ;
 CREATE SCHEMA IF NOT EXISTS `ms3_itbms_db` DEFAULT CHARACTER SET utf8 ;
+USE `ms3_itbms_db`;
 
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`brands` (
 	id INT PRIMARY KEY AUTO_INCREMENT,
@@ -39,6 +40,44 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_item_images` (
     FOREIGN KEY (sale_item_id) REFERENCES sale_items(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`roles` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`users` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    enabled BOOLEAN DEFAULT TRUE,
+    account_non_expired BOOLEAN DEFAULT TRUE,
+    account_non_locked BOOLEAN DEFAULT TRUE,
+    credentials_non_expired BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_username (username),
+    INDEX idx_email (email)
+);
+
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`user_roles` (
+    user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
+-- Insert default roles
+INSERT INTO `ms3_itbms_db`.`roles` (`name`, `description`) VALUES 
+('ROLE_ADMIN', 'Administrator with full access'),
+('ROLE_USER', 'Regular user with limited access'),
+('ROLE_MODERATOR', 'Moderator with intermediate access');
+
+-- Insert Mock Data
 INSERT INTO `ms3_itbms_db`.`brands` (`id`, `name`, `website_url`, `is_active`,`country_of_origin`) VALUES
 (1,"Samsung","https://www.samsung.com",1, "South Korea"),
 (2,"Apple","https://www.apple.com",1, "United States"),

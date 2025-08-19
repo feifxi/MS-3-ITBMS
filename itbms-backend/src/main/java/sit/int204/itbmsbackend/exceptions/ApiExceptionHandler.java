@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import sit.int204.itbmsbackend.dtos.GeneralErrorResponseDto;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Map;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class ApiExceptionHandler {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Object> handleSQLException(SQLIntegrityConstraintViolationException ex, HttpServletRequest request) {
         GeneralErrorResponseDto errorResponse =  new GeneralErrorResponseDto(
@@ -40,5 +41,18 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+
+//    @ExceptionHandler(IllegalArgumentException.class)
+//    public ResponseEntity<Map<String,String>> handleIllegalArg(IllegalArgumentException ex) {
+//        return ResponseEntity.status(HttpStatus.CONFLICT)
+//                .body(Map.of("error", ex.getMessage()));
+//    }
+//
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<Map<String,String>> handleValidation(MethodArgumentNotValidException ex) {
+//        var first = ex.getBindingResult().getFieldErrors().stream().findFirst();
+//        String msg = first.map(f -> f.getField() + " " + f.getDefaultMessage()).orElse("Invalid payload");
+//        return ResponseEntity.badRequest().body(Map.of("error", msg));
+//    }
 }
 

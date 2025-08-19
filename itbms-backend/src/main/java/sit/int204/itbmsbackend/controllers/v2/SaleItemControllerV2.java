@@ -38,8 +38,8 @@ public class SaleItemControllerV2 {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "createdOn") String sortField,
             @RequestParam(defaultValue = "asc") String sortDirection,
-            @RequestParam(required = false, defaultValue = "0") Integer priceLower,
-            @RequestParam(required = false, defaultValue = "999999") Integer priceUpper,
+            @RequestParam(required = false) Integer priceLower,
+            @RequestParam(required = false) Integer priceUpper,
             @RequestParam(required = false) List<Integer> storageSizes,
             @RequestParam(required = false, defaultValue = "false") boolean distinctStorage
     ) {
@@ -55,11 +55,12 @@ public class SaleItemControllerV2 {
                         size,
                         sortField,
                         sortDirection,
-                        priceLower != null ? BigDecimal.valueOf(priceLower) : BigDecimal.ZERO,
-                        priceUpper != null ? BigDecimal.valueOf(priceUpper) : BigDecimal.valueOf(999999),
+                        priceLower != null ? BigDecimal.valueOf(priceLower) : null,
+                        priceUpper != null ? BigDecimal.valueOf(priceUpper) : null,
                         storageSizes
                 )
         );
+
     }
 }
 

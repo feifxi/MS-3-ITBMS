@@ -2,13 +2,15 @@
 import { ref, onMounted, watch, nextTick } from "vue"
 import { Client } from "@stomp/stompjs"
 
+const BASE_WS_API = import.meta.env.VITE_BASE_API
+
 const messages = ref([])
 const message = ref("")
 const chatWindow = ref(null)
 const username = "User" + Math.floor(Math.random() * 1000)
 
 const client = new Client({
-  brokerURL: "ws://localhost:8080/itb-mshop/ws", // Spring Boot WebSocket endpoint
+  brokerURL: `ws://localhost:8080/itb-mshop/ws`, // Spring Boot WebSocket endpoint
   reconnectDelay: 5000, // auto reconnect every 5s
   heartbeatIncoming: 4000,
   heartbeatOutgoing: 4000,

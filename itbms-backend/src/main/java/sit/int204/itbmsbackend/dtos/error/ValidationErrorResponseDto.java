@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.dtos;
+package sit.int204.itbmsbackend.dtos.error;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GeneralErrorResponseDto {
+public class ValidationErrorResponseDto {
     private final int status;
     private final String message;
     private final String instance;

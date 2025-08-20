@@ -267,69 +267,13 @@ watch([saleItem, saleItemImageFiles], () => {
 
 <template>
     <main class="px-4 sm:px-16 py-8">
-        <BreadCrumb :links="[
-            { to: '/sale-items', label: 'Home' },
-            { to: '#', label: 'New Sale Item' },
-        ]" />
-
         <div class="">
             <div v-if="isLoading" class="text-center text-blue-500 animate-pulse text-3xl font-bold">
                 Loading...
             </div>
 
-            <div v-else class="itbms-row flex max-lg:flex-col flex-wrap gap-12 bg-white rounded-lg shadow-lg p-6">
-                <div class="flex-1 flex flex-col gap-4">
-                    <div class="text-center overflow-hidden rounded-lg shadow-md">
-                        <img 
-                            :src="saleItemImageFiles[selectedImageIndex]?.preview || placeHolder" 
-                            alt="sale item"
-                            class="w-full h-auto hover:scale-105 transition-transform duration-300" />
-                    </div>
-                    <div class="grid grid-cols-4 gap-1">
-                        <img 
-                            v-for="i of [0,1,2,3]" 
-                            @click="() => handleChangeSelectedImage(i)"
-                            :src="saleItemImageFiles[i]?.preview || placeHolder" 
-                            alt="sale item" 
-                            :class="'shadow-md cursor-pointer ' + (saleItemImageFiles.length > 0 && i == selectedImageIndex ? 'border-5 border-purple-600' : '') " 
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="image-upload" className="itbms-upload-button primary-btn max-w-[150px]">
-                            upload image
-                        </label>
-                        <input
-                            id="image-upload"
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            @change="handleFileSelect"
-                            className="hidden"
-                        />
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <div 
-                            v-for="(image, index) in saleItemImageFiles" 
-                            class="py-2 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-purple-100 text-purple-600 px-6"
-                        >
-                            <p :class="`itbms-picture-file${index+1}`">{{ image.file.name }}</p>
-                            <X  @click="() => handleRemoveImage(image.file.name)"
-                                :class="`itbms-picture-file${index+1}-clear hover:text-white ml-auto size-6 cursor-pointer hover:bg-purple-600 transition-all rounded-full`" 
-                            /> 
-                            <div class="flex flex-col">
-                                <ChevronUp 
-                                    v-if="index != 0" 
-                                    :class="`itbms-picture-file${index+1}-up cursor-pointer`" 
-                                    @click="() => handleChangeOrderUp(index)"/>
-                                <ChevronDown 
-                                    v-if="index != saleItemImageFiles.length - 1"  
-                                    :class="`itbms-picture-file${index+1}-down cursor-pointer`"
-                                    @click="() => handleChangeOrderDown(index)"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <div v-else class="itbms-row flex flex-col bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-3xl font-bold">Register</h2>
                 <div class="flex-1 p-3">
                     <form @submit="submitForm" class="flex flex-col gap-3">
                         <div class="flex flex-col gap-1">

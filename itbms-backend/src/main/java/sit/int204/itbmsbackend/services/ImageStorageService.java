@@ -4,13 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.configs.FileStorageProperties;
-import sit.int204.itbmsbackend.entities.SaleItemImage;
 import sit.int204.itbmsbackend.repositories.SaleItemImageRepository;
 
 import java.io.*;
@@ -19,15 +17,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
-public class SaleItemImageService {
+public class ImageStorageService {
     @Autowired
     private FileStorageProperties properties;
-    @Autowired
-    private SaleItemImageRepository saleItemImageRepository;
 
     public boolean isValidFileSize(MultipartFile file) {
         DataSize maxSize = DataSize.parse(properties.getMaxSize());

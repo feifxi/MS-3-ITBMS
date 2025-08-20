@@ -32,13 +32,11 @@ public class SaleItemService {
     @Autowired
     private BrandService brandService;
     @Autowired
-    private SaleItemImageService imageService;
-    @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
     @Autowired
-    private SaleItemImageService saleItemImageService;
+    private ImageStorageService imageStorageService;
 
     public List<SaleItemListDto> findAll() {
         List <SaleItem> saleItems = saleItemRepository.findAll();
@@ -148,7 +146,7 @@ public class SaleItemService {
         List<String> originalFilenames = new ArrayList<>();
         List<String> newFilenames = new ArrayList<>();
         for (MultipartFile image : saleItemDto.getImages()) {
-            String newFilename = imageService.saveImage(image);
+            String newFilename = imageStorageService.saveImage(image);
             originalFilenames.add(image.getOriginalFilename());
             newFilenames.add(newFilename);
         }
@@ -193,7 +191,7 @@ public class SaleItemService {
         // --- Remove deleted images ---
         for (SaleItemImage img : existingImages) {
             if (!keptImageNames.contains(img.getImageName())) {
-                imageService.deleteImage(img.getImageName());
+                imageStorageService.deleteImage(img.getImageName());
                 saleItemImageRepository.delete(img);
             }
         }
@@ -205,7 +203,7 @@ public class SaleItemService {
 
             if (isNewImage) {
                 // Save as a completely new image
-                String newFilename = imageService.saveImage(uploadedImage);
+                String newFilename = imageStorageService.saveImage(uploadedImage);
                 SaleItemImage newImgEntity = new SaleItemImage();
                 newImgEntity.setImageName(newFilename);
                 newImgEntity.setOriginalImageName(uploadedImage.getOriginalFilename());
@@ -247,7 +245,7 @@ public class SaleItemService {
         );
         List<SaleItemImage> saleItemImages = saleItemImageRepository.findAllBySaleItemOrderByImageViewOrder(existingSaleItem);
         for (SaleItemImage img : saleItemImages) {
-            saleItemImageService.deleteImage(img.getImageName());   // remove image from storage
+            imageStorageService.deleteImage(img.getImageName());   // remove image from storage
         }
         saleItemImageRepository.deleteAll(saleItemImages);  // remove image data from db
         saleItemRepository.deleteById(id);  // remove sale item data

@@ -1,7 +1,5 @@
 package sit.int204.itbmsbackend.controllers.v1;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,12 +19,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.configs.FileStorageProperties;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemCreateDto;
@@ -34,10 +30,9 @@ import sit.int204.itbmsbackend.dtos.saleItem.SaleItemDetailDto;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemListDto;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemResponseDto;
 import sit.int204.itbmsbackend.dtos.saleItem.SaleItemUpdateDto;
-import sit.int204.itbmsbackend.entities.SaleItem;
 import sit.int204.itbmsbackend.entities.SaleItemImage;
 import sit.int204.itbmsbackend.repositories.SaleItemImageRepository;
-import sit.int204.itbmsbackend.services.SaleItemImageService;
+import sit.int204.itbmsbackend.services.ImageStorageService;
 import sit.int204.itbmsbackend.services.SaleItemService;
 
 
@@ -49,7 +44,7 @@ public class SaleItemControllerV1 {
     @Autowired
     private FileStorageProperties properties;
     @Autowired
-    private SaleItemImageService imageService;
+    private ImageStorageService imageService;
     @Autowired
     private SaleItemImageRepository saleItemImageRepository;
     @Autowired

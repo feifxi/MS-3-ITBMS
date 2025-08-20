@@ -5,11 +5,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import sit.int204.itbmsbackend.configs.FileStorageProperties;
 import sit.int204.itbmsbackend.utils.ListMapper;
 
 
 @SpringBootApplication
+@EnableScheduling
 public class ItbmsBackendApplication {
 
     public static void main(String[] args) {

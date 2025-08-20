@@ -7,17 +7,20 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class RegisterRequest {
-    @NotBlank
-    @Size(min = 3, max = 50)
-    private String username;
+public class BuyerRegisterRequest {
+    @Size(max = 40)
+    @NotNull
+    private String nickname;
 
-    @NotBlank
-    @Email
+    @Size(max = 40)
+    @NotNull
+    private String fullName;
+
     @Size(max = 100)
+    @NotNull
     private String email;
 
-    @NotBlank
-    @Size(min = 6)
+    @Size(min = 8)
+    @NotNull
     private String password;
 }

@@ -26,15 +26,18 @@ server:
 
 # File Config
 file:
-  upload-dir: saleitems_image
+  upload-dir: upload_images
   max-size: 2MB
   allowed-types: image/jpeg,image/png,image/webp
 
 # JWT Config
 jwt:
   secret: mySecretKey123456789012345678901234567890hfeoiafhaoifhadhiwadhjwoifdhwafiajfaidjsadiosadjifwhwif
-  access-token-expiration: 86400000 # 24 hours in milliseconds
-  refresh-token-expiration: 86400000
+  access-token-expiration_ms: 86400000 # 24 hours in milliseconds
+  refresh-token-expiration_ms: 86400000
+
+email:
+  verification_token_expiration_hr: 24
 
 # Logging
 logging:

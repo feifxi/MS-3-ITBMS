@@ -2,7 +2,7 @@ package sit.int204.itbmsbackend.utils;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import sit.int204.itbmsbackend.dtos.PageDTO;
+import sit.int204.itbmsbackend.dtos.common.PageDTO;
 
 
 import java.util.List;

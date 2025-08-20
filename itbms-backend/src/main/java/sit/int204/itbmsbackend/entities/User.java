@@ -43,20 +43,8 @@ public class User implements UserDetails {
     private String password;
 
     @ColumnDefault("1")
-    @Column(name = "enabled")
-    private Boolean enabled;
-
-    @ColumnDefault("1")
-    @Column(name = "account_non_expired")
-    private Boolean accountNonExpired;
-
-    @ColumnDefault("1")
-    @Column(name = "account_non_locked")
-    private Boolean accountNonLocked;
-
-    @ColumnDefault("1")
-    @Column(name = "credentials_non_expired")
-    private Boolean credentialsNonExpired;
+    @Column(name = "is_locked")
+    private Boolean isLocked;
 
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;

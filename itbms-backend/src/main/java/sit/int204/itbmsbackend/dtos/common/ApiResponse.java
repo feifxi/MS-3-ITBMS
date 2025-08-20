@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.dtos;
+package sit.int204.itbmsbackend.dtos.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

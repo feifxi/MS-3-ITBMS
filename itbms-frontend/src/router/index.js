@@ -9,6 +9,7 @@ import BrandList from '../views/BrandList.vue'
 import BrandEdit from '../views/BrandEdit.vue'
 import BrandAdd from '../views/BrandAdd.vue'
 import Chat from '@/views/Chat.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +63,11 @@ const router = createRouter({
       path: '/chat-app',
       name: 'chatApp',
       component: Chat,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
     },
   ],
 })

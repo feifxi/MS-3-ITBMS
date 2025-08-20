@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import sit.int204.itbmsbackend.dtos.ApiResponse;
+import sit.int204.itbmsbackend.dtos.common.ApiResponse;
 import sit.int204.itbmsbackend.dtos.auth.*;
 import sit.int204.itbmsbackend.entities.RefreshToken;
 import sit.int204.itbmsbackend.entities.Role;

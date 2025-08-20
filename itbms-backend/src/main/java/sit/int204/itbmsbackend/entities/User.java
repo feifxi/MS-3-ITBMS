@@ -11,10 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,11 +58,11 @@ public class User implements UserDetails {
     @Column(name = "credentials_non_expired")
     private Boolean credentialsNonExpired;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "created_on", nullable = false)
+    private LocalDateTime createdOn;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_on", nullable = false)
+    private LocalDateTime updatedOn;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
@@ -82,12 +80,12 @@ public class User implements UserDetails {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        createdOn = LocalDateTime.now();
+        updatedOn = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedOn = LocalDateTime.now();
     }
 }

@@ -13,14 +13,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.dtos.ApiResponse;
-import sit.int204.itbmsbackend.dtos.auth.AuthTokenResponse;
-import sit.int204.itbmsbackend.dtos.auth.LoginRequest;
-import sit.int204.itbmsbackend.dtos.auth.RegisterRequest;
+import sit.int204.itbmsbackend.dtos.auth.*;
+import sit.int204.itbmsbackend.entities.RefreshToken;
 import sit.int204.itbmsbackend.entities.Role;
 import sit.int204.itbmsbackend.entities.User;
 import sit.int204.itbmsbackend.jwt.JwtUtils;
 import sit.int204.itbmsbackend.repositories.RoleRepository;
 import sit.int204.itbmsbackend.repositories.UserRepository;
+import sit.int204.itbmsbackend.services.RefreshTokenService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +39,8 @@ public class AuthController {
     private PasswordEncoder encoder;
     @Autowired
     private JwtUtils jwtUtils;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
@@ -75,15 +77,21 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         User userDetails = (User) authentication.getPrincipal();
+
+//        // Create refresh token
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails);
+        // Get authority
         Set<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
         return ResponseEntity.ok(new AuthTokenResponse(
                 jwt,
+                refreshToken.getToken(),
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
@@ -92,9 +100,33 @@ public class AuthController {
         );
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        return refreshTokenService.findByToken(request.getRefreshToken())
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateJwtTokenFromEmail(user.getEmail());
+                    RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
+                    return ResponseEntity.ok(new RefreshTokenResponse(token, newRefreshToken.getToken()));
+                })
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Refresh token not found."));
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if user is authenticated
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, "No user is currently logged in."));
+        }
+
+        User userDetails = (User) authentication.getPrincipal();
+        refreshTokenService.deleteByUser(userDetails);
         SecurityContextHolder.clearContext();
-        return ResponseEntity.ok(new ApiResponse(true, "User logged out successfully!"));
+
+        return ResponseEntity.ok(new ApiResponse(true, "User signed out successfully!"));
     }
+
 }

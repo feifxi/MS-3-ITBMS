@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`roles` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     description VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`users` (
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`users` (
     account_non_expired BOOLEAN DEFAULT TRUE,
     account_non_locked BOOLEAN DEFAULT TRUE,
     credentials_non_expired BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_username (username),
     INDEX idx_email (email)
 );
@@ -69,6 +69,19 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`user_roles` (
     PRIMARY KEY (user_id, role_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`refresh_tokens` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    expiry_date DATETIME NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_user_id (user_id),
+    INDEX idx_expiry_date (expiry_date)
 );
 
 -- Insert default roles

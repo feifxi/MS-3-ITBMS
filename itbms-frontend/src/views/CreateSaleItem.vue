@@ -2,7 +2,6 @@
 import { ref, onMounted, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { createSaleItem, fetchAllBrands } from '../api'
-import mockPhone from '@/assets/image/mockPhone.webp'
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import Button from '@/components/Button.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';

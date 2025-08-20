@@ -20,7 +20,7 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.access-token-expiration}")
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
@@ -28,6 +28,15 @@ public class JwtUtils {
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getEmail())) // use email to identify
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(key(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateJwtTokenFromEmail(String email) {
+        return Jwts.builder()
+                .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)

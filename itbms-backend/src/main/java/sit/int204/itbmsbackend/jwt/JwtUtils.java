@@ -20,23 +20,12 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.access-token-expiration}")
+    @Value("${jwt.access-token-expiration_ms}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(Authentication authentication) {
-        User userPrincipal = (User) authentication.getPrincipal();
-
+    public String generateJwtToken(User user) {
         return Jwts.builder()
-                .setSubject((userPrincipal.getEmail())) // use email to identify
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(key(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public String generateJwtTokenFromEmail(String email) {
-        return Jwts.builder()
-                .setSubject(email)
+                .setSubject(user.getEmail())    // generate with user email
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)

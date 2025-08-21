@@ -58,7 +58,6 @@ export const fetchAllSaleItemsV3 = async (page, size, filterBrands, filterPriceR
         }
     }
     
-    
     return await fetch(`${BASE_API}/v2/sale-items?${params.toString()}`);
 }
 
@@ -70,10 +69,6 @@ export const fetchPriceRanges = async () => {
     return await fetch(`${BASE_API}/v1/price-ranges`);
 }
 
-
-
-
-
 export const fetchSaleItemById = async (id) => {
     return await fetch(`${BASE_API}/v1/sale-items/${id}`)
 }
@@ -81,8 +76,6 @@ export const fetchSaleItemById = async (id) => {
 export const createSaleItem = async (saleItem) => {
     return await fetch(`${BASE_API}/v1/sale-items`,{
         method: "POST",
-        // headers: { "Content-Type": "application/json" }, // change to form data
-        // body: JSON.stringify(saleItem),
         body: saleItem,
     })
 }
@@ -90,8 +83,6 @@ export const createSaleItem = async (saleItem) => {
 export const updateSaleItem = async (id, saleItem) => {
     return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
         method: "PUT",
-        // headers: { "Content-Type": "application/json" },
-        // body: JSON.stringify(saleItem),
         body: saleItem,
     })
 }
@@ -133,4 +124,29 @@ export const updateBrand = async (id, brand) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(brand),
   })
+}
+
+export const registerBuyerUser = async (userData) => {
+    return await fetch(`${BASE_API}/v2/auth/registers/buyer`,{
+        method: "POST",
+        body: userData,
+    })
+}
+
+export const registerSellerUser = async (userData) => {
+    return await fetch(`${BASE_API}/v2/auth/registers/seller`,{
+        method: "POST",
+        body: userData,
+    })
+}
+
+export const loginUser = async (email, password) => {
+    return await fetch(`${BASE_API}/v2/auth/login`,{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: email,
+            password: password,
+        }),
+    })
 }

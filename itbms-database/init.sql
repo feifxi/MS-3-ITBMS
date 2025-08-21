@@ -1,5 +1,5 @@
-SET GLOBAL time_zone = '+00:00';
-SET time_zone = '+00:00';
+-- SET GLOBAL time_zone = '+00:00';
+-- SET time_zone = '+00:00';
 
 DROP DATABASE IF EXISTS `ms3_itbms_db` ;
 CREATE SCHEMA IF NOT EXISTS `ms3_itbms_db` DEFAULT CHARACTER SET utf8 ;
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`sale_item_images` (
 );
 
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`roles` (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL UNIQUE,
     description VARCHAR(255),
     created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -49,14 +49,17 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`roles` (
 );
 
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`users` (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nickname VARCHAR(40) NOT NULL,
+    full_name VARCHAR(40) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    is_locked BOOLEAN DEFAULT FALSE,
+    is_locked BOOLEAN NOT NULL DEFAULT FALSE,
     created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_username (username),
+    status ENUM('ACTIVE','INACTIVE') DEFAULT 'INACTIVE',
+    verification_token VARCHAR(255),
+    verification_token_expiry DATETIME,
     INDEX idx_email (email)
 );
 
@@ -68,6 +71,40 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`user_roles` (
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
+-- Buyer profile (1-to-1 with user, optional)
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`buyer_profiles` (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT UNIQUE NOT NULL,
+    default_address_id INT, -- link to addresses table
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Seller profile (1-to-1 with user, optional)
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`seller_profiles` (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT UNIQUE NOT NULL,
+    shop_name VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    bank_account_number VARCHAR(50) NOT NULL,
+    bank_name VARCHAR(50) NOT NULL,
+    national_id VARCHAR(20),
+    national_id_image_front VARCHAR(255),
+    national_id_image_back VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Shipping addresses (buyers can have many addresses)
+CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`addresses` (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    buyer_id INT NOT NULL,
+    full_name VARCHAR(100),
+    phone VARCHAR(20),
+    address_line TEXT NOT NULL,
+    city VARCHAR(100),
+    postal_code VARCHAR(20),
+    country VARCHAR(50),
+    FOREIGN KEY (buyer_id) REFERENCES buyer_profiles(id) ON DELETE CASCADE
+);
 
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`refresh_tokens` (
     id INT AUTO_INCREMENT PRIMARY KEY,

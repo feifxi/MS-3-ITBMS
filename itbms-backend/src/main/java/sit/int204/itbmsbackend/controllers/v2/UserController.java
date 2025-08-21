@@ -17,28 +17,18 @@ public class UserController {
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<?> userProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
+        String email = authentication.getName();
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "User profile data");
-        response.put("username", username);
+        response.put("email", email);
         response.put("authorities", authentication.getAuthorities());
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/dashboard")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<?> userDashboard() {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Welcome to user dashboard");
-        response.put("access", "USER, MODERATOR, ADMIN");
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/update-profile")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> updateData) {
+    @PostMapping("/update-profile/{userId}")
+    @PreAuthorize("hasRole('USER') and #userId == principal.id")
+    public ResponseEntity<?> updateProfile(@RequestBody Map<String, String> updateData, @PathVariable Integer userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 

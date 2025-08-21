@@ -1,26 +1,29 @@
 -- example of create view
 USE ms3_itbms_db;
 
-SELECT * FROM sale_items;
-
-SELECT DISTINCT storage_Gb FROM sale_items;
-
+-- View
 CREATE VIEW saleitems_storage_size_view AS
 SELECT DISTINCT storage_Gb FROM sale_items;
 
 SELECT * FROM saleitems_storage_size_view;
 
 
--- between 101
--- /api/saleitems?upperPrice=1000&lowerPrice=5000&brands=apple,samsung&storageSize=32,254
-SELECT * FROM sale_items WHERE price BETWEEN 1000 AND 5000;
-
+-- Sale item
+SELECT * FROM sale_items;
 -- User
-USE ms3_itbms_db;
-
-SELECT * FROM user_roles;
-SELECT * FROM users;
 SELECT * FROM roles;
+SELECT * FROM users;
+SELECT * FROM seller_profiles;
+SELECT * FROM buyer_profiles;
+SELECT * FROM user_roles;
+-- Auth
+SELECT * FROM refresh_tokens;
+-- Email Verified Exipires user
+SELECT * FROM users u WHERE u.verification_token_expiry < NOW();
+
+SET time_zone = '+07:00';
+SELECT @@global.time_zone, @@session.time_zone;
+SELECT NOW(), UTC_TIMESTAMP();
 
 -- Inspect user role
 SELECT u.username, r.name AS 'role name' FROM users u

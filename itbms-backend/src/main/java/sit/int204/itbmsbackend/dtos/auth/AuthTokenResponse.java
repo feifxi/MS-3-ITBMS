@@ -1,25 +1,24 @@
 package sit.int204.itbmsbackend.dtos.auth;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Set;
 
 @Data
 public class AuthTokenResponse {
-    private String token;
+    private String accessToken;
     private String refreshToken;
     private String type = "Bearer";
     private Integer id;
-    private String username;
+    private String nickname;
     private String email;
     private Set<String> roles;
 
-    public AuthTokenResponse(String accessToken, String refreshToken, Integer id, String username, String email, Set<String> roles) {
-        this.token = accessToken;
+    public AuthTokenResponse(String accessToken, String refreshToken, Integer id, String nickname, String email, Set<String> roles) {
+        this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.id = id;
-        this.username = username;
+        this.nickname = nickname;
         this.email = email;
         this.roles = roles;
     }

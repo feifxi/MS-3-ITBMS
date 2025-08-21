@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.controllers.v3;
+package sit.int204.itbmsbackend.controllers.v2;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

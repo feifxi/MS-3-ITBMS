@@ -19,7 +19,7 @@ public class RefreshTokenService {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    @Value("${jwt.refresh-token-expiration:86400000}") // 24 hours default
+    @Value("${jwt.refresh-token-expiration_ms:86400000}") // 24 hours default
     private int jwtRefreshExpirationMs;
 
     @Transactional

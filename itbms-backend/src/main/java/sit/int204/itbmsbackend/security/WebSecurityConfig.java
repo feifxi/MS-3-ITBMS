@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sit.int204.itbmsbackend.filters.AuthTokenFilter;
-import sit.int204.itbmsbackend.jwt.AuthEntryPointJwt;
+import sit.int204.itbmsbackend.filters.AuthEntryPointJwt;
 import sit.int204.itbmsbackend.services.UserDetailsServiceImpl;
 
 @Configuration
@@ -63,7 +63,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/v2/auth/**").permitAll()
                         .requestMatchers("/v2/public/**").permitAll()
                         .requestMatchers("/v2/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/v2/moderator/**").hasAnyRole("MODERATOR", "ADMIN")
                         .requestMatchers("/v2/user/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
                         .anyRequest().authenticated()
                 );

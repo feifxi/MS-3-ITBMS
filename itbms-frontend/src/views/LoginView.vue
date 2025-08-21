@@ -190,7 +190,7 @@ watch(userData, () => {
                 </p>
               </div>
 
-              <div class="flex gap-3 items-center mt-5">
+              <div class="flex flex-col gap-3 mt-5">
                 <Button
                   variant="primary"
                   :onclick="submitForm"
@@ -200,16 +200,6 @@ watch(userData, () => {
                 >
                   {{ isSubmitting ? "Loading..." : "Sign in" }}
                 </Button>
-
-                <Button
-                  variant="secondary"
-                  :onclick="goBackHome"
-                  type="button"
-                  class-name="itbms-cancel-button shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]"
-                >
-                  Cancel
-                </Button>
-
                 <button
                   type="button"
                   @click="navigateToRegister"

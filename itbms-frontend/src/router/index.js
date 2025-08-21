@@ -11,6 +11,7 @@ import BrandAdd from '../views/BrandAdd.vue'
 import Chat from '@/views/Chat.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,6 +65,7 @@ const router = createRouter({
       path: '/chat-app',
       name: 'chatApp',
       component: Chat,
+      meta: { requiresAuth: true },
     },
     {
       path: '/register',
@@ -76,6 +78,23 @@ const router = createRouter({
       component: LoginView,
     },
   ],
+})
+
+router.beforeEach(async (to, from, next) => {
+  const auth = useAuthStore()
+  
+  // ensure user is fetched if token exists
+  if (auth.token && !auth.user) {
+    await auth.fetchUser()
+  }
+  console.log("Logged in user : " ,auth.user)
+  if (to.meta.requiresAuth && !auth.user) { 
+    next({ name: "login" })
+  } else if (auth.user && (to.name === "register" || to.name === "login")) {
+    next({ name: "SaleItemGallery" })
+  } else {
+    next()
+  }
 })
 
 export default router

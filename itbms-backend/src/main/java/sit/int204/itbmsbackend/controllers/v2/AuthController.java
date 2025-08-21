@@ -220,6 +220,23 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true, "Email verification successfully!"));
     }
 
+    @GetMapping("/check-identity")
+    public ResponseEntity<UserDetailsResponse> checkUserIdentity() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Check if user is authenticated
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        User userDetails = (User) authentication.getPrincipal();
+        UserDetailsResponse response = new UserDetailsResponse();
+        response.setId(userDetails.getId());
+        response.setNickname(userDetails.getNickname());
+        response.setFullName(userDetails.getFullName());
+        response.setEmail(userDetails.getEmail());
+        response.setIsLocked(userDetails.getIsLocked());
+        return ResponseEntity.ok(response);
+    }
+
     /**
      * Scheduled job to delete user with expired token every 24 hour.
      */

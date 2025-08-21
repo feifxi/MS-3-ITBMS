@@ -5,9 +5,11 @@ import { loginUser, registerBuyerUser, registerSellerUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import placeHolder from "@/assets/placeholder.svg";
+import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
+const authStore = useAuthStore();
 
 const userData = reactive({
   email: "",
@@ -82,6 +84,9 @@ const submitForm = async (e) => {
     if (res.ok) {
         statusMessageStore.setStatusMessage("Login success.");
         // save user identity to store
+        localStorage.setItem("access_token", result.accessToken)
+        localStorage.setItem("refresh_token", result.refreshToken)
+        await authStore.fetchUser()
 
         router.push({ name: "SaleItemGallery" });
     }

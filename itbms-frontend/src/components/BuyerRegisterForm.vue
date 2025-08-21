@@ -1,10 +1,9 @@
 <script setup>
 import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { registerBuyerUser, registerSellerUser } from "../api";
+import { registerBuyerUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
-import placeHolder from "@/assets/placeholder.svg";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();

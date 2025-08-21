@@ -17,6 +17,19 @@ spring:
 #        dialect: org.hibernate.dialect.MySQLDialect
 #        format_sql: true
 
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: itbmshop359@gmail.com
+    password: hxjhjwvjpczmasfd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 server:
   port: 8080
   servlet:

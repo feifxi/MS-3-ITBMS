@@ -21,6 +21,7 @@ import sit.int204.itbmsbackend.entities.*;
 import sit.int204.itbmsbackend.jwt.JwtUtils;
 import sit.int204.itbmsbackend.repositories.RoleRepository;
 import sit.int204.itbmsbackend.repositories.UserRepository;
+import sit.int204.itbmsbackend.services.EmailService;
 import sit.int204.itbmsbackend.services.ImageStorageService;
 import sit.int204.itbmsbackend.services.RefreshTokenService;
 
@@ -48,6 +49,15 @@ public class AuthController {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private ImageStorageService imageStorageService;
+
+    //--------------ice
+    @Autowired
+    private EmailService emailService;
+
+    @Value("${team.code:TEAM01}") // กำหนด default team code ไว้ได้
+    private String teamCode;
+//-------------------------------------------------------
+
     @Value("${email.verification_token_expiration_hr:86400000}") // 24 hours default
     private int emailVerifiedExpirationHr;
 
@@ -88,6 +98,7 @@ public class AuthController {
         userRepository.save(user);
 
         // Send email verification
+        //emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
 
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Buyer user registered successfully!"));
@@ -150,6 +161,7 @@ public class AuthController {
         userRepository.save(user);
 
         // Send email verification
+        //emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
 
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Seller user registered successfully!"));

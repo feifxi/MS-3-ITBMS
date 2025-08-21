@@ -402,7 +402,7 @@ watch([saleItem, saleItemImageFiles], () => {
                         </div>
 
                         <div class="flex flex-col gap-1">
-                            <label>Ram (GM)</label>
+                            <label>Ram (GB)</label>
                             <input name="ramGb" type="number" 
                                 class="itbms-ramGb input" 
                                 placeholder="Ram..."

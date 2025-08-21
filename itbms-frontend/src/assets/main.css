@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+body {
+    @apply bg-gradient-to-br from-rose-50 to-purple-50
+}
+
 .input {
     @apply w-full py-1.5 px-3 pr-8 rounded-xl text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all min-w-20
 }

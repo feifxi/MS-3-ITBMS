@@ -52,7 +52,7 @@ public class AuthController {
     private int emailVerifiedExpirationHr;
 
     @PostMapping(
-            value = "/buyer/registers",
+            value = "/registers/buyer",
             consumes = {"multipart/form-data"},
             produces = {"application/json"}
     )
@@ -87,11 +87,14 @@ public class AuthController {
         // Save user to db
         userRepository.save(user);
 
+        // Send email verification
+
+
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Buyer user registered successfully!"));
     }
 
     @PostMapping(
-            value = "/seller/registers",
+            value = "/registers/seller",
             consumes = {"multipart/form-data"},
             produces = {"application/json"}
     )
@@ -146,6 +149,9 @@ public class AuthController {
         // Save user to db
         userRepository.save(user);
 
+        // Send email verification
+
+
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Seller user registered successfully!"));
     }
 
@@ -159,23 +165,18 @@ public class AuthController {
                 ));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
         User userDetails = (User) authentication.getPrincipal();
+        Set<String> roles = userDetails.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
 
-//        // Create refresh token
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails);
-        // Get authority
-        Set<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
+        // Generate token
+        String accessToken = jwtUtils.generateJwtToken(userDetails);
+        RefreshToken refreshTokenData = refreshTokenService.createRefreshToken(userDetails);
 
         return ResponseEntity.ok(new AuthTokenResponse(
-                jwt,
-                refreshToken.getToken(),
+                accessToken,
+                refreshTokenData.getToken(),
                 userDetails.getId(),
-                userDetails.getUsername(),
+                userDetails.getNickname(),
                 userDetails.getEmail(),
                 roles
         ));
@@ -187,7 +188,7 @@ public class AuthController {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String token = jwtUtils.generateJwtTokenFromEmail(user.getEmail());
+                    String token = jwtUtils.generateJwtToken(user);
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
                     return ResponseEntity.ok(new RefreshTokenResponse(token, newRefreshToken.getToken()));
                 })
@@ -197,7 +198,6 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         // Check if user is authenticated
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, "No user is currently logged in."));
@@ -221,12 +221,12 @@ public class AuthController {
     }
 
     /**
-     * Scheduled job to delete expired verified token of user every 24 hour.
+     * Scheduled job to delete user with expired token every 24 hour.
      */
     @Scheduled(fixedRate = 24 * 60 * 60 * 1000)
     @Transactional
     public void cleanupNonVerifiedUsers() {
-        System.out.println("==== Cleaning up non-verified users : " + LocalDateTime.now() + "====");
+        System.out.println("=== Cleaning up non-verified users : " + LocalDateTime.now());
         List<User> users = userRepository.findAllByExpiresToken(LocalDateTime.now());
         for (User user : users) {
             // remove national id image of seller from image storage

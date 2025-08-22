@@ -77,6 +77,11 @@ const router = createRouter({
       name: 'login',
       component: LoginView,
     },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: SaleItemView,
+    },
   ],
 })
 

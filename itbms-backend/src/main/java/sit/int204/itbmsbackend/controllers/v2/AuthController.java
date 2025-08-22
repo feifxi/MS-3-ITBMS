@@ -49,15 +49,10 @@ public class AuthController {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private ImageStorageService imageStorageService;
-
-    //--------------ice
     @Autowired
     private EmailService emailService;
-
-    @Value("${team.code:TEAM01}") // กำหนด default team code ไว้ได้
+    @Value("${team.code:ms3}")
     private String teamCode;
-//-------------------------------------------------------
-
     @Value("${email.verification_token_expiration_hr:86400000}") // 24 hours default
     private int emailVerifiedExpirationHr;
 
@@ -68,7 +63,7 @@ public class AuthController {
     )
     public ResponseEntity<?> registerBuyerUser(@Valid @ModelAttribute BuyerRegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: Email is already in use!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
         }
 
         // Create new user account
@@ -98,9 +93,7 @@ public class AuthController {
         userRepository.save(user);
 
         // Send email verification
-        //emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
-
-
+        emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Buyer user registered successfully!"));
     }
 
@@ -111,7 +104,7 @@ public class AuthController {
     )
     public ResponseEntity<?> registerSellerUser(@Valid @ModelAttribute SellerRegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: Email is already in use!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
         }
 
         // Save National ID Images
@@ -161,9 +154,7 @@ public class AuthController {
         userRepository.save(user);
 
         // Send email verification
-        //emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
-
-
+        emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Seller user registered successfully!"));
     }
 

@@ -160,15 +160,17 @@ const submitForm = async (e) => {
     const res = await registerSellerUser(formData);
     const result = await res.json();
     console.log(result);
-    if (!res.ok) throw new Error("Something went wrong");
-    statusMessageStore.setStatusMessage(
-      "The user account has been successfully registered."
-    );
-    router.push({ name: "SaleItemGallery" });
+    if (res.ok) {
+      statusMessageStore.setStatusMessage("The user account has been successfully registered.");
+      router.push({ name: "login" });
+    } else if (res.status === 400) {
+      statusMessageStore.setStatusMessage(result.message, false);
+    } else {
+      throw new Error("Something went wrong");
+    }
   } catch (err) {
     console.log(err);
     statusMessageStore.setStatusMessage("Something went wrong.", false);
-    router.push({ name: "SaleItemGallery" });
   }
   isSubmitting.value = false;
 };

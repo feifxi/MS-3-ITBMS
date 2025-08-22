@@ -1,6 +1,12 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth';
 import { Menu } from 'lucide-vue-next';
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import Button from './Button.vue';
+const router = useRouter();
+const authStore = useAuthStore()
+// console.log(authStore.user)
+
 </script>
 
 <template>
@@ -17,6 +23,7 @@ import { RouterLink } from 'vue-router'
         </RouterLink>
 
         <div class="max-sm:hidden flex items-center gap-4">
+          <!-- Search bar -->
           <div class="relative">
             <input 
               type="text" 
@@ -31,12 +38,32 @@ import { RouterLink } from 'vue-router'
             <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
           </button>
 
-          <button class="cursor-pointer w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-          </button>
+          <div class="flex gap-4">
+            <!-- regsiter/login -->
+            <div v-if="authStore.user">
+              <RouterLink :to="{name: 'profile'}">
+                <button class="cursor-pointer w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+                </button>
+              </RouterLink>
+            </div>
+            <!-- user profile -->
+            <div v-else class="flex gap-2">
+              <RouterLink :to="{name: 'register'}">
+                <Button class-name="ghost-btn">
+                  Sign up
+                </Button>
+              </RouterLink>
+              <RouterLink :to="{name: 'login'}">
+                <Button variant="secondary">
+                  Sign in
+                </Button>
+              </RouterLink>
+            </div>
+          </div>
         </div>
         <div class="sm:hidden">
-          <Menu />
+          <Menu ></Menu>
         </div>
       </div>
     </nav>

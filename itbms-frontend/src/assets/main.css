@@ -15,3 +15,7 @@ body {
 .primary-btn {
     @apply cursor-pointer py-2 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-rose-500 px-6 to-purple-600 text-white hover:opacity-90 transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100
 }
+
+.ghost-btn {
+    @apply cursor-pointer bg-white/20 backdrop-blur-sm text-white border border-white/30 px-6 py-2 rounded-full font-medium hover:bg-white/30 transition-all
+}

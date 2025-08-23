@@ -45,7 +45,7 @@ file:
 # JWT Config
 jwt:
   secret: mySecretKey123456789012345678901234567890hfeoiafhaoifhadhiwadhjwoifdhwafiajfaidjsadiosadjifwhwif
-  access-token-expiration_ms: 86400000 # 24 hours in milliseconds
+  access-token-expiration_ms: 86400000 # 24 hours in milliseconds (update later)
   refresh-token-expiration_ms: 86400000
 
 email:

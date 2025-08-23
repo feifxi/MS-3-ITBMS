@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Boolean existsByEmail(String email);
 
+    Optional<User> findOneByVerificationToken(String verificationToken);
+
     @Query("SELECT u FROM User u WHERE u.verificationTokenExpiry < :now")
     List<User> findAllByExpiresToken(@Param("now") LocalDateTime now);
 

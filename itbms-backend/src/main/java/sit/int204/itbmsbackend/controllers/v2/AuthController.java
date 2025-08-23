@@ -1,9 +1,12 @@
 package sit.int204.itbmsbackend.controllers.v2;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +24,7 @@ import sit.int204.itbmsbackend.entities.*;
 import sit.int204.itbmsbackend.jwt.JwtUtils;
 import sit.int204.itbmsbackend.repositories.RoleRepository;
 import sit.int204.itbmsbackend.repositories.UserRepository;
+import sit.int204.itbmsbackend.security.UserPrincipal;
 import sit.int204.itbmsbackend.services.EmailService;
 import sit.int204.itbmsbackend.services.ImageStorageService;
 import sit.int204.itbmsbackend.services.RefreshTokenService;
@@ -51,10 +55,16 @@ public class AuthController {
     private ImageStorageService imageStorageService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private Validator validator;
+
     @Value("${team.code:ms3}")
     private String teamCode;
     @Value("${email.verification_token_expiration_hr:86400000}") // 24 hours default
     private int emailVerifiedExpirationHr;
+    private final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60;
+    private final String COOKIE_REFRESH_PATH = "/itb-mshop/v2/auth/refresh";
+    private final boolean COOKIE_HTTPS = false;
 
     @PostMapping(
             value = "/registers/buyer",
@@ -75,7 +85,8 @@ public class AuthController {
         // Email verification token
         String verifiedToken = UUID.randomUUID().toString();
         user.setVerificationToken(verifiedToken);
-        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(emailVerifiedExpirationHr));
+//        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(emailVerifiedExpirationHr));
+        user.setVerificationTokenExpiry(LocalDateTime.now().plusMinutes(1));
 
         // Assign default role to user
         Set<Role> roles = new HashSet<>();
@@ -159,7 +170,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -168,54 +179,89 @@ public class AuthController {
                 ));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        User userDetails = (User) authentication.getPrincipal();
-        Set<String> roles = userDetails.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
 
         // Generate token
-        String accessToken = jwtUtils.generateJwtToken(userDetails);
-        RefreshToken refreshTokenData = refreshTokenService.createRefreshToken(userDetails);
+        String accessToken = jwtUtils.generateJwtToken(user);
+        RefreshToken refreshTokenData = refreshTokenService.createRefreshToken(user);
+
+        // Set refresh token as cookie
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshTokenData.getToken())
+                .httpOnly(true)      // Not accessible by JS
+                .secure(COOKIE_HTTPS)        // Only send over HTTPS (set false for dev HTTP)
+                .path(COOKIE_REFRESH_PATH) // Only send to refresh endpoint
+                .maxAge(COOKIE_MAX_AGE) // 7 days in seconds
+                .sameSite("Strict")  // Prevent CSRF (can also use "Lax")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(new AuthTokenResponse(
                 accessToken,
-                refreshTokenData.getToken(),
-                userDetails.getId(),
-                userDetails.getNickname(),
-                userDetails.getEmail(),
+                user.getId(),
+                user.getNickname(),
+                user.getEmail(),
                 roles
         ));
     }
 
-    @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        return refreshTokenService.findByToken(request.getRefreshToken())
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
+        if (refreshToken == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No refresh token provided");
+        }
+        return refreshTokenService.findByToken(refreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     String token = jwtUtils.generateJwtToken(user);
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
-                    return ResponseEntity.ok(new RefreshTokenResponse(token, newRefreshToken.getToken()));
+                    ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken.getToken())
+                            .httpOnly(true)
+                            .secure(COOKIE_HTTPS)
+                            .path(COOKIE_REFRESH_PATH)
+                            .maxAge(COOKIE_MAX_AGE)
+                            .sameSite("Strict")
+                            .build();
+                    response.addHeader("Set-Cookie", cookie.toString());
+                    return ResponseEntity.ok(new RefreshTokenResponse(token));
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Refresh token not found."));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
+    public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Check if user is authenticated
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, "No user is currently logged in."));
         }
 
-        User userDetails = (User) authentication.getPrincipal();
-        refreshTokenService.deleteByUser(userDetails);
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        refreshTokenService.deleteByUser(userPrincipal.getUser());
         SecurityContextHolder.clearContext();
+
+        ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(COOKIE_HTTPS)
+                .path(COOKIE_REFRESH_PATH)
+                .maxAge(0) // deletes cookie
+                .build();
+        response.addHeader("Set-Cookie", clearCookie.toString());
+
         return ResponseEntity.ok(new ApiResponse(true, "User signed out successfully!"));
     }
 
     @PostMapping("/email-verifications")
     public ResponseEntity<?> emailVerification(@Valid @RequestBody EmailVerificationRequest request) {
-        User user = userRepository.findByVerificationTokenUnExpires(request.getToken(), LocalDateTime.now()).orElseThrow(
+        User user = userRepository.findOneByVerificationToken(request.getToken()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token or token expires."));
+        if (user.getVerificationTokenExpiry().isBefore(LocalDateTime.now())) {
+            userRepository.delete(user);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The token has expires, please try register again.");
+        }
         user.setStatus("ACTIVE");
         user.setVerificationToken(null);
         user.setVerificationTokenExpiry(null);
@@ -230,13 +276,14 @@ public class AuthController {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        User userDetails = (User) authentication.getPrincipal();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
         UserDetailsResponse response = new UserDetailsResponse();
-        response.setId(userDetails.getId());
-        response.setNickname(userDetails.getNickname());
-        response.setFullName(userDetails.getFullName());
-        response.setEmail(userDetails.getEmail());
-        response.setIsLocked(userDetails.getIsLocked());
+        response.setId(user.getId());
+        response.setNickname(user.getNickname());
+        response.setFullName(user.getFullName());
+        response.setEmail(user.getEmail());
+        response.setIsLocked(user.getIsLocked());
         return ResponseEntity.ok(response);
     }
 

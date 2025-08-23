@@ -1,5 +1,6 @@
 package sit.int204.itbmsbackend.controllers.v2;
 
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -39,7 +40,8 @@ public class SaleItemControllerV2 {
             @RequestParam(required = false) Integer priceLower,
             @RequestParam(required = false) Integer priceUpper,
             @RequestParam(required = false) List<Integer> storageSizes,
-            @RequestParam(required = false, defaultValue = "false") boolean distinctStorage
+            @RequestParam(required = false, defaultValue = "false") boolean distinctStorage,
+            @RequestParam(required = false) String searchKeyword
     ) {
         if (distinctStorage) {
             List<Integer> storages = saleItemService.getDistinctStorageSizes();
@@ -55,7 +57,9 @@ public class SaleItemControllerV2 {
                         sortDirection,
                         priceLower != null ? BigDecimal.valueOf(priceLower) : null,
                         priceUpper != null ? BigDecimal.valueOf(priceUpper) : null,
-                        storageSizes
+                        storageSizes,
+                        searchKeyword
+
                 )
         );
 

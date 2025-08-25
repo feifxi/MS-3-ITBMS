@@ -12,6 +12,7 @@ const router = useRouter()
 const getSessionStorageItem = (key) => {
   return sessionStorage.getItem(key)
 }
+const searchKeyword = ref('')
 
 // Retrive saved data from session storage
 const persistFilterPriceOptionJSON = getSessionStorageItem("filterPriceOption")
@@ -112,7 +113,7 @@ const paginatedPages = computed(() => {
 const fetchSaleItems = async () => {
   loading.value = true
   try {
-      const res = await fetchAllSaleItemsV3(pagination.page, pagination.size, filterBrands, filterPriceRange, filterStorageSizes, sortOption.sortField, sortOption.sortDirection)
+      const res = await fetchAllSaleItemsV3(pagination.page, pagination.size, filterBrands, filterPriceRange, filterStorageSizes, sortOption.sortField, sortOption.sortDirection , searchKeyword.value)
       if (!res.ok) throw new Error("Something went wrong")
       const data = await res.json()
       const { content, first, last, totalPages } = data
@@ -273,16 +274,22 @@ const handleRemoveStorageSizeFilter = (storageSize) => {
   }
 }
 const handleClearFilter = () => {
-  // clear values
   filterBrands.splice(0, filterBrands.length)
   filterPriceRange.selectedRanges.splice(0, filterPriceRange.selectedRanges.length)
   filterStorageSizes.splice(0, filterStorageSizes.length)
   filterPriceRange.customMin = ''
   filterPriceRange.customMax = ''
-
-  // กลับไปหน้าแรกและ fetch ข้อมูลใหม่
-  pagination.page = 0
-  fetchSaleItems()
+  searchKeyword.value = ''
+ if (route.query.search) {
+    const newQuery = { ...route.query }
+    delete newQuery.search
+    router.replace({
+      name: 'SaleItemGallery',
+      query: newQuery
+    })
+    pagination.page = 0
+    fetchSaleItems()
+  }
 }
 
 
@@ -363,6 +370,19 @@ const handleClickOutside = (event) => {
   if (!priceFilter) isShowPriceFilters.value = false
   if (!storageFilter) isShowStorageFilters.value = false
 }
+watch(() => route.query.search, (newSearch) => {
+  if (newSearch) {
+    searchKeyword.value = newSearch
+    pagination.page = 0
+    fetchSaleItems()
+  }else {
+    if (searchKeyword.value) {
+      searchKeyword.value = ''
+      pagination.page = 0
+      fetchSaleItems()
+    }
+  }
+}, { immediate: true })
 
 onMounted(async () => {
   await fetchBrands()
@@ -376,12 +396,11 @@ watch(()=> pagination.page, () => {
   fetchSaleItems()
 })
 
-watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges, filterStorageSizes, sortOption], () => {
+watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges, filterStorageSizes, sortOption ], () => {
   pagination.page = 0
   saveSessionData()
   fetchSaleItems()
 },{ deep: true })
-
 </script>
 
 
@@ -392,6 +411,17 @@ watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges
       <RouterLink to="/sale-items/add" >
         <Button variant="primary" class="itbms-sale-item-add ">➕ Add Sale Item</Button>
       </RouterLink>
+    </div>
+
+    <div v-if="route.query.search" class="p-3 rounded-xl mb-4 bg-white">
+      <div class="flex items-center gap-3 justify-center">
+        <div class="flex items-center gap-2 bg-rose-100 px-4 py-2 rounded-full">
+          <span class="text-sm font-medium">Searching for: "{{ route.query.search }}"</span>
+          <button @click="handleClearFilter" class="text-rose-500 hover:text-rose-700">
+            <X class="size-4" />
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Filter Brands & Price & Storage Size-->

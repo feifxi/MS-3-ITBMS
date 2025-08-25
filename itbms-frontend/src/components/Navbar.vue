@@ -1,9 +1,12 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { Menu } from 'lucide-vue-next';
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRouter , useRoute } from 'vue-router'
 import Button from './Button.vue';
-const router = useRouter();
+import { ref, watch } from 'vue';
+
+const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const handleLogout = async () => {
@@ -11,6 +14,53 @@ const handleLogout = async () => {
     await authStore.logout()
   }
 }
+const searchKeyword = ref('')
+
+watch(() => route.query.search, (newSearch) => {
+  if (newSearch) {
+    searchKeyword.value = newSearch
+  } else {
+    searchKeyword.value = ''
+  }
+}, { immediate: true })
+
+
+const handleSearch = () => {
+  if (searchKeyword.value.trim()) {
+    if (route.name !== 'SaleItemGallery') {
+      router.push({
+        name: 'SaleItemGallery',
+        query: { search: searchKeyword.value.trim() }
+      })
+    } else {
+      router.replace({
+        name: 'SaleItemGallery',
+        query: { ...route.query, search: searchKeyword.value.trim() }
+      })
+    }
+  } else {
+    if (route.name === 'SaleItemGallery' && route.query.search) {
+      const newQuery = { ...route.query }
+      delete newQuery.search
+      router.replace({
+        name: 'SaleItemGallery',
+        query: newQuery
+      })
+    }
+  }
+}
+const clearSearch = () => {
+  searchKeyword.value = ''
+  if (route.name === 'SaleItemGallery' && route.query.search) {
+    const newQuery = { ...route.query }
+    delete newQuery.search
+    router.replace({
+      name: 'SaleItemGallery',
+      query: newQuery
+    })
+  }
+}
+// console.log(authStore.user)
 
 </script>
 
@@ -27,18 +77,32 @@ const handleLogout = async () => {
           </div>
         </RouterLink>
 
+
         <div class="max-sm:hidden flex items-center gap-4">
           <!-- Search bar -->
           <div class="relative">
             <input 
               type="text" 
-              placeholder="Search phones..." 
+              placeholder="Search here..." 
               class="input !bg-white !rounded-full text-black"
+              v-model="searchKeyword"
+              @keyup.enter="handleSearch"
             >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute right-3 top-2 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <button 
+              v-if="searchKeyword" 
+              @click="clearSearch"
+              class="absolute right-10 top-2 text-gray-400 hover:text-gray-600"
+            >
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+             </button>
+              <button @click="handleSearch" class="absolute right-3 top-2 text-gray-400 hover:text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>  
           </div>
-
-          <button class="relative cursor-pointer">
+            
+              <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x ml-3"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> -->
+            <!-- click handler  -->
+            <button class="relative cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
           </button>

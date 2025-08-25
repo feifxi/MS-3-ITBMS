@@ -50,7 +50,8 @@ public class SaleItemService {
             String sortDirection,
             BigDecimal priceLower,
             BigDecimal priceUpper,
-            List<Integer> storageSizes
+            List<Integer> storageSizes,
+            String searchKeyword
     ) {
         // ======= validate price range =======
         // ส่ง priceLower หรือ priceUpper มา "อย่างใดอย่างหนึ่ง" → ไม่อนุญาต
@@ -106,6 +107,27 @@ public class SaleItemService {
                 spec = spec.and((root, query, cb) ->
                         root.get("storageGb").in(storageSizes));
             }
+        }
+
+        // แทนที่ search logic เดิมด้วยโค้ดนี้ใน SaleItemService
+
+//        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+//            System.out.println("Search keyword received: " + searchKeyword);
+//
+//        }
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            String keyword = searchKeyword.trim();
+
+            spec = spec.and((root, query, cb) -> {
+                return cb.or(
+                        cb.like(cb.lower(cb.concat(root.get("description"), "")),
+                                "%" + keyword.toLowerCase() + "%"),
+                        cb.like(cb.lower(cb.concat(root.get("model"), "")),
+                                "%" + keyword.toLowerCase() + "%"),
+                        cb.like(cb.lower(cb.concat(root.get("color"), "")),
+                                "%" + keyword.toLowerCase() + "%")
+                );
+            });
         }
 
         return listMapper.toPageDTO(

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 const BASE_API = import.meta.env.VITE_BASE_API;
 
+=======
+//api index.js
+const BASE_API = import.meta.env.VITE_BASE_API
+>>>>>>> main
 function cleanObject(obj) {
   return Object.fromEntries(
     Object.entries(obj).filter(
@@ -33,6 +38,7 @@ export const fetchAllSaleItemsV2 = async (
   return await fetch(`${BASE_API}/v2/sale-items` + query);
 };
 
+<<<<<<< HEAD
 // fetch sale items
 export const fetchAllSaleItemsV3 = async (
   page,
@@ -71,6 +77,13 @@ export const fetchAllSaleItemsV3 = async (
       } else if (size === "Not specified") {
         params.append("storageSizes", "null");
       }
+=======
+// fetch sale items 
+export const fetchAllSaleItemsV3 = async (page, size, filterBrands, filterPriceRange, filterStorageSizes, sortField, sortDirection , searchKeyword) => {
+    const params = new URLSearchParams({
+        page: page.toString(),
+        size: size.toString()
+>>>>>>> main
     });
   }
 
@@ -81,8 +94,35 @@ export const fetchAllSaleItemsV3 = async (
     }
   }
 
+<<<<<<< HEAD
   return await fetch(`${BASE_API}/v2/sale-items?${params.toString()}`);
 };
+=======
+    if (filterStorageSizes && filterStorageSizes.length > 0) {
+        filterStorageSizes.forEach(size => {
+            if (typeof size === 'number') {
+                params.append('storageSizes', size.toString())
+                } else if (size === '1 TB') {
+                params.append('storageSizes', '1024') 
+            } else if (size === 'Not specified') {
+                params.append('storageSizes', 'null') 
+            }
+        })
+    }
+    if (searchKeyword && searchKeyword.trim()) {
+        params.append('searchKeyword', searchKeyword.trim());
+    }
+    
+    if (sortField) {
+        params.append('sortField', sortField);
+        if (sortDirection) {
+            params.append('sortDirection', sortDirection);
+        }
+    }
+    
+    return await fetch(`${BASE_API}/v2/sale-items?${params.toString()}`);
+}
+>>>>>>> main
 
 export const fetchAllStorageSizes = async () => {
   return await fetch(`${BASE_API}/v2/sale-items/storage-sizes`);

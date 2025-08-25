@@ -1,3 +1,4 @@
+//api index.js
 const BASE_API = import.meta.env.VITE_BASE_API
 function cleanObject(obj) {
   return Object.fromEntries(
@@ -19,7 +20,7 @@ export const fetchAllSaleItemsV2 = async (page, size, filterBrands, sortField, s
 }
 
 // fetch sale items 
-export const fetchAllSaleItemsV3 = async (page, size, filterBrands, filterPriceRange, filterStorageSizes, sortField, sortDirection) => {
+export const fetchAllSaleItemsV3 = async (page, size, filterBrands, filterPriceRange, filterStorageSizes, sortField, sortDirection , searchKeyword) => {
     const params = new URLSearchParams({
         page: page.toString(),
         size: size.toString()
@@ -49,6 +50,9 @@ export const fetchAllSaleItemsV3 = async (page, size, filterBrands, filterPriceR
                 params.append('storageSizes', 'null') 
             }
         })
+    }
+    if (searchKeyword && searchKeyword.trim()) {
+        params.append('searchKeyword', searchKeyword.trim());
     }
     
     if (sortField) {

@@ -8,8 +8,6 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(null)
   const user = ref(null)
 
-  const isAuthenticated = computed(() => !!accessToken.value && !!user.value)
-
   const login = async (email, password) => {
     const res = await fetch(`${BASE_API}/v2/auth/login`, {
       method: 'POST',
@@ -63,7 +61,6 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     accessToken,
     user,
-    isAuthenticated,
     login,
     logout
   }

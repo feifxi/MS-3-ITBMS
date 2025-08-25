@@ -12,6 +12,9 @@ import Chat from '@/views/Chat.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 import { useAuthStore } from '@/stores/auth'
+import EmailVerificationView from '@/views/EmailVerificationView.vue'
+import UserProfile from '@/views/UserProfile.vue'
+import { refreshAccessToken } from '@/api'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,28 +81,55 @@ const router = createRouter({
       component: LoginView,
     },
     {
+      path: '/verify-email',
+      name: 'verifyEmail',
+      component: EmailVerificationView,
+    },
+    {
       path: '/profile',
-      name: 'profile',
-      component: SaleItemView,
+      name: 'userProfile',
+      component: UserProfile,
+      meta: { requiresAuth: true },
     },
   ],
 })
 
 router.beforeEach(async (to, from, next) => {
-  const auth = useAuthStore()
-  
-  // ensure user is fetched if token exists
-  if (auth.token && !auth.user) {
-    await auth.fetchUser()
-  }
-  console.log("Logged in user : " ,auth.user)
-  if (to.meta.requiresAuth && !auth.user) { 
-    next({ name: "login" })
-  } else if (auth.user && (to.name === "register" || to.name === "login")) {
-    next({ name: "SaleItemGallery" })
-  } else {
+  const isAuthenticated = await checkIfUserIsAuthenticated();
+
+  // Protected route
+  if (to.meta.requiresAuth) {
+    if (isAuthenticated) {
+      next()
+    }  
+    else {
+      next({ path: '/login', query: { redirect: to.fullPath } }); // Redirect to the login page if not authenticated
+    }
+  } 
+  // Register/Login route
+  else if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {
+    next({ name: "Home" })
+  } 
+  // Public route
+  else {
     next()
   }
-})
+});
+
+async function checkIfUserIsAuthenticated() {
+  const auth = useAuthStore()
+  // console.log("user : ", auth.user)
+  // console.log("token : ", auth.accessToken)
+  
+  // Check by access token
+  try {
+    await refreshAccessToken(auth)
+    return auth.accessToken
+  } catch (err) {
+    // console.log("Not authenticated in protected route : ", err)
+    return false
+  }
+}
+
 
 export default router

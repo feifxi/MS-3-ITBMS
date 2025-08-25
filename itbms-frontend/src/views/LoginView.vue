@@ -1,10 +1,9 @@
 <script setup>
 import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { loginUser, registerBuyerUser, registerSellerUser } from "../api";
+import { loginUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
-import placeHolder from "@/assets/placeholder.svg";
 import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
@@ -76,24 +75,12 @@ const submitForm = async (e) => {
   e.preventDefault();
   isSubmitting.value = true;
   try {
-    if (!userData.email || !userData.password) return
-
-    const res = await loginUser(userData.email, userData.password);
-    const result = await res.json();
-    console.log(result);
-    if (res.ok) {
-        statusMessageStore.setStatusMessage("Login success.");
-        // save user identity to store
-        localStorage.setItem("access_token", result.accessToken)
-        localStorage.setItem("refresh_token", result.refreshToken)
-        await authStore.fetchUser()
-
-        router.push({ name: "SaleItemGallery" });
-    }
-    else if (result.status === 401) {
-        statusMessageStore.setStatusMessage("Invalid email or password.", false);
+    const success = await authStore.login(userData.email, userData.password)
+    if (success) {
+      statusMessageStore.setStatusMessage("Login success.");
+      router.push({ name: "SaleItemGallery" });
     } else {
-        throw new Error("Something went wrong");
+      statusMessageStore.setStatusMessage("Invalid email or password.", false);
     }
   } catch (err) {
     console.log(err);
@@ -139,7 +126,7 @@ watch(userData, () => {
         Loading...
       </div>
 
-      <div class="flex">
+      <div v-else class="flex">
         <!-- Side Image -->
         <img
           :src="'https://images.stockcake.com/public/c/4/6/c4678895-7ad4-4670-a61d-923fa66e6df9_large/online-shopping-app-stockcake.jpg'"

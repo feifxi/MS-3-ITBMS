@@ -1,15 +1,28 @@
 package sit.int204.itbmsbackend.dtos.auth;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.util.Map;
+import sit.int204.itbmsbackend.constants.UserType;
 
 @Data
 public class RegisterRequest {
-    @NotBlank
-    private String role;  // "BUYER" or "SELLER"
+    @NotNull
+    private UserType userType;  // "BUYER" or "SELLER"
 
-    // dynamic fields depending on role
-    private Map<String, Object> data;
+    @Size(max = 40)
+    @NotNull
+    private String nickname;
+
+    @Size(max = 40)
+    @NotNull
+    private String fullName;
+
+    @Size(max = 100)
+    @NotNull
+    private String email;
+
+    @Size(min = 8)
+    @NotNull
+    private String password;
 }

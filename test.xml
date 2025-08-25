@@ -1,55 +1,43 @@
-<?xml version='1.0' standalone="yes"?>
-<!DOCTYPE bank [
-    <!ELEMENT bank (customers, accounts)>
-    <!ELEMENT accounts (account*)>
-    <!ELEMENT account (transaction*)>
-    <!ELEMENT customers (customer*)>
-    <!ELEMENT customer EMPTY>
-    <!ELEMENT transaction EMPTY>
-    <!ATTLIST customer 
-        code ID #REQUIRED
-        name CDATA #REQUIRED
-        address CDATA #IMPLIED
-    >
-    <!ATTLIST account 
-        no ID #REQUIRED
-        type (regular | special) "regular"
-        owners IDREFS #REQUIRED
-    >
-    <!ATTLIST transaction 
-        id ID #REQUIRED
-        date CDATA "regular"
-        type (open | close | deposit | withdraw | interest) #REQUIRED
-        amount NMTOKEN #REQUIRED
-    >
-]>
-<bank>
-    <!-- 'bank' contains one 'customers' and one 'accounts' -->
-    <customers>
-        <!-- 'customers' contains a sequence of 'customer' -->
-        <customer code='c10' name='Peter' address='123 Main St' />
-        <customer code='c11' name='Robert' />
-        <!-- 'customer' has no sub-element.
-             'customer' has 'code' as its required ID,
-                            'name' as a required attribute,
-                            'address' as an optional attribute -->
-    </customers>
-    <accounts>
-        <!-- 'accounts' contains a sequence of 'account' -->
-        <account no='a01' type='special' owners='c10 c11'>
-            <!-- 'account' has 'no' as its required ID,
-                               'type' which can be 'regular' or 'special'
-                                       and has 'regular' as its default, 
-                               'owners' which is a required IDREFS type -->
-            <!-- 'account' contains a sequence of 'transaction' -->
-            <transaction id='x0101' date='2008-01-31' type='deposit' amount='100' />
-            <transaction id='x0102' date='2008-02-13' type='withdraw' amount='-500' />
-            <!-- 'transaction' has no sub-element. 
-                'transaction' has 'id' as its required ID,
-                'date' which is a required attribute,
-                'type' which can have one of the following required values 
-                        ('open', 'close', 'deposit','withdraw', 'interest'),
-                'amount' which is a NMTOKEN attribute, -->
-        </account>
-    </accounts>
-</bank>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:menu="http://www.w3.org/menu"
+        xmlns:ingd="http://www.w3.org/ingredient">
+    <restaurant>
+        <menus>
+            <menu:menu>
+                <menu:title>star egg</menu:title>
+                <menu:sizes>
+                    <menu:size>small</menu:size>
+                    <menu:size>medium</menu:size>
+                </menu:sizes>
+                <menu:price>10</menu:price>
+                <ingd:ingredients ingd:amount="5">
+                    <ingd:ingredient>
+                        <ingd:name>egg</ingd:name>
+                        <ingd:price>5</ingd:price>
+                    </ingd:ingredient>
+                </ingd:ingredients>
+            </menu:menu>
+        </menus>
+        <menus>
+            <menu:menu>
+                <menu:title>friend rice</menu:title>
+                <menu:sizes>
+                    <menu:size>small</menu:size>
+                    <menu:size>medium</menu:size>
+                    <menu:size>large</menu:size>
+                </menu:sizes>
+                <menu:price>30</menu:price>
+                <ingd:ingredients ingd:amount="15">
+                    <ingd:ingredient>
+                        <ingd:name>egg</ingd:name>
+                        <ingd:price>5</ingd:price>
+                    </ingd:ingredient>
+                    <ingd:ingredient>
+                        <ingd:name>rice</ingd:name>
+                        <ingd:price>10</ingd:price>
+                    </ingd:ingredient>
+                </ingd:ingredients>
+            </menu:menu>
+        </menus>
+    </restaurant>
+</root>

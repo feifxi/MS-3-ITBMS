@@ -8,6 +8,12 @@ import { ref, watch } from 'vue';
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+
+const handleLogout = async () => {
+  if (confirm("Are you sure you want to sign out?")) {
+    await authStore.logout()
+  }
+}
 const searchKeyword = ref('')
 
 watch(() => route.query.search, (newSearch) => {
@@ -102,25 +108,29 @@ const clearSearch = () => {
           </button>
 
           <div class="flex gap-4">
-            <!-- regsiter/login -->
-            <div v-if="authStore.user">
-              <RouterLink :to="{name: 'profile'}">
+            <!-- user profile -->
+            <div v-if="authStore.user && authStore.accessToken" class="flex items-center gap-2">
+              <RouterLink :to="{name: 'userProfile'}">
                 <button class="cursor-pointer w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
                 </button>
               </RouterLink>
+
+              <Button class-name="ghost-btn" :onclick="handleLogout">
+                Sign out
+              </Button>
             </div>
 
-            <!-- user profile -->
+            <!-- register/login -->
             <div v-else class="flex gap-2">
-              <RouterLink :to="{name: 'register'}">
+              <RouterLink :to="{name: 'login'}">
                 <Button class-name="ghost-btn">
-                  Sign up
+                  Sign in
                 </Button>
               </RouterLink>
-              <RouterLink :to="{name: 'login'}">
+              <RouterLink :to="{name: 'register'}">
                 <Button variant="secondary">
-                  Sign in
+                  Sign up
                 </Button>
               </RouterLink>
             </div>

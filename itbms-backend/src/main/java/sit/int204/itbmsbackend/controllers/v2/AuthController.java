@@ -2,22 +2,23 @@ package sit.int204.itbmsbackend.controllers.v2;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import sit.int204.itbmsbackend.constants.UserRole;
+import sit.int204.itbmsbackend.constants.UserType;
 import sit.int204.itbmsbackend.dtos.common.ApiResponse;
 import sit.int204.itbmsbackend.dtos.auth.*;
 import sit.int204.itbmsbackend.entities.*;
@@ -55,23 +56,41 @@ public class AuthController {
     private ImageStorageService imageStorageService;
     @Autowired
     private EmailService emailService;
-    @Autowired
-    private Validator validator;
 
-    @Value("${team.code:ms3}")
-    private String teamCode;
     @Value("${email.verification_token_expiration_hr:86400000}") // 24 hours default
     private int emailVerifiedExpirationHr;
     private final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60;
-    private final String COOKIE_REFRESH_PATH = "/itb-mshop/v2/auth/refresh";
-    private final boolean COOKIE_HTTPS = false;
+
+    private void validateSellerField(SellerAdditionalFieldRequest seller) {
+        if (seller.getShopName() == null ||
+            seller.getPhone() == null ||
+            seller.getBankAccountNumber() == null ||
+            seller.getBankName() == null ||
+            seller.getNationalId() == null
+        ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid seller fields.");
+        }
+    }
+
+    private ResponseCookie generateCookie(String name, String value, int maxAge) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)      // Not accessible by JS
+                .secure(false)        // Only send over HTTPS (set false for dev HTTP)
+                .path("/itb-mshop/v2/auth/refresh") // Only send to refresh endpoint
+                .maxAge(maxAge) // 7 days in seconds
+//                .sameSite("Strict")  // Prevent CSRF (can also use "Lax")
+                .sameSite("Lax")  // Prevent CSRF (can also use "Lax")
+                .build();
+    }
 
     @PostMapping(
-            value = "/registers/buyer",
-            consumes = {"multipart/form-data"},
-            produces = {"application/json"}
+            value = "/registers",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> registerBuyerUser(@Valid @ModelAttribute BuyerRegisterRequest registerRequest) {
+    public ResponseEntity<?> registerUser(
+            @Valid @ModelAttribute RegisterRequest registerRequest,
+            @ModelAttribute SellerAdditionalFieldRequest sellerDTO) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
         }
@@ -82,58 +101,7 @@ public class AuthController {
         user.setFullName(registerRequest.getFullName());
         user.setEmail(registerRequest.getEmail());
         user.setPassword(encoder.encode(registerRequest.getPassword()));
-        // Email verification token
-        String verifiedToken = UUID.randomUUID().toString();
-        user.setVerificationToken(verifiedToken);
-//        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(emailVerifiedExpirationHr));
-        user.setVerificationTokenExpiry(LocalDateTime.now().plusMinutes(1));
 
-        // Assign default role to user
-        Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findOneByName("ROLE_USER")
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error: Role is not found!"));
-        roles.add(userRole);
-        user.setRoles(roles);
-
-        // Create new buyer profile of user
-        BuyerProfile buyerProfile = new BuyerProfile();
-        buyerProfile.setUser(user);
-        user.setBuyerProfile(buyerProfile);
-
-        // Save user to db
-        userRepository.save(user);
-
-        // Send email verification
-        emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Buyer user registered successfully!"));
-    }
-
-    @PostMapping(
-            value = "/registers/seller",
-            consumes = {"multipart/form-data"},
-            produces = {"application/json"}
-    )
-    public ResponseEntity<?> registerSellerUser(@Valid @ModelAttribute SellerRegisterRequest registerRequest) {
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
-        }
-
-        // Save National ID Images
-        String nationalIdImageFrontFileName = null;
-        String nationalIdImageBackFileName = null;
-        if (registerRequest.getNationalIdImageFront() != null && !registerRequest.getNationalIdImageFront().isEmpty() &&
-            registerRequest.getNationalIdImageBack() != null && !registerRequest.getNationalIdImageBack().isEmpty())
-        {
-            nationalIdImageFrontFileName = imageStorageService.saveImage(registerRequest.getNationalIdImageFront());
-            nationalIdImageBackFileName = imageStorageService.saveImage(registerRequest.getNationalIdImageBack());
-        }
-
-        // Create new user's account
-        User user = new User();
-        user.setNickname(registerRequest.getNickname());
-        user.setFullName(registerRequest.getFullName());
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(encoder.encode(registerRequest.getPassword()));
         // Email verification token
         String verifiedToken = UUID.randomUUID().toString();
         user.setVerificationToken(verifiedToken);
@@ -141,32 +109,54 @@ public class AuthController {
 
         // Assign default role to user
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findOneByName("ROLE_USER")
+        Role userRole = roleRepository.findOneByName(UserRole.ROLE_USER.toString())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error: Role is not found!"));
         roles.add(userRole);
         user.setRoles(roles);
 
-        // Create new seller profile of user
-        SellerProfile sellerProfile = new SellerProfile();
-        sellerProfile.setUser(user);
-        sellerProfile.setPhone(registerRequest.getPhone());
-        sellerProfile.setShopName(registerRequest.getShopName());
-        sellerProfile.setBankName(registerRequest.getBankName());
-        sellerProfile.setBankAccountNumber(registerRequest.getBankAccountNumber());
-        sellerProfile.setNationalId(registerRequest.getNationalId());
-        // Save image name to db
-        if (nationalIdImageFrontFileName != null && nationalIdImageBackFileName != null) {
+        if (UserType.BUYER.equals(registerRequest.getUserType())) {
+            // Create new buyer profile of user
+            BuyerProfile buyerProfile = new BuyerProfile();
+            buyerProfile.setUser(user);
+            user.setBuyerProfile(buyerProfile);
+        }
+        else if (UserType.SELLER.equals(registerRequest.getUserType())) {
+            // Validate additional field of seller
+            validateSellerField(sellerDTO);
+
+            // Validate upload image and save to image storage
+            String nationalIdImageFrontFileName = null;
+            String nationalIdImageBackFileName = null;
+            if (sellerDTO.getNationalIdImageFront() != null && !sellerDTO.getNationalIdImageFront().isEmpty() &&
+                sellerDTO.getNationalIdImageBack() != null && !sellerDTO.getNationalIdImageBack().isEmpty())
+            {
+                nationalIdImageFrontFileName = imageStorageService.saveImage(sellerDTO.getNationalIdImageFront());
+                nationalIdImageBackFileName = imageStorageService.saveImage(sellerDTO.getNationalIdImageBack());
+            }
+
+            // Create new seller profile of user
+            SellerProfile sellerProfile = new SellerProfile();
+            sellerProfile.setUser(user);
+            sellerProfile.setPhone(sellerDTO.getPhone());
+            sellerProfile.setShopName(sellerDTO.getShopName());
+            sellerProfile.setBankName(sellerDTO.getBankName());
+            sellerProfile.setBankAccountNumber(sellerDTO.getBankAccountNumber());
+            sellerProfile.setNationalId(sellerDTO.getNationalId());
+            // Save image name to db
             sellerProfile.setNationalIdImageFront(nationalIdImageFrontFileName);
             sellerProfile.setNationalIdImageBack(nationalIdImageBackFileName);
+
+            user.setSellerProfile(sellerProfile);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user type.");
         }
-        user.setSellerProfile(sellerProfile);
 
         // Save user to db
         userRepository.save(user);
 
         // Send email verification
-        emailService.sendVerificationEmail(user.getEmail(), verifiedToken, teamCode);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Seller user registered successfully!"));
+        emailService.sendVerificationEmail(user.getEmail(), verifiedToken);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse(true, "Buyer user registered successfully!"));
     }
 
     @PostMapping("/login")
@@ -181,29 +171,23 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.getUser();
-        Set<String> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
 
         // Generate token
         String accessToken = jwtUtils.generateJwtToken(user);
         RefreshToken refreshTokenData = refreshTokenService.createRefreshToken(user);
 
         // Set refresh token as cookie
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshTokenData.getToken())
-                .httpOnly(true)      // Not accessible by JS
-                .secure(COOKIE_HTTPS)        // Only send over HTTPS (set false for dev HTTP)
-                .path(COOKIE_REFRESH_PATH) // Only send to refresh endpoint
-                .maxAge(COOKIE_MAX_AGE) // 7 days in seconds
-                .sameSite("Strict")  // Prevent CSRF (can also use "Lax")
-                .build();
-
+        ResponseCookie cookie = generateCookie("refreshToken", refreshTokenData.getToken(), COOKIE_MAX_AGE);
         response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(new AuthTokenResponse(
                 accessToken,
                 user.getId(),
                 user.getNickname(),
+                user.getFullName(),
                 user.getEmail(),
-                roles
+                user.getRolesStr(),
+                user.getIsLocked()
         ));
     }
 
@@ -218,13 +202,7 @@ public class AuthController {
                 .map(user -> {
                     String token = jwtUtils.generateJwtToken(user);
                     RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
-                    ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken.getToken())
-                            .httpOnly(true)
-                            .secure(COOKIE_HTTPS)
-                            .path(COOKIE_REFRESH_PATH)
-                            .maxAge(COOKIE_MAX_AGE)
-                            .sameSite("Strict")
-                            .build();
+                    ResponseCookie cookie = generateCookie("refreshToken", newRefreshToken.getToken(), COOKIE_MAX_AGE);
                     response.addHeader("Set-Cookie", cookie.toString());
                     return ResponseEntity.ok(new RefreshTokenResponse(token));
                 })
@@ -239,22 +217,20 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, "No user is currently logged in."));
         }
 
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        refreshTokenService.deleteByUser(userPrincipal.getUser());
         SecurityContextHolder.clearContext();
 
-        ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(COOKIE_HTTPS)
-                .path(COOKIE_REFRESH_PATH)
-                .maxAge(0) // deletes cookie
-                .build();
+        // Remove user refresh token in db
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        refreshTokenService.deleteByUser(userPrincipal.getUser());
+
+        // Clear refresh token cookie
+        ResponseCookie clearCookie = generateCookie("refreshToken", "", 0);
         response.addHeader("Set-Cookie", clearCookie.toString());
 
         return ResponseEntity.ok(new ApiResponse(true, "User signed out successfully!"));
     }
 
-    @PostMapping("/email-verifications")
+    @PostMapping("/verify-email")
     public ResponseEntity<?> emailVerification(@Valid @RequestBody EmailVerificationRequest request) {
         User user = userRepository.findOneByVerificationToken(request.getToken()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token or token expires."));
@@ -269,7 +245,7 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse(true, "Email verification successfully!"));
     }
 
-    @GetMapping("/check-identity")
+    @GetMapping("/me")
     public ResponseEntity<UserDetailsResponse> checkUserIdentity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Check if user is authenticated
@@ -283,6 +259,7 @@ public class AuthController {
         response.setNickname(user.getNickname());
         response.setFullName(user.getFullName());
         response.setEmail(user.getEmail());
+        response.setRoles(user.getRolesStr());
         response.setIsLocked(user.getIsLocked());
         return ResponseEntity.ok(response);
     }

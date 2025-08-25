@@ -12,6 +12,7 @@ const authStore = useAuthStore()
 const handleLogout = async () => {
   if (confirm("Are you sure you want to sign out?")) {
     await authStore.logout()
+    router.push({ name: "login" })
   }
 }
 const searchKeyword = ref('')

@@ -27,8 +27,8 @@ const loadProfile = async () => {
       email: profile.email,
       nickname: profile.nickname,
       fullName: profile.fullName,
-      isLocked: profile.isLocked,
       roles: profile.roles,
+      isLocked: profile.isLocked,
     }
 
     // console.log("Logged in as:", profile);

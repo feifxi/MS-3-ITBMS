@@ -10,14 +10,18 @@ public class AuthTokenResponse {
     private String type = "Bearer";
     private Integer id;
     private String nickname;
+    private String fullName;
     private String email;
     private Set<String> roles;
+    private Boolean isLocked;
 
-    public AuthTokenResponse(String accessToken, Integer id, String nickname, String email, Set<String> roles) {
+    public AuthTokenResponse(String accessToken, Integer id, String nickname,String fullName, String email, Set<String> roles, Boolean isLocked) {
         this.accessToken = accessToken;
         this.id = id;
         this.nickname = nickname;
+        this.fullName = fullName;
         this.email = email;
         this.roles = roles;
+        this.isLocked = isLocked;
     }
 }

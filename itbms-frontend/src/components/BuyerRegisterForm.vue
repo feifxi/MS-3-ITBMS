@@ -1,9 +1,10 @@
 <script setup>
 import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { registerBuyerUser } from "../api";
+import { fetchWithAuth, registerUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
+import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
@@ -91,6 +92,7 @@ const submitForm = async (e) => {
   try {
     // add userdata
     const formData = new FormData();
+    formData.append('userType', "BUYER");
     for (const field in userData) {
       if (userData[field] !== "" && userData[field] != null) {
         formData.append(field, userData[field]);
@@ -99,7 +101,7 @@ const submitForm = async (e) => {
     // formData.forEach((value, key) => {
     //   console.log(key, " : ", value);
     // });
-    const res = await registerBuyerUser(formData);
+    const res = await registerUser(formData);
     const result = await res.json();
     console.log(result);
     if (res.ok) {
@@ -136,12 +138,48 @@ const navigateToLogin = () => {
   router.push({ name: "login" });
 };
 
+
+// ========= Testing Zone ===========
+const auth = useAuthStore()
+const isTesing = ref(false)
+
+const testFunc = () => {
+  loadProfile()
+  // auth.logout()
+}
+
+const testFunc2 = () => {
+  console.log(auth.user)
+  console.log(auth.accessToken)
+}
+
+// example of using fetch with auth
+const loadProfile = async () => {
+  try {
+    const res = await fetchWithAuth(`/v2/auth/me`, {}, auth);
+    if (!res.ok) {
+      throw new Error("Failed to load profile");
+    }
+    const profile = await res.json();
+    console.log("Profile:", profile);
+  } catch (err) {
+    if (err.message === "Session expired, please log in again.") {
+      // await auth.logout()
+      router.push({ name: "login" })
+    }
+    console.error("Auth error:", err.message);
+  }
+}
+
+
+
 watch(userData, () => {
   showErrorToForm();
   // Disabled save button
   validateAllField();
   // console.log(userData)
 });
+
 </script>
 
 <template>
@@ -150,7 +188,7 @@ watch(userData, () => {
       Loading...
     </div>
 
-    <div class="flex">
+    <div v-else class="flex">
       <!-- Side Image -->
       <img
         :src="'https://images.stockcake.com/public/c/4/6/c4678895-7ad4-4670-a61d-923fa66e6df9_large/online-shopping-app-stockcake.jpg'"
@@ -257,6 +295,28 @@ watch(userData, () => {
               >
                 already have an account?
               </button>
+
+              <!-- Testing Button -->
+              <div v-if="isTesing" class="flex flex-col gap-4">
+                <Button
+                :onclick="testFunc"
+                variant="primary"
+                class-name="itbms-save-button px-10 shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                type="button"
+              >
+                {{ "Test" }}
+              </Button>
+
+                <Button
+                  :onclick="testFunc2"
+                  variant="primary"
+                  class-name="itbms-save-button px-10 shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
+                  type="button"
+                >
+                  {{ "Test2" }}
+                </Button>
+              </div>
+
             </div>
           </form>
         </div>

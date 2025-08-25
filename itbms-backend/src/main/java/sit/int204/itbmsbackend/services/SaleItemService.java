@@ -115,21 +115,6 @@ public class SaleItemService {
         );
     }
 
-/*
-    public PageDTO<SaleItemListDto> findAll(List<String> brands, Integer page, Integer size, String sortField ,String sortDirection) {
-        // Sorting
-        Sort sort = "desc".equalsIgnoreCase(sortDirection)
-                ? Sort.by(sortField).descending().and(Sort.by("id").ascending())
-                : Sort.by(sortField).ascending().and(Sort.by("id").ascending());
-        Pageable pageable = PageRequest.of(page, size, sort);
-        if (brands == null || brands.isEmpty()) {
-            return listMapper.toPageDTO(saleItemRepository.findAll(pageable), SaleItemListDto.class, modelMapper);
-        }
-        return listMapper.toPageDTO(
-                saleItemRepository.findByBrandNameIn(brands, pageable),
-                SaleItemListDto.class, modelMapper
-        );
-    }*/
     public List<Integer> getDistinctStorageSizes() {
         return saleItemRepository.findDistinctStorageGb();
     }

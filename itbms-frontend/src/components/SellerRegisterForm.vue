@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { registerSellerUser } from "../api";
+import { registerUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import placeHolder from "@/assets/placeholder.svg";
@@ -142,6 +142,7 @@ const submitForm = async (e) => {
   try {
     // add userdata
     const formData = new FormData();
+    formData.append('userType', "SELLER");
     for (const field in userData) {
       if (userData[field] !== "" && userData[field] != null) {
         formData.append(field, userData[field]);
@@ -157,7 +158,7 @@ const submitForm = async (e) => {
     // formData.forEach((value, key) => {
     //   console.log(key, " : ", value);
     // });
-    const res = await registerSellerUser(formData);
+    const res = await registerUser(formData);
     const result = await res.json();
     console.log(result);
     if (res.ok) {

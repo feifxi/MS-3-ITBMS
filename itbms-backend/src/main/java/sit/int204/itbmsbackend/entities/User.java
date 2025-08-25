@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -83,5 +84,9 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         updatedOn = LocalDateTime.now();
+    }
+
+    public Set<String> getRolesStr() {
+        return roles.stream().map(Role::getName).collect(Collectors.toSet());
     }
 }

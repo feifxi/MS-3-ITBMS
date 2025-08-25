@@ -59,3 +59,7 @@ logging:
 
 team:
   code: ms3
+
+app:
+  frontend:
+    url: http://intproj24.sit.kmutt.ac.th

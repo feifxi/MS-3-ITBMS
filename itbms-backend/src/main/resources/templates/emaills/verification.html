@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your ITBMS Account</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .email-container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 300;
+    }
+
+    .header p {
+      margin: 10px 0 0 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    .content {
+      padding: 40px 30px;
+    }
+
+    .welcome-text {
+      font-size: 18px;
+      margin-bottom: 25px;
+      color: #555;
+    }
+
+    .verify-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 35px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 16px;
+      margin: 20px 0;
+      transition: transform 0.2s ease;
+    }
+
+    .verify-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .manual-link {
+      background-color: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 5px;
+    }
+
+    .manual-link p {
+      margin: 0 0 10px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .manual-link a {
+      color: #667eea;
+      word-break: break-all;
+      font-size: 13px;
+    }
+
+    .footer {
+      background-color: #f8f9fa;
+      padding: 25px 30px;
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+    }
+
+    .footer p {
+      margin: 5px 0;
+    }
+
+    .warning {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+
+    .team-signature {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .header, .content, .footer {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="email-container">
+  <div class="header">
+    <h1>🚀 Welcome to ITBMS!</h1>
+    <p>IT Business Management System</p>
+  </div>
+
+  <div class="content">
+    <p class="welcome-text">
+      Hi there! 👋<br>
+      Welcome to <strong>ITBMS-<span th:text="${teamCode}">MS3</span></strong>!
+      We're excited to have you on board.
+    </p>
+
+    <p>To get started and secure your account, please verify your email address by clicking the button below:</p>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a th:href="${verifyUrl}" class="verify-button">
+        ✅ Verify My Account
+      </a>
+    </div>
+
+    <div class="manual-link">
+      <p><strong>Can't click the button?</strong></p>
+      <p>Copy and paste this link into your browser:</p>
+      <a th:href="${verifyUrl}" th:text="${verifyUrl}">verification-link</a>
+    </div>
+
+    <div class="warning">
+      <strong>⏰ Important:</strong> This verification link will expire in <strong>24 hours</strong>.
+      Please verify your account as soon as possible.
+    </div>
+
+    <div class="team-signature">
+      <p>If you didn't create an account with us, you can safely ignore this email.</p>
+      <p>
+        Best regards,<br>
+        <strong>The ITBMS Team</strong> 🎯
+      </p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>This email was sent to: <span th:text="${recipientEmail}">user@example.com</span></p>
+    <p>ITBMS - IT Business Management System</p>
+    <p>© <span th:text="${currentYear}">2024</span> ITBMS Team. All rights reserved.</p>
+  </div>
+</div>
+</body>
+</html>

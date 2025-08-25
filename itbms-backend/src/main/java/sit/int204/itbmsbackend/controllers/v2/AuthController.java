@@ -1,5 +1,6 @@
 package sit.int204.itbmsbackend.controllers.v2;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import sit.int204.itbmsbackend.services.EmailService;
 import sit.int204.itbmsbackend.services.ImageStorageService;
 import sit.int204.itbmsbackend.services.RefreshTokenService;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -90,7 +92,7 @@ public class AuthController {
     )
     public ResponseEntity<?> registerUser(
             @Valid @ModelAttribute RegisterRequest registerRequest,
-            @ModelAttribute SellerAdditionalFieldRequest sellerDTO) {
+            @ModelAttribute SellerAdditionalFieldRequest sellerDTO) throws MessagingException, UnsupportedEncodingException {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
         }

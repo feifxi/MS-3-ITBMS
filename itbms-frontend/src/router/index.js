@@ -15,6 +15,7 @@ import { useAuthStore } from '@/stores/auth'
 import EmailVerificationView from '@/views/EmailVerificationView.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import { refreshAccessToken } from '@/api'
+import V2_LoginView from '@/views/V2_LoginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -90,6 +91,11 @@ const router = createRouter({
       name: 'userProfile',
       component: UserProfile,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/login-v2',
+      name: 'loginv2',
+      component: V2_LoginView,
     },
   ],
 })

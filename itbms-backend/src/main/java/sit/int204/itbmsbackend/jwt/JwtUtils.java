@@ -5,7 +5,9 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import sit.int204.itbmsbackend.entities.User;
@@ -16,15 +18,34 @@ import java.util.Date;
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+    @Autowired
+    private Environment environment;
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    @Value("${team.code:ms3}")
+    private String teamCode;
+
     @Value("${jwt.access-token-expiration_ms}")
     private int jwtExpirationMs;
 
+    @Value("${app.frontend.url.dev:http://localhost:5173}")
+    private String devFrontendUrl;
+
+    @Value("${app.frontend.url.prod:http://intproj24.sit.kmutt.ac.th}")
+    private String prodFrontendUrl;
+
+    private String getHostPath() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        boolean isDevMode = activeProfiles.length > 0 && activeProfiles[0].equals("dev");
+        return isDevMode ? devFrontendUrl : prodFrontendUrl;
+    }
+
     public String generateJwtToken(User user) {
+        String hostPath = getHostPath() + "/" + teamCode + "/";
         return Jwts.builder()
+                .setIssuer(hostPath)
                 .setSubject(user.getEmail())    // generate with user email
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))

@@ -163,6 +163,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        userRepository.findOneByEmailAndStatus(loginRequest.getEmail(), "ACTIVE").orElseThrow(
+                ()  -> new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not verify email.")
+        );
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

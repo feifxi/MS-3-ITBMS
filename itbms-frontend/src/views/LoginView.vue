@@ -77,14 +77,10 @@ const submitForm = async (e) => {
   try {
     const success = await authStore.login(userData.email, userData.password)
     if (success) {
-      statusMessageStore.setStatusMessage("Login success.");
       router.push({ name: "SaleItemGallery" });
-    } else {
-      statusMessageStore.setStatusMessage("Invalid email or password.", false);
-    }
+    } 
   } catch (err) {
     console.log(err);
-    statusMessageStore.setStatusMessage("Something went wrong.", false);
     router.push({ name: "SaleItemGallery" });
   }
   isSubmitting.value = false;

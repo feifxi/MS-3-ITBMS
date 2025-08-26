@@ -48,9 +48,10 @@ const fieldIntegrity = {
   },
   password: {
     checkConstraint: (data) => {
-      return 7 < data.length && data.length <= 40;
+      // return 7 < data.length && data.length <= 40;
+      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data);
     },
-    errorMessage: "Password must be 8-40 characters long.",
+    errorMessage: "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
   },
 };
 

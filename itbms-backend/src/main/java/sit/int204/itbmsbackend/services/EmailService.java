@@ -63,8 +63,8 @@ public class EmailService {
         context.setVariable("currentYear", getCurrentYear());
         context.setVariable("currentDateTime", getCurrentDateTime());
 
-        // ใช้ path folder ถูกต้อง "emaills/verification"
-        String htmlContent = templateEngine.process("emaills/verification", context);
+        // ใช้ path folder ถูกต้อง "emails/verification"
+        String htmlContent = templateEngine.process("emails/verification", context);
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -91,8 +91,8 @@ public class EmailService {
         context.setVariable("currentYear", getCurrentYear());
         context.setVariable("currentDateTime", getCurrentDateTime());
 
-        // ใช้ path folder ถูกต้อง "emaills/password-reset"
-        String htmlContent = templateEngine.process("emaills/password-reset", context);
+        // ใช้ path folder ถูกต้อง "emails/password-reset"
+        String htmlContent = templateEngine.process("emails/password-reset", context);
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");

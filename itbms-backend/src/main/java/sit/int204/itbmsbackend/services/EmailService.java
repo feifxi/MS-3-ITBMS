@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -52,6 +53,7 @@ public class EmailService {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
     }
 
+    @Async
     public void sendVerificationEmail(String to, String token) throws MessagingException, UnsupportedEncodingException {
         String hostPath = getHostPath();
         String verifyUrl = hostPath + "/" + teamCode + "/verify-email?token=" + token;

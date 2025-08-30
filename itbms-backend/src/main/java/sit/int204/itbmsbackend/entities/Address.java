@@ -21,8 +21,8 @@ public class Address {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "buyer_id", nullable = false)
-    private BuyerProfile buyer;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Size(max = 100)
     @Column(name = "full_name", length = 100)

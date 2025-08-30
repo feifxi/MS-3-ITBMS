@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
@@ -41,15 +42,45 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Size(max = 255)
+    @Column(name = "shop_name")
+    private String shopName;
+
+    @Size(max = 20)
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Size(max = 50)
+    @Column(name = "bank_account_number", length = 50)
+    private String bankAccountNumber;
+
+    @Size(max = 50)
+    @Column(name = "bank_name", length = 50)
+    private String bankName;
+
+    @Size(max = 20)
+    @Column(name = "id_card_number", length = 20)
+    private String idCardNumber;
+
+    @Size(max = 255)
+    @Column(name = "id_card_image_front")
+    private String idCardImageFront;
+
+    @Size(max = 255)
+    @Column(name = "id_card_image_back")
+    private String idCardImageBack;
+
+    @NotNull
+    @ColumnDefault("0")
     @Column(name = "is_locked", nullable = false)
-    private Boolean isLocked;
+    private Boolean isLocked = false;
 
-    @Column(name = "created_on", nullable = false)
-    private LocalDateTime createdOn;
+    @ColumnDefault("'BUYER'")
+    @Lob
+    @Column(name = "user_type")
+    private String userType;
 
-    @Column(name = "updated_on", nullable = false)
-    private LocalDateTime updatedOn;
-
+    @ColumnDefault("'INACTIVE'")
     @Lob
     @Column(name = "status")
     private String status;
@@ -61,11 +92,17 @@ public class User {
     @Column(name = "verification_token_expiry")
     private LocalDateTime verificationTokenExpiry;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private BuyerProfile buyerProfile;
+    @NotNull
+    @Column(name = "created_on", nullable = false)
+    private LocalDateTime createdOn;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private SellerProfile sellerProfile;
+    @NotNull
+    @Column(name = "updated_on", nullable = false)
+    private LocalDateTime updatedOn;
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private Set<Address> addresses = new LinkedHashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",

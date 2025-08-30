@@ -3,6 +3,7 @@ package sit.int204.itbmsbackend.controllers.v2;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -41,34 +42,27 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v2/auth")
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder encoder;
-    @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-    @Autowired
-    private ImageStorageService imageStorageService;
-    @Autowired
-    private EmailService emailService;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder encoder;
+    private final JwtUtils jwtUtils;
+    private final RefreshTokenService refreshTokenService;
+    private final ImageStorageService imageStorageService;
+    private final EmailService emailService;
 
-    @Value("${email.verification_token_expiration_hr:86400000}") // 24 hours default
+    @Value("${email.verification_token_expiration_hr:24}") // 24 hours default
     private int emailVerifiedExpirationHr;
     private final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60;
 
-    private void validateSellerField(SellerAdditionalFieldRequest seller) {
+    private void validateSellerField(RegisterRequest seller) {
         if (seller.getShopName() == null ||
             seller.getPhone() == null ||
             seller.getBankAccountNumber() == null ||
             seller.getBankName() == null ||
-            seller.getNationalId() == null
+            seller.getIdCardNumber() == null
         ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid seller fields.");
         }
@@ -90,19 +84,18 @@ public class AuthController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> registerUser(
-            @Valid @ModelAttribute RegisterRequest registerRequest,
-            @ModelAttribute SellerAdditionalFieldRequest sellerDTO) throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+    public ResponseEntity<?> registerUser(@Valid @ModelAttribute RegisterRequest request) throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
         }
 
         // Create new user account
         User user = new User();
-        user.setNickname(registerRequest.getNickname());
-        user.setFullName(registerRequest.getFullName());
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(encoder.encode(registerRequest.getPassword()));
+        user.setNickname(request.getNickname());
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPassword(encoder.encode(request.getPassword()));
+        user.setUserType(request.getUserType().toString());
 
         // Email verification token
         String verifiedToken = UUID.randomUUID().toString();
@@ -116,42 +109,28 @@ public class AuthController {
         roles.add(userRole);
         user.setRoles(roles);
 
-        if (UserType.BUYER.equals(registerRequest.getUserType())) {
-            // Create new buyer profile of user
-            BuyerProfile buyerProfile = new BuyerProfile();
-            buyerProfile.setUser(user);
-            user.setBuyerProfile(buyerProfile);
-        }
-        else if (UserType.SELLER.equals(registerRequest.getUserType())) {
-            // Validate additional field of seller
-            validateSellerField(sellerDTO);
+         if (UserType.SELLER.equals(request.getUserType())) {
+            // Validate additional seller field
+            validateSellerField(request);
 
             // Validate upload image and save to image storage
-            String nationalIdImageFrontFileName = null;
-            String nationalIdImageBackFileName = null;
-            if (sellerDTO.getNationalIdImageFront() != null && !sellerDTO.getNationalIdImageFront().isEmpty() &&
-                sellerDTO.getNationalIdImageBack() != null && !sellerDTO.getNationalIdImageBack().isEmpty())
+            String idCardImageFrontFileName = null;
+            String idCardImageBackFileName = null;
+            if (request.getIdCardImageFront() != null && !request.getIdCardImageFront().isEmpty() &&
+                request.getIdCardImageBack() != null && !request.getIdCardImageBack().isEmpty())
             {
-                nationalIdImageFrontFileName = imageStorageService.saveImage(sellerDTO.getNationalIdImageFront());
-                nationalIdImageBackFileName = imageStorageService.saveImage(sellerDTO.getNationalIdImageBack());
+                idCardImageFrontFileName = imageStorageService.saveImage(request.getIdCardImageFront());
+                idCardImageBackFileName = imageStorageService.saveImage(request.getIdCardImageBack());
             }
-
-            // Create new seller profile of user
-            SellerProfile sellerProfile = new SellerProfile();
-            sellerProfile.setUser(user);
-            sellerProfile.setPhone(sellerDTO.getPhone());
-            sellerProfile.setShopName(sellerDTO.getShopName());
-            sellerProfile.setBankName(sellerDTO.getBankName());
-            sellerProfile.setBankAccountNumber(sellerDTO.getBankAccountNumber());
-            sellerProfile.setNationalId(sellerDTO.getNationalId());
-            // Save image name to db
-            sellerProfile.setNationalIdImageFront(nationalIdImageFrontFileName);
-            sellerProfile.setNationalIdImageBack(nationalIdImageBackFileName);
-
-            user.setSellerProfile(sellerProfile);
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user type.");
-        }
+            // Adding additional field of seller
+            user.setPhone(request.getPhone());
+            user.setShopName(request.getShopName());
+            user.setBankName(request.getBankName());
+            user.setBankAccountNumber(request.getBankAccountNumber());
+            user.setIdCardNumber(request.getIdCardNumber());
+            user.setIdCardImageFront(idCardImageFrontFileName); // Save image name to db
+            user.setIdCardImageBack(idCardImageBackFileName);
+         }
 
         // Save user to db
         userRepository.save(user);
@@ -163,9 +142,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        userRepository.findOneByEmailAndStatus(loginRequest.getEmail(), "ACTIVE").orElseThrow(
-                ()  -> new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not verify email.")
-        );
+        User existUser = userRepository.findOneByEmail(loginRequest.getEmail()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found."));
+        if (existUser.getStatus().equals("INACTIVE")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not verify email.");
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -187,6 +168,7 @@ public class AuthController {
 
         return ResponseEntity.ok(new AuthTokenResponse(
                 accessToken,
+                refreshTokenData.getToken(),
                 user.getId(),
                 user.getNickname(),
                 user.getFullName(),
@@ -278,13 +260,12 @@ public class AuthController {
         System.out.println("=== Cleaning up non-verified users : " + LocalDateTime.now());
         List<User> users = userRepository.findAllByExpiresToken(LocalDateTime.now());
         for (User user : users) {
-            // remove national id image of seller from image storage
-            if (user.getSellerProfile() != null &&
-                user.getSellerProfile().getNationalIdImageFront() != null &&
-                user.getSellerProfile().getNationalIdImageBack() != null)
+            // remove id card image from storage
+            if (UserType.SELLER.toString().equals(user.getUserType()) &&
+                user.getIdCardImageFront() != null && user.getIdCardImageBack() != null)
             {
-                imageStorageService.deleteImage(user.getSellerProfile().getNationalIdImageFront());
-                imageStorageService.deleteImage(user.getSellerProfile().getNationalIdImageBack());
+                imageStorageService.deleteImage(user.getIdCardImageFront());
+                imageStorageService.deleteImage(user.getIdCardImageBack());
             }
             userRepository.delete(user);
         }

@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import sit.int204.itbmsbackend.entities.User;
 
@@ -47,6 +46,8 @@ public class JwtUtils {
         return Jwts.builder()
                 .setIssuer(hostPath)
                 .setSubject(user.getEmail())    // generate with user email
+                .claim("nickname", user.getNickname())  // custom claim
+                .claim("id", user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)

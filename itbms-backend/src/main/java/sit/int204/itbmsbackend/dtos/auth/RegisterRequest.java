@@ -3,6 +3,7 @@ package sit.int204.itbmsbackend.dtos.auth;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 import sit.int204.itbmsbackend.constants.UserType;
 
 @Data
@@ -25,4 +26,13 @@ public class RegisterRequest {
     @Size(min = 8)
     @NotNull
     private String password;
+
+    // Seller additional field
+    private String shopName;
+    private String phone;
+    private String bankAccountNumber;
+    private String bankName;
+    private String idCardNumber;
+    private MultipartFile idCardImageFront;
+    private MultipartFile idCardImageBack;
 }

@@ -54,12 +54,20 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`users` (
     full_name VARCHAR(40) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    shop_name VARCHAR(255),
+    phone VARCHAR(20),
+    bank_account_number VARCHAR(50),
+    bank_name VARCHAR(50),
+    id_card_number VARCHAR(20),
+    id_card_image_front VARCHAR(255),
+    id_card_image_back VARCHAR(255),
     is_locked BOOLEAN NOT NULL DEFAULT FALSE,
-    created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    user_type ENUM('BUYER','SELLER') DEFAULT 'BUYER',
     status ENUM('ACTIVE','INACTIVE') DEFAULT 'INACTIVE',
     verification_token VARCHAR(255),
     verification_token_expiry DATETIME,
+    created_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email)
 );
 
@@ -71,39 +79,16 @@ CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`user_roles` (
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
--- Buyer profile (1-to-1 with user, optional)
-CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`buyer_profiles` (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT UNIQUE NOT NULL,
-    default_address_id INT, -- link to addresses table
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Seller profile (1-to-1 with user, optional)
-CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`seller_profiles` (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT UNIQUE NOT NULL,
-    shop_name VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    bank_account_number VARCHAR(50) NOT NULL,
-    bank_name VARCHAR(50) NOT NULL,
-    national_id VARCHAR(20),
-    national_id_image_front VARCHAR(255),
-    national_id_image_back VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Shipping addresses (buyers can have many addresses)
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`addresses` (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    buyer_id INT NOT NULL,
+    user_id INT NOT NULL,
     full_name VARCHAR(100),
     phone VARCHAR(20),
     address_line TEXT NOT NULL,
     city VARCHAR(100),
     postal_code VARCHAR(20),
     country VARCHAR(50),
-    FOREIGN KEY (buyer_id) REFERENCES buyer_profiles(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`refresh_tokens` (

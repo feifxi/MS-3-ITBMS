@@ -85,8 +85,16 @@ public class AuthController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> registerUser(@Valid @ModelAttribute RegisterRequest request) throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
+        User existUser = userRepository.findOneByEmail(request.getEmail()).orElse(null);
+        if (existUser != null) {
+            if (existUser.getStatus().equals("INACTIVE") &&
+                existUser.getVerificationTokenExpiry() != null &&
+                existUser.getVerificationTokenExpiry().isBefore(LocalDateTime.now())
+            ) {
+                userRepository.delete(existUser);   // remove expires verify-token user
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
+            }
         }
 
         // Create new user account
@@ -144,8 +152,14 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         User existUser = userRepository.findOneByEmail(loginRequest.getEmail()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found."));
+
         if (existUser.getStatus().equals("INACTIVE")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not verify email.");
+           if (existUser.getVerificationTokenExpiry() != null && existUser.getVerificationTokenExpiry().isBefore(LocalDateTime.now())) {
+               userRepository.delete(existUser);    // remove expires verify-token user
+               throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Email not found.");
+           } else {
+               throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not verify email.");
+           }
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -220,9 +234,8 @@ public class AuthController {
     @PostMapping("/verify-email")
     public ResponseEntity<?> emailVerification(@Valid @RequestBody EmailVerificationRequest request) {
         User user = userRepository.findOneByVerificationToken(request.getToken()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token or token expires."));
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token."));
         if (user.getVerificationTokenExpiry().isBefore(LocalDateTime.now())) {
-            userRepository.delete(user);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The token has expires, please try register again.");
         }
         user.setStatus("ACTIVE");

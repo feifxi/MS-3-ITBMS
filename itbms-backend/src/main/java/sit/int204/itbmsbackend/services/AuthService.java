@@ -156,6 +156,7 @@ public class AuthService {
                 user.getNickname(),
                 user.getFullName(),
                 user.getEmail(),
+                user.getUserType(),
                 user.getRolesStr(),
                 user.getIsLocked()
         );

@@ -26,15 +26,7 @@ const loadUserProfile =  async () => {
 }
 
 
-// redirect if user is not logged in
-const redirectIfNotSeller = () => {
-  if (auth.user?.userType !== "SELLER") {
-    router.push({ name: "SaleItemGallery" })
-  }
-}
-
 onMounted(async () => {
-    redirectIfNotSeller()
     loadUserProfile()
 })
 

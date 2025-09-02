@@ -23,6 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
       accessToken.value = data.accessToken
       user.value = {
         id: data.id,
+        userType: data.userType,
         email: data.email,
         nickname: data.nickname,
         fullName: data.fullName,

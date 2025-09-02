@@ -39,6 +39,9 @@ public class UserController {
             @ModelAttribute UpdateUserRequest updateUserRequest,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
+        if (userPrincipal == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not logged in.");
+        }
         userService.updateUserProfile(userPrincipal.getUser(), updateUserRequest);
         return ResponseEntity.ok(new ApiResponse(true, "User profile updated successfully!"));
     }

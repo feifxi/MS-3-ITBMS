@@ -7,8 +7,9 @@ import Button from '@/components/Button.vue'
 import DeleteConfirmModal from './ConfirmModal.vue'
 import { formatNumber } from "../libs/utils.js";
 import {Trash2,Pencil,MemoryStick ,Archive,PaintBucket} from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth'
 
-
+const auth = useAuthStore()
 const props = defineProps({ item: Object })
 const router = useRouter()
 const statusMessageStore = useStatusMessageStore()
@@ -19,7 +20,7 @@ const emit = defineEmits(['deleted'])
 const confirmDelete = async () => {
   try {
     isDeleting.value = true
-    const res = await deleteSaleItem(props.item.id)
+    const res = await deleteSaleItem(props.item.id, auth)
     if (!res.ok) throw new Error('Failed')
     statusMessageStore.setStatusMessage('The sale item has been deleted.', true)
     emit('deleted', props.item.id)  // แจ้งไปยัง parent

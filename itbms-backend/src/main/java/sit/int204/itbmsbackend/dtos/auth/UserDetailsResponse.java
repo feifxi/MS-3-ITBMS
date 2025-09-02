@@ -12,4 +12,5 @@ public class UserDetailsResponse {
     private String email;
     private Set<String> roles;
     private Boolean isLocked;
+    private String userType;
 }

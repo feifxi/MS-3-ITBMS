@@ -7,7 +7,9 @@ import Button from '@/components/Button.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 import { ChevronDown, ChevronUp, X } from 'lucide-vue-next';
 import placeHolder from '@/assets/placeholder.svg' 
+import { useAuthStore } from '@/stores/auth';
 
+const auth = useAuthStore()
 const router = useRouter()
 const saleItem = reactive({
     model: '',
@@ -19,7 +21,7 @@ const saleItem = reactive({
     color: '',
     quantity: '',
     brand: {
-        id: 0,
+        id: '',
         name: ''
     },
 })
@@ -173,7 +175,7 @@ const submitForm = async (e) => {
         //   console.log(key, " : ", value);
         // });
 
-        const res = await createSaleItem(formData)
+        const res = await createSaleItem(formData, auth)
         const result = await res.json()
         // console.log(result)
         if (!res.ok) throw new Error("Something went wrong")
@@ -188,7 +190,8 @@ const submitForm = async (e) => {
 }
 
 const goBackHome = () => {
-    router.push('/sale-items')
+    // router.push('/sale-items')
+    router.push({ name: "SaleItemList" })
 }
 
 const showErrorToForm = () => {
@@ -251,7 +254,14 @@ const handleChangeSelectedImage = (index) => {
     selectedImageIndex.value = index
 }
 
+const redirectIfNotSeller = () => {
+    if (auth.user?.userType !== "SELLER") {
+        router.push({ name: "SaleItemGallery" })
+    }
+}
+
 onMounted(() => {
+    redirectIfNotSeller()
     fetchBrands()
 })
 

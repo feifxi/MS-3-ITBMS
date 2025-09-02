@@ -8,33 +8,15 @@ function cleanObject(obj) {
   );
 }
 
-export const fetchAllSaleItems = async () => {
-  return await fetch(`${BASE_API}/v1/sale-items`);
-};
-
-export const fetchAllSaleItemsV2 = async (
-  page,
-  size,
-  filterBrands,
-  sortField,
-  sortDirection
-) => {
-  const brands =
-    "&filterBrands=" +
-    filterBrands.reduce((allBrand, brand) => allBrand + "," + brand, "");
-  const sort = `&sortField=${sortField}${
-    sortField === "createdOn" ? "" : "&sortDirection=" + sortDirection
-  }`;
-  const query =
-    `?page=${page}&size=${size}` +
-    (filterBrands.length > 0 ? brands : "") +
-    sort;
-  // console.log(query)
-  return await fetch(`${BASE_API}/v2/sale-items` + query);
+export const fetchAllSaleItems = async (authStore) => {
+  return await fetchWithAuth(`/v1/sale-items`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  }, authStore)
 };
 
 // fetch sale items 
-export const fetchAllSaleItemsV3 = async (page, size, filterBrands, filterPriceRange, filterStorageSizes, sortField, sortDirection , searchKeyword) => {
+export const fetchAllSaleItemsV2 = async (page, size, filterBrands, filterPriceRange, filterStorageSizes, sortField, sortDirection , searchKeyword) => {
     const params = new URLSearchParams({
         page: page.toString(),
         size: size.toString()
@@ -91,25 +73,39 @@ export const fetchSaleItemById = async (id) => {
   return await fetch(`${BASE_API}/v1/sale-items/${id}`);
 };
 
-export const createSaleItem = async (saleItem) => {
-  return await fetch(`${BASE_API}/v1/sale-items`, {
+export const createSaleItem = async (saleItem, authStore) => {
+  return await fetchWithAuth(`/v1/sale-items`, {
     method: "POST",
     body: saleItem,
-  });
+  }, authStore)
+
+  // return await fetch(`${BASE_API}/v1/sale-items`, {
+  //   method: "POST",
+  //   body: saleItem,
+  // });
 };
 
-export const updateSaleItem = async (id, saleItem) => {
-  return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
+export const updateSaleItem = async (id, saleItem, authStore) => {
+  return await fetchWithAuth(`/v1/sale-items/${id}`, {
     method: "PUT",
     body: saleItem,
-  });
+  }, authStore)
+
+  // return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
+  //   method: "PUT",
+  //   body: saleItem,
+  // });
 };
 
-export const deleteSaleItem = async (id) => {
-  return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
+export const deleteSaleItem = async (id, authStore) => {
+  return await fetchWithAuth(`/v1/sale-items/${id}`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-  });
+  }, authStore)
+
+  // return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
+  //   method: "DELETE",
+  //   headers: { "Content-Type": "application/json" },
+  // });
 };
 
 export const fetchAllBrands = async () => {
@@ -150,17 +146,6 @@ export const registerUser = async (userData) => {
   });
 };
 
-export const loginUser = async (email, password) => {
-  return await fetch(`${BASE_API}/v2/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      email: email,
-      password: password,
-    }),
-    credentials: "include",
-  });
-};
 
 export const verifyEmail = async (token) => {
   return await fetch(`${BASE_API}/v2/auth/verify-email`, {
@@ -172,7 +157,11 @@ export const verifyEmail = async (token) => {
   });
 };
 
-// ==================   Fetch with Auth  ========================================
+export const fetchUserProfile = async (authStore) => {
+  return await fetchWithAuth(`/v2/users/profile`, {}, authStore)
+}
+
+// ==================   Fetch with Auth  ===========================
 
 export async function fetchWithAuth(url, options = {}, authStore) {
   let accessToken = authStore.accessToken;
@@ -197,7 +186,6 @@ export async function fetchWithAuth(url, options = {}, authStore) {
       throw new Error("Session expired, please log in again.");
     }
   }
-
   return response;
 }
 

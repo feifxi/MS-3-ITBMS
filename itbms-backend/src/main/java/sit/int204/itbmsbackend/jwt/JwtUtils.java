@@ -26,7 +26,7 @@ public class JwtUtils {
     @Value("${team.code:ms3}")
     private String teamCode;
 
-    @Value("${jwt.access-token-expiration_ms}")
+    @Value("${jwt.access-token-expiration_ms:1800000}")
     private int jwtExpirationMs;
 
     @Value("${app.frontend.url.dev:http://localhost:5173}")

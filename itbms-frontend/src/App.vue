@@ -28,14 +28,12 @@ const loadProfile = async () => {
       nickname: profile.nickname,
       fullName: profile.fullName,
       roles: profile.roles,
+      userType: profile.userType,
       isLocked: profile.isLocked,
     }
 
     // console.log("Logged in as:", profile);
   } catch (err) {
-    if (err.message === "Session expired, please log in again." || err.message === "Invalid token or expires.") {
-      // router.push({ name: "login" })
-    }
     console.error("Auth error:", err.message);
   } finally {
     isLoading.value = false

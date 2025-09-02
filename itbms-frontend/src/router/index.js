@@ -35,42 +35,6 @@ const router = createRouter({
       component: SaleItemDetailView,
     },
     {
-      path: '/sale-items/add',
-      name: 'AddSaleItem',
-      component: CreateSaleItem,
-    },
-    {
-      path: '/sale-items/:id/edit',
-      name: 'UpdateSaleItem',
-      component: UpdateSaleItem,
-    },
-    {
-      path: '/sale-items/list',
-      name: 'SaleItemList',
-      component: ListSaelItem,
-    },
-    {
-      path: '/brands',
-      name: 'BrandList',
-      component: BrandList,
-    },
-    {
-      path: '/brands/:id/edit',
-      name: 'UpdateBrand',
-      component: BrandEdit,
-    },
-    {
-      path: '/brands/add',
-      name: 'AddBrand',
-      component: BrandAdd,
-    },
-    {
-      path: '/chat-app',
-      name: 'chatApp',
-      component: Chat,
-      meta: { requiresAuth: true },
-    },
-    {
       path: '/register',
       name: 'register',
       component: RegisterView,
@@ -86,13 +50,55 @@ const router = createRouter({
       component: EmailVerificationView,
     },
     {
+      path: '/sale-items/add',
+      name: 'AddSaleItem',
+      component: CreateSaleItem,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/sale-items/:id/edit',
+      name: 'UpdateSaleItem',
+      component: UpdateSaleItem,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/sale-items/list',
+      name: 'SaleItemList',
+      component: ListSaelItem,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/brands',
+      name: 'BrandList',
+      component: BrandList,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/brands/:id/edit',
+      name: 'UpdateBrand',
+      component: BrandEdit,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/brands/add',
+      name: 'AddBrand',
+      component: BrandAdd,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/profile',
       name: 'userProfile',
       component: UserProfile,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/chat-app',
+      name: 'chatApp',
+      component: Chat,
+    },
   ],
 })
+
 
 router.beforeEach(async (to, from, next) => {
   const isAuthenticated = await checkIfUserIsAuthenticated();
@@ -101,15 +107,15 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     if (isAuthenticated) {
       next()
-    }  
+    }
     else {
-      next({ path: '/login', query: { redirect: to.fullPath } }); // Redirect to the login page if not authenticated
+      next({ name: 'login', query: { redirect: to.fullPath } }); // Redirect to the login page if not authenticated
     }
   } 
   // Register/Login route
   else if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {
     next({ name: "Home" })
-  } 
+  }
   // Public route
   else {
     next()
@@ -124,7 +130,7 @@ async function checkIfUserIsAuthenticated() {
   // Check by access token
   try {
     await refreshAccessToken(auth)
-    return auth.accessToken
+    return auth.accessToken != null
   } catch (err) {
     // console.log("Not authenticated in protected route : ", err)
     return false

@@ -3,8 +3,10 @@ package sit.int204.itbmsbackend.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -54,18 +56,27 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.disable())
-                .csrf(csrf -> csrf.disable())
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll() // allow all - for testing
-                        .requestMatchers("/v2/auth/**").permitAll()
-                        .requestMatchers("/v2/public/**").permitAll()
-                        .requestMatchers("/v2/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/v2/user/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
-                        .anyRequest().authenticated()
-                );
+        http
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/error").permitAll()
+                    .requestMatchers(
+                            "/v1/brands/**",
+                            "/v2/auth/**"
+                    ).permitAll()
+                    // Allow sale item detail and sale item images
+                    .requestMatchers(
+                            HttpMethod.GET,
+                            "/v1/sale-items/*",
+                            "/v1/sale-items/images/*",
+                            "/v2/sale-items/**"
+                    ).permitAll()
+                    // All other requests require authentication.
+                    .anyRequest().authenticated()
+            );
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

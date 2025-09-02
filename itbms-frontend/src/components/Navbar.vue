@@ -63,6 +63,10 @@ const clearSearch = () => {
 }
 // console.log(authStore.user)
 
+const handleClickCart = () => {
+  console.log("Open Cart")
+}
+
 </script>
 
 <template>
@@ -79,7 +83,7 @@ const clearSearch = () => {
         </RouterLink>
 
 
-        <div class="max-sm:hidden flex items-center gap-4">
+        <div class="max-sm:hidden flex items-center gap-8">
           <!-- Search bar -->
           <div class="relative">
             <input 
@@ -100,23 +104,21 @@ const clearSearch = () => {
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             </button>  
           </div>
-            
-              <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x ml-3"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> -->
-            <!-- click handler  -->
-            <button class="relative cursor-pointer">
+
+            <!-- Cart -->
+          <button class="relative cursor-pointer" @click="handleClickCart">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
             <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
           </button>
 
           <div class="flex gap-4">
             <!-- user profile -->
-            <div v-if="authStore.user && authStore.accessToken" class="flex items-center gap-2">
+            <div v-if="authStore.user && authStore.accessToken" class="flex items-center gap-5">
               <RouterLink :to="{name: 'userProfile'}">
                 <button class="cursor-pointer w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
                 </button>
               </RouterLink>
-
               <Button class-name="ghost-btn" :onclick="handleLogout">
                 Sign out
               </Button>

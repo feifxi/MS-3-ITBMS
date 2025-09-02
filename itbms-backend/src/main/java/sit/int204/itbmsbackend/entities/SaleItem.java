@@ -1,6 +1,5 @@
 package sit.int204.itbmsbackend.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -74,4 +73,10 @@ public class SaleItem {
 
     @OneToMany(mappedBy = "saleItem")
     private List<SaleItemImage> saleItemImages = new ArrayList<>();
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private User seller;
 }

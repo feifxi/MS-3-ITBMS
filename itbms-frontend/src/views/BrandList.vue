@@ -7,18 +7,20 @@ import BreadCrumb from '../components/BreadCrumb.vue';
 
 import { useRouter } from 'vue-router'
 import {CirclePlus,Package} from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth';
 
 
 const router = useRouter()
 const brands = ref([])
 const saleItems = ref([])
 const isLoading = ref(true)
+const auth = useAuthStore()
 
 onMounted(async () => {
   try {
     const [brandRes, saleItemRes] = await Promise.all([
       fetchAllBrands(),
-      fetchAllSaleItems()
+      fetchAllSaleItems(auth)
     ])
     if (!brandRes.ok || !saleItemRes.ok) throw new Error('Failed to fetch')
     brands.value = await brandRes.json()

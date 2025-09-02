@@ -5,7 +5,7 @@ import { Heart, Plus } from "lucide-vue-next";
 import placeHolder from '@/assets/placeholder.svg' 
 
 const BASE_API = import.meta.env.VITE_BASE_API
-const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
+const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
 
 defineProps({
     item: {

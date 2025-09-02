@@ -20,9 +20,9 @@ const userData = reactive({
   phone: "",
   bankName: "",
   bankAccountNumber: "",
-  nationalId: "",
-  nationalIdImageFront: null,
-  nationalIdImageBack: null,
+  idCardNumber: "",
+  idCardImageFront: null,
+  idCardImageBack: null,
 });
 const isLoading = ref(false);
 const isSubmitting = ref(false);
@@ -38,9 +38,9 @@ const errorFormMessage = reactive({
   phone: "",
   bankName: "",
   bankAccountNumber: "",
-  nationalId: "",
-  nationalIdImageFront: "",
-  nationalIdImageBack: "",
+  idCardNumber: "",
+  idCardImageFront: "",
+  idCardImageBack: "",
 });
 
 const fieldIntegrity = {   
@@ -58,16 +58,16 @@ const fieldIntegrity = {
   },
   email: {
     checkConstraint: (data) => {
-      return 0 < data.length && data.length <= 40 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data);
+      return 0 < data.length && data.length <= 50 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data);
     },
     errorMessage: "Invalid email.",
   },
   password: {
     checkConstraint: (data) => {
       // return 7 < data.length && data.length <= 40;
-      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data);
+      return data.length <= 14 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data);
     },
-    errorMessage: "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
+    errorMessage: "Password must be between 8 - 14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
   },
   shopName: {
     checkConstraint: (data) => {
@@ -93,11 +93,11 @@ const fieldIntegrity = {
     },
     errorMessage: "Must choose bank.",
   },
-  nationalId: {
+  idCardNumber: {
     checkConstraint: (data) => {
       return 0 < data.length && data.length <= 40;
     },
-    errorMessage: "Full Name must be 1-40 characters long.",
+    errorMessage: "ID Card Number must be 1-40 characters long.",
   },
 };
 
@@ -115,7 +115,7 @@ const handleFocusOut = (e) => {
 };
 
 const handleChangeBank = (e) => {
-    currentFocusField.value = e.target.name
+  currentFocusField.value = e.target.name
 }
 
 const checkFieldIntegrity = (field) => {
@@ -150,11 +150,11 @@ const submitForm = async (e) => {
       }
     }
     // add natnional id card image if exists
-    if (userData.nationalIdImageFront !== ''  && userData.nationalIdImageFront != null &&
-        userData.nationalIdImageBack !== ''  && userData.nationalIdImageBack != null) 
+    if (userData.idCardImageFront !== ''  && userData.idCardImageFront != null &&
+        userData.idCardImageBack !== ''  && userData.idCardImageBack != null) 
     { 
-      formData.append("nationalIdImageFront", userData.nationalIdImageFront.file);
-      formData.append("nationalIdImageBack", userData.nationalIdImageBack.file);
+      formData.append("idCardImageFront", userData.idCardImageFront.file);
+      formData.append("idCardImageBack", userData.idCardImageBack.file);
     }
     // formData.forEach((value, key) => {
     //   console.log(key, " : ", value);
@@ -191,7 +191,7 @@ const showErrorToForm = () => {
   }
 };
 
-const handleSelectNationalIdImage = (e, type = "FRONT") => {
+const handleSelectidCardImage = (e, type = "FRONT") => {
   const file = e.target.files[0];
   const MAX_MB_UNIT = 2 * 1024 * 1024;
   if (file > MAX_MB_UNIT) {
@@ -204,18 +204,18 @@ const handleSelectNationalIdImage = (e, type = "FRONT") => {
   }
 
   if (type === "FRONT") {
-    userData.nationalIdImageFront = uploadedImage
+    userData.idCardImageFront = uploadedImage
   } else {
-    userData.nationalIdImageBack = uploadedImage
+    userData.idCardImageBack = uploadedImage
   }
   e.target.value = "";
 };
 
-const handleRemoveNationalIdImage = (type = "FRONT") => {
+const handleRemoveidCardNumberImage = (type = "FRONT") => {
   if (type === "FRONT") {
-    userData.nationalIdImageFront = ''
+    userData.idCardImageFront = ''
   } else {
-    userData.nationalIdImageBack = ''
+    userData.idCardImageBack = ''
   }
 }
 
@@ -411,16 +411,16 @@ watch(userData, () => {
                 National Id
               </label>
               <input
-                name="nationalId"
+                name="idCardNumber"
                 type="text"
-                class="itbms-nationalId input"
+                class="itbms-idCardNumber input"
                 placeholder="National ID..."
-                v-model="userData.nationalId"
+                v-model="userData.idCardNumber"
                 @focusin="handleFocusIn"
                 @focusout="handleFocusOut"
               />
               <p class="itbms-message text-red-500 pl-2">
-                {{ errorFormMessage["nationalId"] }}
+                {{ errorFormMessage["idCardNumber"] }}
               </p>
             </div>
 
@@ -430,14 +430,14 @@ watch(userData, () => {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
               <div class="flex flex-col gap-2 relative">
                 <span 
-                  v-if="userData.nationalIdImageFront" 
+                  v-if="userData.idCardImageFront" 
                   class="z-50 -top-3 -right-3 absolute flex justify-center items-center cursor-pointer size-8 bg-white shadow-xl rounded-full hover:size-9 transition-all" 
-                  @click="handleRemoveNationalIdImage('FRONT')"
+                  @click="handleRemoveidCardNumberImage('FRONT')"
                 >
                   X
                 </span>
                 <img
-                  :src="userData.nationalIdImageFront?.preview || placeHolder"
+                  :src="userData.idCardImageFront?.preview || placeHolder"
                   alt="sale item"
                   :class="'shadow-md'"
                 />
@@ -451,21 +451,21 @@ watch(userData, () => {
                   id="image-upload-front"
                   type="file"
                   accept="image/*"
-                  @change="(e) => handleSelectNationalIdImage(e, 'FRONT')"
+                  @change="(e) => handleSelectidCardImage(e, 'FRONT')"
                   className="hidden"
                 />
               </div>
 
               <div class="flex flex-col gap-2 relative">
                 <span 
-                  v-if="userData.nationalIdImageBack" 
+                  v-if="userData.idCardImageBack" 
                   class="z-50 -top-3 -right-3 absolute flex justify-center items-center cursor-pointer size-8 bg-white shadow-xl rounded-full hover:size-9 transition-all" 
-                  @click="handleRemoveNationalIdImage('BACK')"
+                  @click="handleRemoveidCardNumberImage('BACK')"
                 >
                   X
                 </span>
                 <img
-                  :src="userData.nationalIdImageBack?.preview || placeHolder"
+                  :src="userData.idCardImageBack?.preview || placeHolder"
                   alt="sale item"
                   :class="'shadow-md'"
                 />
@@ -479,7 +479,7 @@ watch(userData, () => {
                   id="image-upload-back"
                   type="file"
                   accept="image/*"
-                  @change="(e) => handleSelectNationalIdImage(e, 'BACK')"
+                  @change="(e) => handleSelectidCardImage(e, 'BACK')"
                   className="hidden"
                 />
               </div>

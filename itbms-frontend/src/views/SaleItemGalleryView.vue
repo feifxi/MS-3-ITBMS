@@ -1,5 +1,5 @@
  <script setup>
-import { fetchAllBrands, fetchAllSaleItemsV2 , fetchAllSaleItemsV3, fetchAllStorageSizes, fetchPriceRanges } from '@/api/index.js'
+import { fetchAllBrands, fetchAllSaleItemsV2, fetchAllStorageSizes, fetchPriceRanges } from '@/api/index.js'
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import CardSaleItem from '../components/CardSaleItem.vue'
 import Button from '@/components/Button.vue'
@@ -113,7 +113,7 @@ const paginatedPages = computed(() => {
 const fetchSaleItems = async () => {
   loading.value = true
   try {
-      const res = await fetchAllSaleItemsV3(pagination.page, pagination.size, filterBrands, filterPriceRange, filterStorageSizes, sortOption.sortField, sortOption.sortDirection , searchKeyword.value)
+      const res = await fetchAllSaleItemsV2(pagination.page, pagination.size, filterBrands, filterPriceRange, filterStorageSizes, sortOption.sortField, sortOption.sortDirection , searchKeyword.value)
       if (!res.ok) throw new Error("Something went wrong")
       const data = await res.json()
       const { content, first, last, totalPages } = data
@@ -408,13 +408,13 @@ watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges
   <main class="py-8 px-4 sm:px-16 min-h-screen bg-gradient-to-br from-rose-50 to-purple-50">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">Sale Items</h2>
-      <RouterLink to="/sale-items/add" >
+      <!-- <RouterLink to="/sale-items/add" >
         <Button variant="primary" class="itbms-sale-item-add ">➕ Add Sale Item</Button>
-      </RouterLink>
+      </RouterLink> -->
     </div>
 
     <div v-if="route.query.search" class="p-3 rounded-xl mb-4 bg-white">
-      <div class="flex items-center gap-3 justify-center">
+      <div class="flex items-center gap-3">
         <div class="flex items-center gap-2 bg-rose-100 px-4 py-2 rounded-full">
           <span class="text-sm font-medium">Searching for: "{{ route.query.search }}"</span>
           <button @click="handleClearFilter" class="text-rose-500 hover:text-rose-700">

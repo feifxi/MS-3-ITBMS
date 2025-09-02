@@ -1,7 +1,6 @@
 <script setup>
 import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { loginUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { useAuthStore } from "@/stores/auth";

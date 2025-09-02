@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import sit.int204.itbmsbackend.entities.SaleItem;
+import sit.int204.itbmsbackend.entities.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,7 +18,8 @@ import java.util.Optional;
 public interface SaleItemRepository extends JpaRepository<SaleItem, Integer>, JpaSpecificationExecutor<SaleItem> {
     Page<SaleItem> findByBrandNameIn(List<String> brands, Pageable pageable);
     List<SaleItem> findSaleItemByPriceBetween(BigDecimal priceAfter, BigDecimal priceBefore);
-
+    List<SaleItem> findAllBySeller(User seller);
+    
     @Query("SELECT DISTINCT s.storageGb FROM SaleItem s ORDER BY s.storageGb ASC")
     List<Integer> findDistinctStorageGb();
 }

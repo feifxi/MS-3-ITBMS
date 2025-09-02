@@ -100,7 +100,7 @@ public class User {
     @Column(name = "updated_on", nullable = false)
     private LocalDateTime updatedOn;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private Set<Address> addresses = new LinkedHashSet<>();
 

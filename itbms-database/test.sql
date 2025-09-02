@@ -9,7 +9,8 @@ SELECT * FROM saleitems_storage_size_view;
 
 
 -- Sale item
-SELECT * FROM sale_items;
+SELECT * FROM sale_items s JOIN users u ON u.id = s.seller_id;
+
 -- User
 SELECT * FROM roles;
 SELECT * FROM users;

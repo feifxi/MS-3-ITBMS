@@ -42,16 +42,16 @@ const fieldIntegrity = {
   },
   email: {
     checkConstraint: (data) => {
-      return 0 < data.length && data.length <= 40 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data);
+      return 0 < data.length && data.length <= 50 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data);
     },
     errorMessage: "Invalid email.",
   },
   password: {
     checkConstraint: (data) => {
       // return 7 < data.length && data.length <= 40;
-      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data);
+      return data.length <= 14 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data);
     },
-    errorMessage: "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
+    errorMessage: "Password must be between 8 - 14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
   },
 };
 

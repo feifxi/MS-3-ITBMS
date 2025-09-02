@@ -10,11 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import sit.int204.itbmsbackend.constants.UserType;
 import sit.int204.itbmsbackend.dtos.common.PageDTO;
 import sit.int204.itbmsbackend.dtos.saleItem.*;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.entities.SaleItem;
 import sit.int204.itbmsbackend.entities.SaleItemImage;
+import sit.int204.itbmsbackend.entities.User;
 import sit.int204.itbmsbackend.repositories.SaleItemImageRepository;
 import sit.int204.itbmsbackend.repositories.SaleItemRepository;
 import sit.int204.itbmsbackend.utils.ListMapper;
@@ -38,10 +40,11 @@ public class SaleItemService {
     @Autowired
     private ImageStorageService imageStorageService;
 
-    public List<SaleItemListDto> findAll() {
-        List <SaleItem> saleItems = saleItemRepository.findAll();
+    public List<SaleItemListDto> findAll(User seller) {
+        List <SaleItem> saleItems = saleItemRepository.findAllBySeller(seller);
         return listMapper.mapList(saleItems, SaleItemListDto.class, modelMapper);
     }
+
     public PageDTO<SaleItemListDto> findAll(
             List<String> brands,
             Integer page,
@@ -148,7 +151,11 @@ public class SaleItemService {
         return modelMapper.map(saleItem, SaleItemDetailDto.class);
     }
 
-    public SaleItemResponseDto addSaleItem(SaleItemCreateDto saleItemDto) {
+    public SaleItemResponseDto addSaleItem(SaleItemCreateDto saleItemDto, User seller) {
+        if (!seller.getUserType().equals(UserType.SELLER.toString())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User must be SELLER.");
+        }
+
         // Save sale item image
         List<String> originalFilenames = new ArrayList<>();
         List<String> newFilenames = new ArrayList<>();
@@ -161,9 +168,12 @@ public class SaleItemService {
         Brand brand = brandService.getBrandById(saleItemDto.getBrandId());
         saleItemDto.setBrand(brand);
         saleItemDto.setQuantity(saleItemDto.getQuantity() != null ? saleItemDto.getQuantity() : 1);
-        SaleItem newSaleItem = saleItemRepository.save(
-                modelMapper.map(saleItemDto, SaleItem.class)
-        );
+
+        SaleItem newSaleItem = modelMapper.map(saleItemDto, SaleItem.class);
+        newSaleItem.setSeller(seller);
+
+        saleItemRepository.save(newSaleItem);
+
         // Save sale item image info to database
         for (int i = 0; i < originalFilenames.size(); i++) {
             SaleItemImage saleItemImage = new SaleItemImage();
@@ -178,10 +188,16 @@ public class SaleItemService {
         return modelMapper.map(newSaleItem, SaleItemResponseDto.class);
     }
 
-    public SaleItemResponseDto updateSaleItem(SaleItemUpdateDto saleItemDto) {
+    public SaleItemResponseDto updateSaleItem(SaleItemUpdateDto saleItemDto, User seller) {
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())
         );
+        if (!existingSaleItem.getSeller().getId().equals(seller.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot update saleItem of other seller.");
+        }
+        if (!seller.getUserType().equals(UserType.SELLER.toString())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User must be SELLER.");
+        }
 
         // Update sale item image
         List<MultipartFile> images = saleItemDto.getImages();
@@ -246,10 +262,17 @@ public class SaleItemService {
         return modelMapper.map(updatedSaleItem, SaleItemResponseDto.class);
     }
 
-    public void removeSaleItem(Integer id) {
+    public void removeSaleItem(Integer id, User seller) {
         SaleItem existingSaleItem = saleItemRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
         );
+        if (!existingSaleItem.getSeller().getId().equals(seller.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete saleItem of other seller.");
+        }
+        if (!seller.getUserType().equals(UserType.SELLER.toString())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User must be SELLER.");
+        }
+
         List<SaleItemImage> saleItemImages = saleItemImageRepository.findAllBySaleItemOrderByImageViewOrder(existingSaleItem);
         for (SaleItemImage img : saleItemImages) {
             imageStorageService.deleteImage(img.getImageName());   // remove image from storage

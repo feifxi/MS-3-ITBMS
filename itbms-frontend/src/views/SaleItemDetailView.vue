@@ -11,12 +11,15 @@ import Button from '@/components/Button.vue';
 import DeleteConfirmModal from '@/components/ConfirmModal.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 import placeHolder from '@/assets/placeholder.svg' 
+import { useAuthStore } from '@/stores/auth';
 
 const BASE_API = import.meta.env.VITE_BASE_API
-const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
+const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
+
 const item = ref(null)
 const isLoading = ref(true)
 const isNotFound = ref(false)
@@ -52,7 +55,7 @@ const confirmDelete = async () => {
   
   try {
     isDeleting.value = true
-    const res = await deleteSaleItem(id)
+    const res = await deleteSaleItem(id, auth)
     if (!res.ok) throw new Error('Deletion failed')
 
     statusMessageStore.setStatusMessage('The sale item has been deleted.', true)
@@ -184,7 +187,7 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <div class="flex gap-3 items-center mt-10">
+              <!-- <div class="flex gap-3 items-center mt-10">
                 <RouterLink :to="`/sale-items/${item.id}/edit`" class="itbms-edit-button">
                   <Button variant="secondary">Edit</Button>
                 </RouterLink>
@@ -196,7 +199,7 @@ onMounted(async () => {
                   class="itbms-delete-button">
                   {{ isDeleting ? 'Loading...' : 'Delete' }}
                 </Button>
-              </div>
+              </div> -->
             </div>
           </section>
         </div>

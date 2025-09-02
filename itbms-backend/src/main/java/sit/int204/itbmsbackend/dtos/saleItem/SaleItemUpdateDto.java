@@ -1,6 +1,7 @@
 package sit.int204.itbmsbackend.dtos.saleItem;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,19 +46,18 @@ public class SaleItemUpdateDto {
 
 //    @NotNull(message = "Brand is required")
     private Brand brand;
-    private Integer brandId;  // BrandId for testing
+    private Integer brandId;
+
+    @Size(min = 1, max = 4, message = "You must upload between 1 and 4 images")
+    private List<MultipartFile> images = new ArrayList<>();
+
+    @NotNull
+    @Size(min = 1, max = 4, message = "Maximum 4 images are allowed")
+    private List<Boolean> isNewImageList = new ArrayList<>();;
 
     @NotNull
     @Size(max = 4, message = "Maximum 4 images are allowed")
-    private List<MultipartFile> images;
-
-    @NotNull
-    @Size(max = 4, message = "Maximum 4 images are allowed")
-    private List<Boolean> isNewImageList;
-
-    @NotNull
-    @Size(max = 4, message = "Maximum 4 images are allowed")
-    List<String> keptImageNames;
+    List<String> keptImageNames = new ArrayList<>();;
 
     public void setModel(String model) {
         this.model = Utils.trimOrSetNull(model);

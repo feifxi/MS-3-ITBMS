@@ -6,16 +6,18 @@ import Button from '@/components/Button.vue'
 
 import { useRouter } from 'vue-router'
 import {CirclePlus,Package,ChartNoAxesGantt} from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth'
 
 
 const router = useRouter()
+const auth = useAuthStore()
 
 const saleItems = ref([])
 const isLoading = ref(true)
 
 onMounted(async () => {
   try {
-    const res = await fetchAllSaleItems()
+    const res = await fetchAllSaleItems(auth)
     if (!res.ok) throw new Error('Failed to fetch')
     saleItems.value = await res.json()
     saleItems.value.sort((a, b) => new Date(a.createdOn) - new Date(b.createdOn))
@@ -33,6 +35,16 @@ function goToManageBrand() {
 function handleDeleted(deletedItemId) {
   saleItems.value = saleItems.value.filter(item => item.id !== deletedItemId)
 }
+
+const redirectIfNotSeller = () => {
+    if (auth.user?.userType !== "SELLER") {
+        router.push({ name: "SaleItemGallery" })
+    }
+}
+
+onMounted(() => {
+    redirectIfNotSeller()
+})
 
 </script>
 

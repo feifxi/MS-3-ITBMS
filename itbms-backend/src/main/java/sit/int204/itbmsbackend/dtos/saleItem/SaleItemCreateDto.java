@@ -1,6 +1,7 @@
 package sit.int204.itbmsbackend.dtos.saleItem;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -48,8 +49,8 @@ public class SaleItemCreateDto {
     private Brand brand;
     private Integer brandId;  // BrandId for testing
 
-    @Size(max = 4, message = "Maximum 4 images are allowed")
-    private List<MultipartFile> images;
+    @Size(min = 1, max = 4, message = "You must upload between 1 and 4 images")
+    private List<MultipartFile> images = new ArrayList<>();
 
     public void setModel(String model) {
         this.model = Utils.trimOrSetNull(model);

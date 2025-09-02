@@ -1,0 +1,102 @@
+package sit.int204.itbmsbackend.services;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import sit.int204.itbmsbackend.constants.UserType;
+import sit.int204.itbmsbackend.dtos.user.UpdateUserRequest;
+import sit.int204.itbmsbackend.dtos.user.UserProfileResponse;
+import sit.int204.itbmsbackend.entities.User;
+import sit.int204.itbmsbackend.repositories.UserRepository;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+    private final ImageStorageService imageStorageService;
+
+    private void validateSellerField(UpdateUserRequest seller) {
+        if (seller.getShopName() == null ||
+                seller.getPhone() == null ||
+                seller.getBankAccountNumber() == null ||
+                seller.getBankName() == null ||
+                seller.getIdCardNumber() == null
+        ) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid seller fields.");
+        }
+    }
+
+    public UserProfileResponse getUserProfile(User user) {
+        UserProfileResponse response = new UserProfileResponse();
+        response.setUserType(user.getUserType());
+        response.setId(user.getId());
+        response.setNickname(user.getNickname());
+        response.setFullName(user.getFullName());
+        response.setEmail(user.getEmail());
+
+        response.setShopName(user.getShopName());
+        response.setPhone(user.getPhone());
+        response.setBankAccountNumber(user.getBankAccountNumber());
+        response.setBankName(user.getBankName());
+        response.setIdCardNumber(user.getIdCardNumber());
+        response.setIdCardImageFront(user.getIdCardImageFront());
+        response.setIdCardImageBack(user.getIdCardImageBack());
+        response.setIsLocked(user.getIsLocked());
+
+        response.setStatus(user.getStatus());
+        response.setCreatedOn(user.getCreatedOn());
+        response.setUpdatedOn(user.getUpdatedOn());
+        response.setAddresses(user.getAddresses());
+        response.setRoles(user.getRolesStr());
+
+        return response;
+    }
+
+    public void updateUserProfile(User existingUser, UpdateUserRequest updateUser) {
+        existingUser.setNickname(updateUser.getNickname());
+        existingUser.setFullName(updateUser.getFullName());
+        existingUser.setUserType(updateUser.getUserType().toString());
+        if (UserType.SELLER.equals(updateUser.getUserType())) {
+            // Validate additional seller field
+            validateSellerField(updateUser);
+
+            // Validate upload image and save to image storage
+            String idCardImageFrontFileName;
+            String idCardImageBackFileName;
+            // ID Card Front
+            if (updateUser.getKeptIdCardImageFront()) {
+                idCardImageFrontFileName = existingUser.getIdCardImageFront();
+            } else {
+                if (existingUser.getIdCardImageFront() != null) {
+                    imageStorageService.deleteImage(existingUser.getIdCardImageFront());
+                }
+                idCardImageFrontFileName = updateUser.getIdCardImageFront() != null
+                        ? imageStorageService.saveImage(updateUser.getIdCardImageFront())
+                        : null;
+            }
+            // ID Card Back
+            if (updateUser.getKeptIdCardImageBack()) {
+                idCardImageBackFileName = existingUser.getIdCardImageBack();
+            } else {
+                if (existingUser.getIdCardImageBack() != null) {
+                    imageStorageService.deleteImage(existingUser.getIdCardImageBack());
+                }
+                idCardImageBackFileName = updateUser.getIdCardImageBack() != null
+                        ? imageStorageService.saveImage(updateUser.getIdCardImageBack())
+                        : null;
+            }
+
+            // Adding additional field of seller
+            existingUser.setPhone(updateUser.getPhone());
+            existingUser.setShopName(updateUser.getShopName());
+            existingUser.setBankName(updateUser.getBankName());
+            existingUser.setBankAccountNumber(updateUser.getBankAccountNumber());
+            existingUser.setIdCardNumber(updateUser.getIdCardNumber());
+            existingUser.setIdCardImageFront(idCardImageFrontFileName);
+            existingUser.setIdCardImageBack(idCardImageBackFileName);
+        }
+
+        userRepository.save(existingUser);
+    }
+}

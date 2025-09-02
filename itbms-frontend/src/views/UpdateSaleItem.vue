@@ -8,12 +8,15 @@ import Button from '@/components/Button.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 import { ChevronDown, ChevronUp, X } from 'lucide-vue-next';
 import placeHolder from '@/assets/placeholder.svg' 
+import { useAuthStore } from '@/stores/auth';
 
 const BASE_API = import.meta.env.VITE_BASE_API
-const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/pictures/"
+const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
 
 const router = useRouter()
 const route =  useRoute()
+const auth = useAuthStore()
+
 const { id } = route.params
 const saleItem = ref({
     model: '',
@@ -215,7 +218,7 @@ const submitForm = async (e) => {
         //   console.log(key, " : ", value);
         // });
 
-        const res = await updateSaleItem(id, formData)
+        const res = await updateSaleItem(id, formData, auth)
         const result = await res.json()
         // console.log(result)
         if (!res.ok) throw new Error("Something went wrong")
@@ -224,13 +227,15 @@ const submitForm = async (e) => {
         console.log(err)
         statusMessageStore.setStatusMessage("Something went wrong.", false)
     }
-    router.push('/sale-items/' + id) 
+    // router.push('/sale-items/' + id) 
+    router.push({ name: "SaleItemList" }) 
     isSubmitting.value = false
 }
 
 
 const goBackHome = () => {
-    router.push('/sale-items/' + id)
+    // router.push('/sale-items/' + id)
+    router.push({ name: "SaleItemList" })
 }
 
 
@@ -315,7 +320,14 @@ const mappedToOriginalFileName = (fileName) => {
     return image?.originalFileName || fileName
 }
 
+const redirectIfNotSeller = () => {
+    if (auth.user?.userType !== "SELLER") {
+        router.push({ name: "SaleItemGallery" })
+    }
+}
+
 onMounted(async () => {
+    redirectIfNotSeller()
     await fetchBrands()
     await fetchSaleItem()
 })

@@ -36,3 +36,7 @@ WHERE u.id = 8;
 UPDATE user_roles SET role_id = 1 WHERE user_id = 1;
 -- add role
 INSERT INTO user_roles VALUES (8,1);
+DELETE FROM refresh_tokens;
+
+SET SQL_SAFE_UPDATES = 0;
+

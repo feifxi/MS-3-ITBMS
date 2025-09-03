@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -24,16 +25,18 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60;
+    private final Environment environment;
+    private final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
     private ResponseCookie generateCookie(String name, String value, int maxAge) {
+        String[] activeProfiles = environment.getActiveProfiles();
+        boolean isDevMode = activeProfiles.length > 0 && activeProfiles[0].equals("dev");
         return ResponseCookie.from(name, value)
                 .httpOnly(true)      // Not accessible by JS
                 .secure(false)        // Only send over HTTPS (set false for dev HTTP)
-                .path("/itb-mshop/v2/auth/refresh") // Only send to refresh endpoint
-                .maxAge(maxAge) // 7 days in seconds
-//                .sameSite("Strict")  // Prevent CSRF (can also use "Lax")
-                .sameSite("Lax")  // Prevent CSRF (can also use "Lax")
+                .path("/")
+                .maxAge(maxAge)
+                .sameSite("Lax")
                 .build();
     }
 
@@ -66,7 +69,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(@CookieValue(name = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response) {
         if (refreshToken == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No refresh token provided");
         }

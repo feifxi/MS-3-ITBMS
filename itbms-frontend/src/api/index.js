@@ -161,6 +161,13 @@ export const fetchUserProfile = async (authStore) => {
   return await fetchWithAuth(`/v2/users/profile`, {}, authStore)
 }
 
+export const updateUserProfile = async (userData, authStore) => {
+  return await fetchWithAuth(`${BASE_API}/v2/users`, {
+    method: "PUT",
+    body: userData,
+  }, authStore);
+};
+
 // ==================   Fetch with Auth  ===========================
 
 export async function fetchWithAuth(url, options = {}, authStore) {
@@ -195,7 +202,11 @@ export const refreshAccessToken = async (authStore) => {
     credentials: "include", // ⬅️ send refresh token cookie
   });
 
-  if (!res.ok) throw new Error("Invalid token or expires.");
+  if (!res.ok) {
+    authStore.accessToken = null
+    authStore.user = null
+    throw new Error("Invalid token or expires.");
+  }
 
   const data = await res.json();
   const accessToken = data.accessToken

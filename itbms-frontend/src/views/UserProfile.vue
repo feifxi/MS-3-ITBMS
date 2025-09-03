@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { useAuthStore } from "@/stores/auth";
 import { onMounted, ref } from "vue";
-import { fetchUserProfile } from "@/api";
+import { fetchUserProfile, updateUserProfile } from "@/api";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
@@ -25,6 +25,17 @@ const loadUserProfile =  async () => {
   }
 }
 
+
+const updateProfile = async () => {
+  try {
+    isLoading.value = true
+    const res = await updateUserProfile(userProfile, auth)
+    const result = await res.json()
+    console.log(result)
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 onMounted(async () => {
     loadUserProfile()

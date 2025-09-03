@@ -53,7 +53,10 @@ public class UserService {
         return response;
     }
 
-    public void updateUserProfile(User existingUser, UpdateUserRequest updateUser) {
+    public void updateUserProfile(Integer userId, UpdateUserRequest updateUser) {
+        User existingUser = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+
         existingUser.setNickname(updateUser.getNickname());
         existingUser.setFullName(updateUser.getFullName());
         existingUser.setUserType(updateUser.getUserType().toString());

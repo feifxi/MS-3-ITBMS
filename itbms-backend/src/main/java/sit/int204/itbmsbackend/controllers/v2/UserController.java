@@ -4,13 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import sit.int204.itbmsbackend.dtos.auth.UserDetailsResponse;
 import sit.int204.itbmsbackend.dtos.common.ApiResponse;
 import sit.int204.itbmsbackend.dtos.user.UpdateUserRequest;
 import sit.int204.itbmsbackend.dtos.user.UserProfileResponse;
+import sit.int204.itbmsbackend.entities.User;
 import sit.int204.itbmsbackend.security.UserPrincipal;
 import sit.int204.itbmsbackend.services.UserService;
 
@@ -30,19 +31,23 @@ public class UserController {
     }
 
     @PutMapping(
+            value = "/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-//    @PreAuthorize("hasRole('USER') and #userId == principal.id")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<ApiResponse> updateProfile(
-//            @PathVariable Integer userId,
+            @PathVariable Integer id,
             @ModelAttribute UpdateUserRequest updateUserRequest,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        if (userPrincipal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not logged in.");
+        User loggedInUser = userPrincipal.getUser();
+        if (!loggedInUser.getRolesStr().contains("ADMIN") &&
+            !loggedInUser.getId().equals(id)
+        ) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        userService.updateUserProfile(userPrincipal.getUser(), updateUserRequest);
+        userService.updateUserProfile(id, updateUserRequest);
         return ResponseEntity.ok(new ApiResponse(true, "User profile updated successfully!"));
     }
 }

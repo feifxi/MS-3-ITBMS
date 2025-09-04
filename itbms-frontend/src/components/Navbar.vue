@@ -4,27 +4,14 @@ import { Menu } from 'lucide-vue-next';
 import { RouterLink, useRouter , useRoute } from 'vue-router'
 import Button from './Button.vue';
 import { ref, watch } from 'vue';
+import ConfirmModal from './ConfirmModal.vue';
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-const handleLogout = async () => {
-  if (confirm("Are you sure you want to sign out?")) {
-    await authStore.logout()
-    router.push({ name: "login" })
-  }
-}
-const searchKeyword = ref('')
-
-watch(() => route.query.search, (newSearch) => {
-  if (newSearch) {
-    searchKeyword.value = newSearch
-  } else {
-    searchKeyword.value = ''
-  }
-}, { immediate: true })
-
+// Search Bar
+const searchKeyword = ref('') 
 
 const handleSearch = () => {
   if (searchKeyword.value.trim()) {
@@ -61,8 +48,35 @@ const clearSearch = () => {
     })
   }
 }
-// console.log(authStore.user)
 
+watch(() => route.query.search, (newSearch) => {
+  if (newSearch) {
+    searchKeyword.value = newSearch
+  } else {
+    searchKeyword.value = ''
+  }
+}, { immediate: true })
+
+
+// Sign out
+const showConfirmSignoutDialog = ref(false)
+
+const handleShowSignoutDialog = () => {
+  showConfirmSignoutDialog.value = true
+}
+
+const handleCloseSignoutDialog = () => {
+  showConfirmSignoutDialog.value = false
+}
+
+const confirmSignout = async () => {
+  await authStore.logout()
+  showConfirmSignoutDialog.value = false
+  router.push({ name: "login" })
+}
+
+
+// Cart
 const handleClickCart = () => {
   console.log("Open Cart")
 }
@@ -119,7 +133,7 @@ const handleClickCart = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
                 </button>
               </RouterLink>
-              <Button class-name="ghost-btn" :onclick="handleLogout">
+              <Button class-name="ghost-btn" :onclick="handleShowSignoutDialog">
                 Sign out
               </Button>
             </div>
@@ -145,6 +159,15 @@ const handleClickCart = () => {
       </div>
     </nav>
   </header>
+
+  <ConfirmModal
+    v-if="showConfirmSignoutDialog"
+    :title="'Sign out Confirmation'"
+    :message="`Are you sure you want to sign out?`"
+    :button-label="'Sign out'"
+    @confirm="confirmSignout"
+    @cancel="handleCloseSignoutDialog"
+  />
 </template>
 
 <style scoped>

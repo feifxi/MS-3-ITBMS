@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.filters;
+package sit.int204.itbmsbackend.security.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,8 +14,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import sit.int204.itbmsbackend.jwt.JwtUtils;
-import sit.int204.itbmsbackend.services.UserDetailsServiceImpl;
+import sit.int204.itbmsbackend.security.UserDetailsServiceImpl;
+import sit.int204.itbmsbackend.utils.JwtUtils;
 
 import java.io.IOException;
 

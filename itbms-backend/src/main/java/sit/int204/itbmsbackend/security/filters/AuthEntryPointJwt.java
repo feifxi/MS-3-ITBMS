@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.filters;
+package sit.int204.itbmsbackend.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

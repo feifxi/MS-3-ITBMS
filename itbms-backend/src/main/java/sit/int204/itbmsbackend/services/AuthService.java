@@ -20,7 +20,7 @@ import sit.int204.itbmsbackend.dtos.auth.*;
 import sit.int204.itbmsbackend.entities.RefreshToken;
 import sit.int204.itbmsbackend.entities.Role;
 import sit.int204.itbmsbackend.entities.User;
-import sit.int204.itbmsbackend.jwt.JwtUtils;
+import sit.int204.itbmsbackend.utils.JwtUtils;
 import sit.int204.itbmsbackend.repositories.RoleRepository;
 import sit.int204.itbmsbackend.repositories.UserRepository;
 import sit.int204.itbmsbackend.security.UserPrincipal;

@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.jwt;
+package sit.int204.itbmsbackend.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

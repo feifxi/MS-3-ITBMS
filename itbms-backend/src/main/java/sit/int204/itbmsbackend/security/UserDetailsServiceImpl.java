@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.services;
+package sit.int204.itbmsbackend.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sit.int204.itbmsbackend.entities.User;
 import sit.int204.itbmsbackend.repositories.UserRepository;
-import sit.int204.itbmsbackend.security.UserPrincipal;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

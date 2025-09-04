@@ -162,7 +162,7 @@ export const fetchUserProfile = async (authStore) => {
 }
 
 export const updateUserProfile = async (userData, authStore) => {
-  return await fetchWithAuth(`${BASE_API}/v2/users`, {
+  return await fetchWithAuth(`${BASE_API}/v2/users/${authStore.user.id}`, {
     method: "PUT",
     body: userData,
   }, authStore);

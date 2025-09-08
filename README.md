@@ -1,10 +1,10 @@
-# 📱 Mobile Shop E-commerce Platform
+# 📱  Mobile Shop E-commerce Platform
 
 A full-stack e-commerce web application for mobile devices and accessories, built with Vue.js frontend and Java Spring Boot backend, containerized with Docker for production deployment.
 
 ## 🌐 Live Demo
 
-Visit the live application: [http://intproj24.sit.kmutt.ac.th/ms3/sale-items](http://intproj24.sit.kmutt.ac.th/ms3/)
+Visit the live application: [http://intproj24.sit.kmutt.ac.th/ms3/](http://intproj24.sit.kmutt.ac.th/ms3/)
 
 ## ✨ Features
 
@@ -35,7 +35,7 @@ Visit the live application: [http://intproj24.sit.kmutt.ac.th/ms3/sale-items](ht
 ### DevOps & Deployment
 - **Docker** - Containerization platform
 - **Docker Compose** - Multi-container orchestration
-- **Production Server** - Deployed on university infrastructure
+- **Production Server** - Deployed on university infrastructure (private VM)
 
 ## 🚀 Getting Started
 
@@ -58,7 +58,7 @@ Visit the live application: [http://intproj24.sit.kmutt.ac.th/ms3/sale-items](ht
 2. **Backend Setup**
    ```bash
    cd itbms-backend
-   # Configure database connection in application.properties
+   # Configure database connection in application.yml
    cp src/main/resources/application.example.yml src/main/resources/application.yml
    # Install dependencies and run
    mvn clean install
@@ -72,44 +72,43 @@ Visit the live application: [http://intproj24.sit.kmutt.ac.th/ms3/sale-items](ht
    npm run dev
    ```
 
-4. **Database Setup**
-   ```sql
-   CREATE DATABASE mobile_shop;
-   -- Import initial data if available
+4. **Database Setup via docker (run at root project)**
+   ```docker
+   docker run --name itbms-dev-db -e MYSQL_ROOT_PASSWORD=rootpass -v ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql -p 3306:3306 -d mysql:latest
    ```
+   
+5. **Access the application**
+   - Frontend: `http://localhost:5173/ms3/`
+   - Backend API: `http://localhost:8080/itb-mshop`
 
 ### Docker Deployment
 
-1. **Build and run with Docker Compose**
+**Build and run with Docker Compose**
    ```bash
    docker-compose up --build
    ```
 
-2. **Access the application**
-   - Frontend: `http://localhost:8080`
-   - Backend API: `http://localhost:8081`
 
 ## 📁 Project Architecture
 
 ```
 MS-3-ITBMS/
-├── frontend/                 # Vue.js application
+├── itbms-frontend/          # Vue.js application
 │   ├── src/
 │   │   ├── components/      # Reusable Vue components
 │   │   ├── views/           # Page components
 │   │   ├── router/          # Route definitions
-│   │   ├── store/           # Vuex store modules
-│   │   └── services/        # API service layers
-├── backend/                 # Spring Boot application
+│   │   ├── store/           # Pinia store 
+├── itbms-backend/           # Spring Boot application
 │   ├── src/main/java/
-│   │   ├── controller/      # REST controllers
-│   │   ├── service/         # Business logic layer
-│   │   ├── repository/      # Data access layer
-│   │   ├── model/           # Entity classes
-│   │   └── config/          # Configuration classes
+│   │   ├── controllers/     # REST controllers
+│   │   ├── services/        # Business logic layer
+│   │   ├── repositories/    # Data access layer
+│   │   ├── entities/        # Entity classes
+│   │   ├── security/        # Security modules
+│   │   └── configs/         # Configuration classes
+├── itbms-database/          # SQL scripts for init database
 ├── docker-compose.yml       # Multi-container setup
-├── Dockerfile.frontend      # Frontend container config
-├── Dockerfile.backend       # Backend container config
 └── README.md
 ```
 
@@ -124,7 +123,7 @@ MS-3-ITBMS/
 - Place and track orders
 - Order history and receipts
 
-### Admin Features
+### Admin Features (up comming)
 - Product management (CRUD operations)
 - Category management
 - Order management and status updates
@@ -137,7 +136,7 @@ The application uses multi-stage Docker builds for optimization:
 
 - **Frontend**: Nginx-served Vue.js build
 - **Backend**: OpenJDK with Spring Boot JAR
-- **Database**: MySQL/PostgreSQL container
+- **Database**: MySQL container
 - **Reverse Proxy**: Nginx for routing
 
 ## 🔒 Security Features
@@ -145,46 +144,9 @@ The application uses multi-stage Docker builds for optimization:
 - JWT-based authentication
 - Role-based access control (Customer/Admin)
 - Input validation and sanitization
-- HTTPS in production
+- HTTPS in production (up comming)
 - CORS configuration
 - SQL injection protection via JPA
 
-## 📊 API Documentation
-
-The backend provides RESTful APIs for:
-
-- **Authentication**: `/api/auth/*`
-- **Products**: `/api/products/*`
-- **Categories**: `/api/categories/*`
-- **Orders**: `/api/orders/*`
-- **Users**: `/api/users/*`
-
-## 🚀 Production Deployment
-
-This application is deployed using Docker containers on university infrastructure with:
-- Automated CI/CD pipeline
-- Load balancing and scaling
-- Database backups and monitoring
-- SSL certificates for secure connections
-
-## 🤝 Contributing
-
-This is an academic project (MS-3-ITBMS course). Contributions and feedback are welcome!
-
-## 📚 Course Information
-
-This project was developed as part of:
-- **Course**: MS-3 ITBMS (IT Business Management System)
-- **Institution**: King Mongkut's University of Technology Thonburi (KMUTT)
-- **Academic Year**: 2024
-
-## 📝 License
-
-This project is developed for educational purposes.
-
-## 🙋‍♂️ Contact
-
-For questions about this project or collaboration opportunities, feel free to reach out!
-
 ---
-⭐ Don't forget to star this repository if you find it useful!
+⭐ This project was developed as part of INT222 Integrated Project to show the fullstack skill.

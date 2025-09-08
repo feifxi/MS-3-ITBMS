@@ -72,7 +72,7 @@ Visit the live application: [http://intproj24.sit.kmutt.ac.th/ms3/](http://intpr
    npm run dev
    ```
 
-4. **Database Setup via docker (run at root project)**
+4. **Database Setup via Docker (run at root project)**
    ```docker
    docker run --name itbms-dev-db -e MYSQL_ROOT_PASSWORD=rootpass -v ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql -p 3306:3306 -d mysql:latest
    ```
@@ -115,15 +115,15 @@ MS-3-ITBMS/
 ## 🔧 Key Functionalities
 
 ### Customer Features
-- Browse product catalog with categories
+- Browse the product catalog with categories
 - Search and filter products
 - View detailed product information
-- Add items to shopping cart
+- Add items to the shopping cart
 - User registration and authentication
 - Place and track orders
 - Order history and receipts
 
-### Admin Features (up comming)
+### Admin Features (upcoming)
 - Product management (CRUD operations)
 - Category management
 - Order management and status updates
@@ -144,9 +144,9 @@ The application uses multi-stage Docker builds for optimization:
 - JWT-based authentication
 - Role-based access control (Customer/Admin)
 - Input validation and sanitization
-- HTTPS in production (up comming)
+- HTTPS in production (upcoming)
 - CORS configuration
 - SQL injection protection via JPA
 
 ---
-⭐ This project was developed as part of INT222 Integrated Project to show the fullstack skill.
+⭐ This project was developed as part of INT222 Integrated Project coursework to show the Full Stack skills.

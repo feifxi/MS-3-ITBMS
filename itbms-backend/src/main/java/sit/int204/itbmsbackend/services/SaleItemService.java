@@ -1,7 +1,7 @@
 package sit.int204.itbmsbackend.services;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,26 +26,40 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SaleItemService {
-    @Autowired
-    private SaleItemRepository saleItemRepository;
-    @Autowired
-    private SaleItemImageRepository saleItemImageRepository;
-    @Autowired
-    private BrandService brandService;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private ListMapper listMapper;
-    @Autowired
-    private ImageStorageService imageStorageService;
+    private final BrandService brandService;
+    private final ImageStorageService imageStorageService;
+    private final SaleItemRepository saleItemRepository;
+    private final SaleItemImageRepository saleItemImageRepository;
+    private final ModelMapper modelMapper;
+    private final ListMapper listMapper;
 
-    public List<SaleItemListDto> findAll(User seller) {
+    public List<SaleItemListResponseDTO> findAll(User seller) {
         List <SaleItem> saleItems = saleItemRepository.findAllBySeller(seller);
-        return listMapper.mapList(saleItems, SaleItemListDto.class, modelMapper);
+        return listMapper.mapList(saleItems, SaleItemListResponseDTO.class, modelMapper);
     }
 
-    public PageDTO<SaleItemListDto> findAll(
+    public PageDTO<SaleItemListResponseDTO> findAllBySellerId(
+            Integer sellerId,
+            Integer page,
+            Integer size,
+            String sortField,
+            String sortDirection
+    ) {
+        Sort sort = "desc".equalsIgnoreCase(sortDirection)
+                ? Sort.by(sortField).descending().and(Sort.by("id").ascending())
+                : Sort.by(sortField).ascending().and(Sort.by("id").ascending());
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return listMapper.toPageDTO(
+                saleItemRepository.findAllBySellerId(sellerId, pageable),
+                SaleItemListResponseDTO.class,
+                modelMapper
+        );
+    }
+
+    public PageDTO<SaleItemListResponseDTO> findAll(
             List<String> brands,
             Integer page,
             Integer size,
@@ -56,13 +70,10 @@ public class SaleItemService {
             List<Integer> storageSizes,
             String searchKeyword
     ) {
-        // ======= validate price range =======
+        // Validate price range
         // ส่ง priceLower หรือ priceUpper มา "อย่างใดอย่างหนึ่ง" → ไม่อนุญาต
-        if ((priceLower != null && priceUpper == null) ||
-                (priceLower == null && priceUpper != null)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "ต้องส่ง priceLower และ priceUpper มาพร้อมกัน หรือไม่ส่งเลย");
+        if ((priceLower != null && priceUpper == null) || (priceLower == null && priceUpper != null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ต้องส่ง priceLower และ priceUpper มาพร้อมกัน หรือไม่ส่งเลย");
         }
 
         Sort sort = "desc".equalsIgnoreCase(sortDirection)
@@ -112,13 +123,9 @@ public class SaleItemService {
             }
         }
 
-        // แทนที่ search logic เดิมด้วยโค้ดนี้ใน SaleItemService
-
-//        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
-//            System.out.println("Search keyword received: " + searchKeyword);
-//
-//        }
+        // Search by keyword in description, model, color
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            //System.out.println("Search keyword received: " + searchKeyword);
             String keyword = searchKeyword.trim();
 
             spec = spec.and((root, query, cb) -> {
@@ -135,7 +142,7 @@ public class SaleItemService {
 
         return listMapper.toPageDTO(
                 saleItemRepository.findAll(spec, pageable),
-                SaleItemListDto.class,
+                SaleItemListResponseDTO.class,
                 modelMapper
         );
     }
@@ -144,14 +151,14 @@ public class SaleItemService {
         return saleItemRepository.findDistinctStorageGb();
     }
 
-    public SaleItemDetailDto findById(Integer id) {
+    public SaleItemResponseDTO findById(Integer id) {
         SaleItem saleItem =  saleItemRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + id)
         );
-        return modelMapper.map(saleItem, SaleItemDetailDto.class);
+        return modelMapper.map(saleItem, SaleItemResponseDTO.class);
     }
 
-    public SaleItemResponseDto addSaleItem(SaleItemCreateDto saleItemDto, User seller) {
+    public SaleItemResponseDTO addSaleItem(SaleItemCreateRequestDTO saleItemDto, User seller) {
         if (!seller.getUserType().equals(UserType.SELLER.toString())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User must be SELLER.");
         }
@@ -185,10 +192,10 @@ public class SaleItemService {
         }
         List<SaleItemImage> saleItemImages  = saleItemImageRepository.findAllBySaleItemOrderByImageViewOrder(newSaleItem);
         newSaleItem.setSaleItemImages(saleItemImages);  // fetch new image data because of lazy loading
-        return modelMapper.map(newSaleItem, SaleItemResponseDto.class);
+        return modelMapper.map(newSaleItem, SaleItemResponseDTO.class);
     }
 
-    public SaleItemResponseDto updateSaleItem(SaleItemUpdateDto saleItemDto, User seller) {
+    public SaleItemResponseDTO updateSaleItem(SaleItemUpdateRequestDTO saleItemDto, User seller) {
         SaleItem existingSaleItem = saleItemRepository.findById(saleItemDto.getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"SaleItem not found for this id :: " + saleItemDto.getId())
         );
@@ -211,7 +218,7 @@ public class SaleItemService {
         // Fetch existing images from DB
         List<SaleItemImage> existingImages = saleItemImageRepository.findAllBySaleItemOrderByImageViewOrder(existingSaleItem);
 
-        // --- Remove deleted images ---
+        // Remove deleted images
         for (SaleItemImage img : existingImages) {
             if (!keptImageNames.contains(img.getImageName())) {
                 imageStorageService.deleteImage(img.getImageName());
@@ -219,7 +226,7 @@ public class SaleItemService {
             }
         }
 
-        // --- Handle new or updated images ---
+        // Handle new or updated images
         for (int i = 0; i < images.size(); i++) {
             MultipartFile uploadedImage = images.get(i);
             Boolean isNewImage = isNewImageList.get(i);
@@ -247,7 +254,7 @@ public class SaleItemService {
             }
         }
 
-        // --- Update Sale Item core fields ---
+        // Update Sale Item core fields
         Brand brand = brandService.getBrandById(saleItemDto.getBrandId());
         existingSaleItem.setModel(saleItemDto.getModel());
         existingSaleItem.setPrice(saleItemDto.getPrice());
@@ -259,7 +266,7 @@ public class SaleItemService {
         existingSaleItem.setScreenSizeInch(saleItemDto.getScreenSizeInch());
         existingSaleItem.setBrand(brand);
         SaleItem updatedSaleItem = saleItemRepository.save(existingSaleItem);
-        return modelMapper.map(updatedSaleItem, SaleItemResponseDto.class);
+        return modelMapper.map(updatedSaleItem, SaleItemResponseDTO.class);
     }
 
     public void removeSaleItem(Integer id, User seller) {

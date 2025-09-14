@@ -12,7 +12,6 @@ const router = useRouter()
 const getSessionStorageItem = (key) => {
   return sessionStorage.getItem(key)
 }
-const searchKeyword = ref('')
 
 // Retrive saved data from session storage
 const persistFilterPriceOptionJSON = getSessionStorageItem("filterPriceOption")
@@ -58,8 +57,9 @@ const isShowStorageFilters = ref(false)
 const saleitems = ref([])
 const brands = ref([])
 const storageSizes = ref([])
-const priceRanges = ref([]) 
 const loading = ref(false)
+const searchKeyword = ref('')
+
 
 // Set the saved data to the current state
 const filterBrands = reactive([...persistFilterBrandsOption])
@@ -150,10 +150,8 @@ const fetchStorageSize = async () => {
       if (!res.ok) throw new Error("Something went wrong")
       const storageData = await res.json()
       storageSizes.value = storageData 
-      // storageSizes.value = [...storageData,'1 TB', 'Not specified']
   } catch (err) {
       console.error('Failed to fetch storage sizes: ', err)
-      // storageSizes.value = [32, 64, 128, 256, 512,'1 TB', 'Not specified']
   } finally {
     loading.value = false
   }
@@ -174,18 +172,6 @@ const handleRemoveBrandFilter = (brandName) => {
   filterBrands.splice(removeIndex, 1)
 }
 
-const handlePriceRangeChange = () => {
-
-}
-
-// const handleAddFilterByStorageSize = () => {
-  
-// }
-
-// const handleClearFilter = () => {
-//   filterBrands.splice(0, filterBrands.length)
-// }
-
 
 // Price range filtering
 const handleAddPredefinedPriceRange = (range) => {
@@ -205,32 +191,6 @@ const handleRemovePriceRange = (range) => {
   const removeIndex = filterPriceRange.selectedRanges.findIndex(r => r.label === range.label)
   filterPriceRange.selectedRanges.splice(removeIndex, 1)
 }
-
-// const handleCustomPriceRange = () => {
-//   const min = parseInt(filterPriceRange.customMin) || 0
-//   const max = parseInt(filterPriceRange.customMax) || 999999
-  
-//   if (min >= max) {
-//     alert('Minimum price must be less than maximum price')
-//     return
-//   }
-  
-//   const customRange = {
-//     label: `${min} - ${max} Baht`,
-//     min: min,
-//     max: max
-//   }
-
-//    // Remove any existing custom range
-//   filterPriceRange.selectedRanges = filterPriceRange.selectedRanges.filter(r => !r.label.includes('Custom'))
-//   filterPriceRange.selectedRanges.push({ ...customRange, label: `Custom: ${customRange.label}` })
-  
-//   // Clear custom inputs
-//   filterPriceRange.customMin = ''
-//   filterPriceRange.customMax = ''
-// }
-
-// Storage size filtering
 
 const handleCustomPriceRange = () => {
   const min = parseInt(filterPriceRange.customMin)
@@ -273,6 +233,7 @@ const handleRemoveStorageSizeFilter = (storageSize) => {
     filterStorageSizes.splice(index, 1)
   }
 }
+
 const handleClearFilter = () => {
   filterBrands.splice(0, filterBrands.length)
   filterPriceRange.selectedRanges.splice(0, filterPriceRange.selectedRanges.length)
@@ -291,7 +252,6 @@ const handleClearFilter = () => {
     fetchSaleItems()
   }
 }
-
 
 // Sorting 
 const handleSortDefault = () => {
@@ -370,6 +330,26 @@ const handleClickOutside = (event) => {
   if (!priceFilter) isShowPriceFilters.value = false
   if (!storageFilter) isShowStorageFilters.value = false
 }
+
+
+onMounted(async () => {
+  await fetchBrands()
+  await fetchSaleItems()
+  await fetchStorageSize()
+  document.addEventListener('click', handleClickOutside)
+})
+
+watch(()=> pagination.page, () => {
+  saveSessionData()
+  fetchSaleItems()
+})
+
+watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges, filterStorageSizes, sortOption], () => {
+  pagination.page = 0
+  saveSessionData()
+  fetchSaleItems()
+},{ deep: true })
+
 watch(() => route.query.search, (newSearch) => {
   if (newSearch) {
     searchKeyword.value = newSearch
@@ -384,23 +364,6 @@ watch(() => route.query.search, (newSearch) => {
   }
 }, { immediate: true })
 
-onMounted(async () => {
-  await fetchBrands()
-  await fetchSaleItems()
-  await fetchStorageSize()
-  document.addEventListener('click', handleClickOutside)
-})
-
-watch(()=> pagination.page, () => {
-  saveSessionData()
-  fetchSaleItems()
-})
-
-watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges, filterStorageSizes, sortOption ], () => {
-  pagination.page = 0
-  saveSessionData()
-  fetchSaleItems()
-},{ deep: true })
 </script>
 
 
@@ -607,7 +570,7 @@ watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges
       </div>
       
       <!-- Pagination -->
-      <div v-show="paginatedPages.length > 1" class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold">
+      <div :v-show="paginatedPages.length > 1" class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold">
         <button @click="handleGoFirst" class='itbms-page-first paginationBtn !px-4' :disabled="pagination.first">
           First
         </button>
@@ -616,7 +579,7 @@ watch([()=> pagination.size, filterBrands, () => filterPriceRange.selectedRanges
         </button>
         
         <button v-for="pageIndex in paginatedPages"
-        :key="pageIndex"
+          :key="pageIndex"
           :class="[`itbms-page-${pageIndex-1} paginationBtn w-10`, {
             '!bg-rose-500': pagination.page + 1 === pageIndex
           }]"

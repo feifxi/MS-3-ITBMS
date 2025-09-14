@@ -15,7 +15,25 @@ export const fetchAllSaleItems = async (authStore) => {
   }, authStore)
 };
 
-// fetch sale items 
+export const fetchAllSaleItemsBySeller = async (authStore, page = 0, size = 10, sortField, sortDirection) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString()
+  });
+
+  if (sortField) {
+    params.append('sortField', sortField);
+    if (sortDirection) {
+        params.append('sortDirection', sortDirection);
+    }
+  }
+
+  return await fetchWithAuth(`/v2/sellers/${authStore.user.id}/sale-items?${params.toString()}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  }, authStore)
+};
+
 export const fetchAllSaleItemsV2 = async (page, size, filterBrands, filterPriceRange, filterStorageSizes, sortField, sortDirection , searchKeyword) => {
     const params = new URLSearchParams({
         page: page.toString(),
@@ -158,7 +176,7 @@ export const verifyEmail = async (token) => {
 };
 
 export const fetchUserProfile = async (authStore) => {
-  return await fetchWithAuth(`/v2/users/profile`, {}, authStore)
+  return await fetchWithAuth(`/v2/users/${authStore.user.id}`, {}, authStore)
 }
 
 export const updateUserProfile = async (userData, authStore) => {

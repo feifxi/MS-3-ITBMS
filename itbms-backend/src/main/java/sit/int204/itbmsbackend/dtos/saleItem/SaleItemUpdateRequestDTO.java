@@ -11,14 +11,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.utils.Utils;
 
 @Data
-public class SaleItemCreateDto {
+public class SaleItemUpdateRequestDTO {
     @JsonIgnore
     private Integer id;
 
@@ -28,7 +26,8 @@ public class SaleItemCreateDto {
     @NotBlank(message = "Description is required")
     private String description;
 
-    @Min(value = 0, message = "Price must be greater than 0")
+    @Min(0)
+    @NotNull(message = "Price is required")
     private BigDecimal price;
 
     @Min(value = 0, message = "ramGb must be greater than 0")
@@ -47,10 +46,18 @@ public class SaleItemCreateDto {
 
 //    @NotNull(message = "Brand is required")
     private Brand brand;
-    private Integer brandId;  // BrandId for testing
+    private Integer brandId;
 
     @Size(min = 1, max = 4, message = "You must upload between 1 and 4 images")
     private List<MultipartFile> images = new ArrayList<>();
+
+    @NotNull
+    @Size(min = 1, max = 4, message = "Maximum 4 images are allowed")
+    private List<Boolean> isNewImageList = new ArrayList<>();;
+
+    @NotNull
+    @Size(max = 4, message = "Maximum 4 images are allowed")
+    List<String> keptImageNames = new ArrayList<>();;
 
     public void setModel(String model) {
         this.model = Utils.trimOrSetNull(model);

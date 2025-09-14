@@ -19,7 +19,8 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Integer>, Jp
     Page<SaleItem> findByBrandNameIn(List<String> brands, Pageable pageable);
     List<SaleItem> findSaleItemByPriceBetween(BigDecimal priceAfter, BigDecimal priceBefore);
     List<SaleItem> findAllBySeller(User seller);
-    
+    Page<SaleItem> findAllBySellerId(Integer id, Pageable pageable);
+
     @Query("SELECT DISTINCT s.storageGb FROM SaleItem s ORDER BY s.storageGb ASC")
     List<Integer> findDistinctStorageGb();
 }

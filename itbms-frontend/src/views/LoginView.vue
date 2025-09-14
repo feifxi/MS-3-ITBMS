@@ -74,9 +74,13 @@ const submitForm = async (e) => {
   e.preventDefault();
   isSubmitting.value = true;
   try {
-    const success = await authStore.login(userData.email, userData.password)
+    const { success, userType } = await authStore.login(userData.email, userData.password)
     if (success) {
-      router.push({ name: "SaleItemGallery" });
+      if (userType === "SELLER") {
+        router.push({ name: "SaleItemList" });
+      } else {
+        router.push({ name: "SaleItemGallery" });
+      }
     } 
   } catch (err) {
     console.log(err);

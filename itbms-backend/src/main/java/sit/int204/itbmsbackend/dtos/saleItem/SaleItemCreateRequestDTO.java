@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +15,7 @@ import sit.int204.itbmsbackend.entities.Brand;
 import sit.int204.itbmsbackend.utils.Utils;
 
 @Data
-public class SaleItemUpdateDto {
+public class SaleItemCreateRequestDTO {
     @JsonIgnore
     private Integer id;
 
@@ -26,8 +25,7 @@ public class SaleItemUpdateDto {
     @NotBlank(message = "Description is required")
     private String description;
 
-    @Min(0)
-    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be greater than 0")
     private BigDecimal price;
 
     @Min(value = 0, message = "ramGb must be greater than 0")
@@ -46,18 +44,10 @@ public class SaleItemUpdateDto {
 
 //    @NotNull(message = "Brand is required")
     private Brand brand;
-    private Integer brandId;
+    private Integer brandId;  // BrandId for testing
 
     @Size(min = 1, max = 4, message = "You must upload between 1 and 4 images")
     private List<MultipartFile> images = new ArrayList<>();
-
-    @NotNull
-    @Size(min = 1, max = 4, message = "Maximum 4 images are allowed")
-    private List<Boolean> isNewImageList = new ArrayList<>();;
-
-    @NotNull
-    @Size(max = 4, message = "Maximum 4 images are allowed")
-    List<String> keptImageNames = new ArrayList<>();;
 
     public void setModel(String model) {
         this.model = Utils.trimOrSetNull(model);

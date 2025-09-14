@@ -6,10 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,11 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.configs.FileStorageProperties;
-import sit.int204.itbmsbackend.dtos.saleItem.SaleItemCreateDto;
-import sit.int204.itbmsbackend.dtos.saleItem.SaleItemDetailDto;
-import sit.int204.itbmsbackend.dtos.saleItem.SaleItemListDto;
-import sit.int204.itbmsbackend.dtos.saleItem.SaleItemResponseDto;
-import sit.int204.itbmsbackend.dtos.saleItem.SaleItemUpdateDto;
+import sit.int204.itbmsbackend.dtos.saleItem.SaleItemCreateRequestDTO;
+import sit.int204.itbmsbackend.dtos.saleItem.SaleItemListResponseDTO;
+import sit.int204.itbmsbackend.dtos.saleItem.SaleItemResponseDTO;
+import sit.int204.itbmsbackend.dtos.saleItem.SaleItemUpdateRequestDTO;
 import sit.int204.itbmsbackend.entities.SaleItemImage;
 import sit.int204.itbmsbackend.repositories.SaleItemImageRepository;
 import sit.int204.itbmsbackend.security.UserPrincipal;
@@ -52,15 +48,15 @@ public class SaleItemControllerV1 {
     private final SaleItemImageRepository saleItemImageRepository;
 
     @GetMapping
-    public ResponseEntity<List<SaleItemListDto>> getAllSaleItems() {
+    public ResponseEntity<List<SaleItemListResponseDTO>> getAllSaleItems() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         return ResponseEntity.ok(saleItemService.findAll(userPrincipal.getUser()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SaleItemDetailDto> getSaleItemById(@PathVariable Integer id) {
-        SaleItemDetailDto saleItemDetailDto = saleItemService.findById(id);
+    public ResponseEntity<SaleItemResponseDTO> getSaleItemById(@PathVariable Integer id) {
+        SaleItemResponseDTO saleItemDetailDto = saleItemService.findById(id);
         return ResponseEntity.ok(saleItemDetailDto);
     }
 
@@ -68,8 +64,8 @@ public class SaleItemControllerV1 {
             consumes = {"multipart/form-data"},
             produces = {"application/json"}
     )
-    public ResponseEntity<SaleItemResponseDto> addSaleItem(
-            @Valid @ModelAttribute SaleItemCreateDto saleItem,
+    public ResponseEntity<SaleItemResponseDTO> addSaleItem(
+            @Valid @ModelAttribute SaleItemCreateRequestDTO saleItem,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(saleItemService.addSaleItem(saleItem, userPrincipal.getUser()));
@@ -80,10 +76,10 @@ public class SaleItemControllerV1 {
             consumes = {"multipart/form-data", "application/json"},
             produces = {"application/json"}
     )
-    public ResponseEntity<SaleItemResponseDto> updateProduct(
+    public ResponseEntity<SaleItemResponseDTO> updateProduct(
             @Valid
             @PathVariable Integer id,
-            @ModelAttribute SaleItemUpdateDto saleItem,
+            @ModelAttribute SaleItemUpdateRequestDTO saleItem,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         saleItem.setId(id);

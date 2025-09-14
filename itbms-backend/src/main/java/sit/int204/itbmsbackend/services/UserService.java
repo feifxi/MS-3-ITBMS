@@ -27,7 +27,10 @@ public class UserService {
         }
     }
 
-    public UserProfileResponse getUserProfile(User user) {
+    public UserProfileResponse findById(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+
         UserProfileResponse response = new UserProfileResponse();
         response.setUserType(user.getUserType());
         response.setId(user.getId());

@@ -38,7 +38,7 @@ const updateProfile = async () => {
 }
 
 onMounted(async () => {
-    loadUserProfile()
+  loadUserProfile()
 })
 
 </script>
@@ -47,10 +47,10 @@ onMounted(async () => {
   <div class="px-16 py-8">
     <div class="bg-white px-16 py-8 rounded-xl shadow">
         <h1 class=" text-3xl font-bold">User Profile</h1>
-        <p>Nickname : {{ auth.user?.nickname || "-"}}</p>
-        <p>Fullname : {{ auth.user?.fullName || "-"}}</p>
-        <p>Email : {{ auth.user?.email || "-"}}</p>
-        <p>User type : {{ auth.user?.userType || "-"}}</p>
+        <p>Nickname : {{ userProfile?.nickname || "-"}}</p>
+        <p>Fullname : {{ userProfile?.fullName || "-"}}</p>
+        <p>Email : {{ userProfile?.email || "-"}}</p>
+        <p>User type : {{ userProfile?.userType || "-"}}</p>
     </div>
   </div>
 </template>

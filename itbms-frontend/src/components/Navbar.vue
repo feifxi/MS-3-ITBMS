@@ -87,7 +87,7 @@ const handleClickCart = () => {
   <header class="sticky top-0 z-50 bg-gradient-to-r from-purple-500 to-rose-500 text-white">
     <nav class="px-8 sm:px-16">
       <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-        <RouterLink to="/">
+        <RouterLink :to="{ name: 'SaleItemGallery' }">
           <div class="flex items-center gap-2">
             <div class="text-white">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
@@ -128,11 +128,18 @@ const handleClickCart = () => {
           <div class="flex gap-4">
             <!-- user profile -->
             <div v-if="authStore.user && authStore.accessToken" class="flex items-center gap-5">
+              <RouterLink v-if="authStore.user.userType === 'SELLER'" :to="{ name: 'SaleItemList' }" class="itbms-shopnow">
+                <button class="cursor-pointer bg-white text-rose-600 px-6 py-2 rounded-full font-medium hover:bg-opacity-90 transition-all transform hover:scale-105">
+                  Management
+                </button>
+              </RouterLink>
+
               <RouterLink :to="{name: 'userProfile'}">
                 <button class="cursor-pointer w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
                 </button>
               </RouterLink>
+
               <Button class-name="ghost-btn" :onclick="handleShowSignoutDialog">
                 Sign out
               </Button>

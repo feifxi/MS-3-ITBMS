@@ -21,12 +21,16 @@ import sit.int204.itbmsbackend.services.UserService;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/profile")
-    public ResponseEntity<UserProfileResponse> getProfile(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        if (userPrincipal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not logged in.");
+    @GetMapping("/{id}")
+    public ResponseEntity<UserProfileResponse> getProfile(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        User loggedInUser = userPrincipal.getUser();
+        if (!loggedInUser.getRolesStr().contains("ADMIN") && !loggedInUser.getId().equals(id)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        UserProfileResponse userDetailsResponse = userService.getUserProfile(userPrincipal.getUser());
+        UserProfileResponse userDetailsResponse = userService.findById(id);
         return ResponseEntity.ok(userDetailsResponse);
     }
 
@@ -42,9 +46,7 @@ public class UserController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         User loggedInUser = userPrincipal.getUser();
-        if (!loggedInUser.getRolesStr().contains("ADMIN") &&
-            !loggedInUser.getId().equals(id)
-        ) {
+        if (!loggedInUser.getRolesStr().contains("ADMIN") && !loggedInUser.getId().equals(id)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         userService.updateUserProfile(id, updateUserRequest);

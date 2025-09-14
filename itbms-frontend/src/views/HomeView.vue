@@ -101,12 +101,12 @@
             <h2 class="text-3xl md:text-4xl font-bold mb-4">iPhone 15 Pro</h2>
             <p class="mb-6 text-white/80">Experience the future with our most powerful iPhone yet. Titanium design, A17 Pro chip, and revolutionary camera system.</p>
             <div class="flex gap-4">
-              <RouterLink to="/sale-items" class="itbms-shopnow">
+              <RouterLink :to="{ name:'SaleItemGallery' }" class="itbms-shopnow">
                 <button class="cursor-pointer bg-white text-rose-600 px-6 py-2 rounded-full font-medium hover:bg-opacity-90 transition-all transform hover:scale-105">
                   Buy Now
                 </button>
               </RouterLink>
-              <RouterLink to="/sale-items/list" class="itbms-shopnow">
+              <RouterLink :to="{ name:'SaleItemList' }" class="itbms-shopnow">
                 <button class="cursor-pointer bg-white/20 backdrop-blur-sm text-white border border-white/30 px-6 py-2 rounded-full font-medium hover:bg-white/30 transition-all">
                   Management
                 </button>

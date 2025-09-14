@@ -46,7 +46,7 @@ const confirmDelete = async () => {
   
  <!-- Desktop View -->
     <div class="itbms-row border-b bg-white hidden md:grid grid-cols-10 gap-3 items-center p-4 text-center text-sm">
-      <div class="itbms-id break-words whitespace-normal overflow-hidden px-1">{{ props.item.id }}</div>
+      <div class="itbms-id break-words whitespace-normal overflow-hidden px-1 font-bold">{{ props.item.id }}</div>
       <div class="itbms-brand break-words whitespace-normal overflow-hidden px-1">{{ props.item.brandName }}</div>
       <div class="itbms-model col-span-2 break-words whitespace-normal overflow-hidden px-1">{{ props.item.model }}</div>
       <div class="itbms-ramGb break-words whitespace-normal overflow-hidden px-1">{{ props.item.ramGb || '-' }}</div>

@@ -32,13 +32,25 @@ export const useAuthStore = defineStore('auth', () => {
       }
       // console.log(accessToken.value)
       statusMessageStore.setStatusMessage("Login success.");
-      return true
+      return {
+        success: true,
+        userType: data.userType,
+        nickname: data.nickname,
+      }
     } else if (res.status === 403) {
       statusMessageStore.setStatusMessage("Your email address is not verified. Please check your inbox to verify your account.", false);
-      return false
+      return {
+        success: false,
+        userType: null,
+        nickname: null,
+      }
     } else {
       statusMessageStore.setStatusMessage("Email or password is incorrect.", false);
-      return false
+      return {
+        success: false,
+        userType: null,
+        nickname: null,
+      } 
     }
   }
 

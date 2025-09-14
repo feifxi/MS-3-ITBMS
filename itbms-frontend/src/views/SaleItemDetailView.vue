@@ -92,7 +92,7 @@ onMounted(async () => {
     />
     <main class="px-4 sm:px-16 py-8">
       <BreadCrumb v-if="item" :links="[
-        { to: { name: 'SaleItemGallery'}, label: 'Home' },
+        { to: { name: 'SaleItemGallery'}, label: 'Sale Items' },
         { to: '#', label: `${item.model}` },
       ]" />
 

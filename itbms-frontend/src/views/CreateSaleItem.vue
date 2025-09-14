@@ -278,7 +278,7 @@ watch([saleItem, saleItemImageFiles], () => {
 <template>
     <main class="px-4 sm:px-16 py-8">
         <BreadCrumb :links="[
-            { to: { name: 'saleItemList' }, label: 'Sale Items' },
+            { to: { name: 'SaleItemList' }, label: 'Sale Items' },
             { to: '#', label: 'New Sale Item' },
         ]" />
 

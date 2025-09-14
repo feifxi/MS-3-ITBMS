@@ -4,7 +4,7 @@
   import mockPhone from '@/assets/image/mockPhone.webp'
   import mockPhone2 from '@/assets/image/mock2.png' 
   import placeHolder from '@/assets/placeholder.svg' 
-  
+import { useStatusMessageStore } from '@/stores/statusMessage';
   
   const categories = ref([
     { id: 1, name: 'iPhone', color: 'rose' },
@@ -89,6 +89,17 @@
       image: mockPhone2
     }
   ]);
+
+
+  const statusMessageStore = useStatusMessageStore();
+
+    const num = ref(1)
+
+  const test = () => {
+    console.log("Active")
+    statusMessageStore.setStatusMessage(num.value++);
+  }
+
 </script>
 
 <template>
@@ -186,7 +197,7 @@
           <div class="text-white max-w-md">
             <h3 class="text-2xl font-bold mb-2">Samsung Galaxy Z Fold 5</h3>
             <p class="mb-4 text-white/80">Experience the future of foldable technology with enhanced durability and performance.</p>
-            <button class="bg-white text-purple-600 px-6 py-2 rounded-full font-medium hover:bg-opacity-90 transition-all">
+            <button @click="test" class="bg-white cursor-pointer text-purple-600 px-6 py-2 rounded-full font-medium hover:bg-opacity-90 transition-all">
               Pre-order Now
             </button>
           </div>

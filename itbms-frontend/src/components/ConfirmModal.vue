@@ -33,14 +33,14 @@ const emit = defineEmits(['confirm', 'cancel'])
 
       <div class="flex justify-center gap-4">
         <button v-if="!isDisabled"
-          class="itbms-confirm-button bg-gradient-to-r from-rose-500 to-purple-600 text-white px-6 py-2 rounded-full font-medium hover:opacity-90 transition-all transform hover:scale-105"
+          class="cursor-pointer itbms-confirm-button bg-gradient-to-r from-rose-500 to-purple-600 text-white px-6 py-2 rounded-full font-medium hover:opacity-90 transition-all transform hover:scale-105"
           @click="$emit('confirm')"
         >
           {{ buttonLabel }}
         </button>
 
         <button 
-          class="itbms-cancel-button bg-gray-100 text-gray-600 px-6 py-2 rounded-full font-medium hover:bg-gray-200 transition-all"
+          class="cursor-pointer itbms-cancel-button bg-gray-100 text-gray-600 px-6 py-2 rounded-full font-medium hover:bg-gray-200 transition-all"
           @click="$emit('cancel')"
         >
           Cancel

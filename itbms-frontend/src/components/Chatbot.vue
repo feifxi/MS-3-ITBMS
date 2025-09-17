@@ -5,11 +5,14 @@ import { ref, watch, nextTick } from "vue";
 import Button from "./Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { askChatbot } from "@/api";
+import ConfirmModal from "./ConfirmModal.vue";
+import { useRouter } from "vue-router";
 
 const auth = useAuthStore();
 const statusMessageStore = useStatusMessageStore();
+const router = useRouter()
 
-const isShowingChatbot = ref(false)
+const isShowingChatbot = ref(false);
 const inputMessage = ref("");
 const messages = ref([]);
 const isTyping = ref(false);
@@ -17,7 +20,13 @@ const messagesEndRef = ref(null);
 
 const handleSendMessage = async (e) => {
   e.preventDefault();
-  const question = inputMessage.value
+
+  if (!auth.user) {
+    handleShowDialog();
+    return;
+  }
+
+  const question = inputMessage.value;
   if (!question.trim()) return;
 
   const userMessage = {
@@ -51,8 +60,8 @@ const handleSendMessage = async (e) => {
 };
 
 const handleToggleChatbotBox = () => {
-    isShowingChatbot.value = !isShowingChatbot.value
-}
+  isShowingChatbot.value = !isShowingChatbot.value;
+};
 
 const scrollToBottom = () => {
   if (messagesEndRef.value) {
@@ -69,27 +78,32 @@ watch(
   },
   { deep: true }
 );
+
+const showLoginSuggestDialog = ref(false);
+
+const handleShowDialog = () => {
+  showLoginSuggestDialog.value = true;
+};
+
+const handleCloseDialog = () => {
+  showLoginSuggestDialog.value = false;
+};
+
+const goToSignin = async () => {
+  handleCloseDialog();
+  isShowingChatbot.value = false
+  router.push({ name: "login" });
+};
 </script>
 
 <template>
-    <div v-if="isShowingChatbot" @click="handleToggleChatbotBox" class="fixed cursor-pointer bottom-0 right-[2%] flex flex-col mx-auto border border-neutral-300 rounded-lg overflow-hidden">
-        <div class="flex items-center gap-3 p-2 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500">
-        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-            <Bot class="w-6 h-6" />
-        </div>
-        <div>
-            <h3 class="font-semibold text-white">Chanombude Bot</h3>
-        </div>
-        </div>
-    </div>
-    
   <div
-    v-else
+    v-if="isShowingChatbot"
     class="fixed bottom-0 right-[10%] flex flex-col h-[600px] w-full max-w-sm mx-auto border border-neutral-300 rounded-lg overflow-hidden bg-white"
   >
     <!-- Header -->
     <div
-        @click="handleToggleChatbotBox" 
+      @click="handleToggleChatbotBox"
       class="cursor-pointer flex items-center gap-3 p-4 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500"
     >
       <div
@@ -186,4 +200,32 @@ watch(
       </form>
     </div>
   </div>
+
+  <div
+    v-else
+    @click="handleToggleChatbotBox"
+    class="fixed cursor-pointer bottom-0 right-[2%] flex flex-col mx-auto border border-neutral-300 rounded-lg overflow-hidden"
+  >
+    <div
+      class="flex items-center gap-3 p-2 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500"
+    >
+      <div
+        class="w-8 h-8 rounded-full bg-white flex items-center justify-center"
+      >
+        <Bot class="w-6 h-6" />
+      </div>
+      <div>
+        <h3 class="font-semibold text-white">Chanombude Bot</h3>
+      </div>
+    </div>
+  </div>
+
+  <ConfirmModal
+    v-if="showLoginSuggestDialog"
+    :title="'Login require'"
+    :message="`Login is require to use this feature`"
+    :button-label="'Sign in'"
+    @confirm="goToSignin"
+    @cancel="handleCloseDialog"
+  />
 </template>

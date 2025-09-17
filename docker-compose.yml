@@ -2,8 +2,6 @@ services:
   ollama:
     container_name: itbms-ollama-container
     image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
     networks:
@@ -50,8 +48,9 @@ services:
       DB_URL: ${DB_URL}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "8080:8080"
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
     networks:
       - itbms-network
     depends_on:

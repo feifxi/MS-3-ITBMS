@@ -24,8 +24,6 @@ import sit.int204.itbmsbackend.security.filters.AuthTokenFilter;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final UserDetailsServiceImpl userDetailsService;
-    private final AuthEntryPointJwt unauthorizedHandler;
     private final String[] PUBLIC_MATCHERS = {
             "/v1/brands/**",
             "/v1/sale-items/*",
@@ -33,6 +31,9 @@ public class WebSecurityConfig {
             "/v2/auth/**",
             "/v2/sale-items/**",
     };
+
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {

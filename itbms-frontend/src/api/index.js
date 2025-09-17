@@ -96,11 +96,6 @@ export const createSaleItem = async (saleItem, authStore) => {
     method: "POST",
     body: saleItem,
   }, authStore)
-
-  // return await fetch(`${BASE_API}/v1/sale-items`, {
-  //   method: "POST",
-  //   body: saleItem,
-  // });
 };
 
 export const updateSaleItem = async (id, saleItem, authStore) => {
@@ -108,22 +103,12 @@ export const updateSaleItem = async (id, saleItem, authStore) => {
     method: "PUT",
     body: saleItem,
   }, authStore)
-
-  // return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
-  //   method: "PUT",
-  //   body: saleItem,
-  // });
 };
 
 export const deleteSaleItem = async (id, authStore) => {
   return await fetchWithAuth(`/v1/sale-items/${id}`, {
     method: "DELETE",
   }, authStore)
-
-  // return await fetch(`${BASE_API}/v1/sale-items/${id}`, {
-  //   method: "DELETE",
-  //   headers: { "Content-Type": "application/json" },
-  // });
 };
 
 export const fetchAllBrands = async () => {
@@ -180,11 +165,21 @@ export const fetchUserProfile = async (authStore) => {
 }
 
 export const updateUserProfile = async (userData, authStore) => {
-  return await fetchWithAuth(`${BASE_API}/v2/users/${authStore.user.id}`, {
+  return await fetchWithAuth(`/v2/users/${authStore.user.id}`, {
     method: "PUT",
     body: userData,
   }, authStore);
 };
+
+export const askChatbot = async (message, authStore) => {
+  return await fetchWithAuth(`/v2/chatbot/ollama`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: message
+    }),
+  }, authStore);
+}
 
 // ==================   Fetch with Auth  ===========================
 

@@ -5,6 +5,7 @@ import ToastMessage from './components/ToastMessage.vue';
 import { useAuthStore } from './stores/auth';
 import {onMounted, ref } from 'vue';
 import { fetchWithAuth, refreshAccessToken } from './api';
+import Chatbot from './components/Chatbot.vue';
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -53,6 +54,7 @@ loadProfile()
   <main v-else class="relative bg-gradient-to-br from-rose-50 to-purple-50">
     <Navbar />
     <RouterView />
+    <Chatbot />
     <ToastMessage />
   </main>
 </template>

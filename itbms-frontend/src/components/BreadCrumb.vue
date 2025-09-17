@@ -25,20 +25,3 @@ defineProps({
         </div>
     </div>
 </template>
-
-<!-- <template>
-    <div class="flex items-center font-bold pb-4 sm:text-xl">
-        <div v-for="(link, index) of links" class="flex">
-            <div v-if="index === links.length-1" class="">
-                {{ link.label }}
-            </div>
-            <RouterLink v-else :to="link.to" class="text-rose-500" :class="{
-                'itbms-home-button': index === 0,
-                'itbms-back-button': index === 1,
-            }">
-                {{ link.label }}
-            </RouterLink>
-            <ChevronRight v-if="index !== links.length-1" />
-        </div>
-    </div>
-</template> -->

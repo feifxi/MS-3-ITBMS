@@ -1,22 +1,15 @@
 spring:
   application:
     name: itbms-backend
-
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-#  jpa:
-#    hibernate:
-#      ddl-auto: validate
+  jpa:
+    hibernate:
+#      ddl-auto: none
 #    show-sql: true
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.MySQLDialect
-#        format_sql: true
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -28,13 +21,20 @@ spring:
           auth: true
           starttls:
             enable: true
-
-server:
-  port: 8080
-  servlet:
-    context-path: /itb-mshop
-  error:
-    include-stacktrace: on_param
+  ai:
+    chat:
+      client:
+        enabled: false
+    openai:
+      api-key: ${OPENAI_API_KEY:your-openai-api-key}
+      chat:
+        options:
+          model: gpt-4o-mini
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: llama3
 
 # File Config
 file:
@@ -48,6 +48,7 @@ jwt:
   access-token-expiration_ms: 1800000   # 30 minutes
   refresh-token-expiration_ms: 86400000 # 24 hours
 
+# Email
 email:
   verification_token_expiration_hr: 24
 
@@ -57,9 +58,16 @@ logging:
     org.springframework.security: DEBUG
     com.example.auth: DEBUG
 
-team:
-  code: ms3
+server:
+  port: 8080
+  servlet:
+    context-path: /itb-mshop
+  error:
+    include-stacktrace: on_param
 
 app:
   frontend:
     url: http://intproj24.sit.kmutt.ac.th
+
+team:
+  code: ms3

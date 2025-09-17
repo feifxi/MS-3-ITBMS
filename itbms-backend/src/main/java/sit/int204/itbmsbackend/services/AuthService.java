@@ -62,8 +62,8 @@ public class AuthService {
         User existUser = userRepository.findOneByEmail(request.getEmail()).orElse(null);
         if (existUser != null) {
             if (existUser.getStatus().equals("INACTIVE") &&
-                    existUser.getVerificationTokenExpiry() != null &&
-                    existUser.getVerificationTokenExpiry().isBefore(LocalDateTime.now())
+                existUser.getVerificationTokenExpiry() != null &&
+                existUser.getVerificationTokenExpiry().isBefore(LocalDateTime.now())
             ) {
                 userRepository.delete(existUser);   // remove expires verify-token user
             } else {

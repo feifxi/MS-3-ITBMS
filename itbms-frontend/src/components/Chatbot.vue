@@ -9,6 +9,7 @@ import { askChatbot } from "@/api";
 const auth = useAuthStore();
 const statusMessageStore = useStatusMessageStore();
 
+const isShowingChatbot = ref(false)
 const inputMessage = ref("");
 const messages = ref([]);
 const isTyping = ref(false);
@@ -49,6 +50,10 @@ const handleSendMessage = async (e) => {
   isTyping.value = false;
 };
 
+const handleToggleChatbotBox = () => {
+    isShowingChatbot.value = !isShowingChatbot.value
+}
+
 const scrollToBottom = () => {
   if (messagesEndRef.value) {
     messagesEndRef.value.scrollIntoView({ behavior: "smooth" });
@@ -67,12 +72,25 @@ watch(
 </script>
 
 <template>
+    <div v-if="isShowingChatbot" @click="handleToggleChatbotBox" class="fixed cursor-pointer bottom-0 right-[2%] flex flex-col mx-auto border border-neutral-300 rounded-lg overflow-hidden">
+        <div class="flex items-center gap-3 p-2 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500">
+        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+            <Bot class="w-6 h-6" />
+        </div>
+        <div>
+            <h3 class="font-semibold text-white">Chanombude Bot</h3>
+        </div>
+        </div>
+    </div>
+    
   <div
+    v-else
     class="fixed bottom-0 right-[10%] flex flex-col h-[600px] w-full max-w-sm mx-auto border border-neutral-300 rounded-lg overflow-hidden bg-white"
   >
     <!-- Header -->
     <div
-      class="flex items-center gap-3 p-4 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500"
+        @click="handleToggleChatbotBox" 
+      class="cursor-pointer flex items-center gap-3 p-4 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500"
     >
       <div
         class="w-10 h-10 rounded-full bg-white flex items-center justify-center"
@@ -80,7 +98,7 @@ watch(
         <Bot class="w-6 h-6" />
       </div>
       <div>
-        <h3 class="font-semibold text-white">Chanombude ChatBot</h3>
+        <h3 class="font-semibold text-white">Chanombude Bot</h3>
         <p class="text-sm text-white">Online • Ready to brainrot</p>
       </div>
     </div>

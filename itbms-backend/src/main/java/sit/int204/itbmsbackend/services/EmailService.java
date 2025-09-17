@@ -26,23 +26,14 @@ public class EmailService {
     @Value("${team.code:ms3}")
     private String teamCode;
 
-    @Value("${app.frontend.url.dev:http://localhost:5173}")
-    private String devFrontendUrl;
-
-    @Value("${app.frontend.url.prod:http://intproj24.sit.kmutt.ac.th}")
-    private String prodFrontendUrl;
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Autowired
     public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine, Environment environment) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
         this.environment = environment;
-    }
-
-    private String getHostPath() {
-        String[] activeProfiles = environment.getActiveProfiles();
-        boolean isDevMode = activeProfiles.length > 0 && activeProfiles[0].equals("dev");
-        return isDevMode ? devFrontendUrl : prodFrontendUrl;
     }
 
     private String getCurrentYear() {
@@ -55,7 +46,7 @@ public class EmailService {
 
     @Async
     public void sendVerificationEmail(String to, String token) throws MessagingException, UnsupportedEncodingException {
-        String hostPath = getHostPath();
+        String hostPath = frontendUrl;
         String verifyUrl = hostPath + "/" + teamCode + "/verify-email?token=" + token;
 
         Context context = new Context();
@@ -77,13 +68,13 @@ public class EmailService {
         helper.setFrom("itbmshop359@gmail.com", "ITBMS Team");
 
         System.out.println("Verification URL: " + verifyUrl);
-        System.out.println("Running in mode: " + (getHostPath().contains("localhost") ? "DEVELOPMENT" : "PRODUCTION"));
+        System.out.println("Running in mode: " + (frontendUrl.contains("localhost") ? "DEVELOPMENT" : "PRODUCTION"));
 
         mailSender.send(message);
     }
 
     public void sendPasswordResetEmail(String to, String token) throws MessagingException, UnsupportedEncodingException {
-        String hostPath = getHostPath();
+        String hostPath = frontendUrl;
         String resetUrl = hostPath + "/" + teamCode + "/reset-password?token=" + token;
 
         Context context = new Context();
@@ -105,7 +96,7 @@ public class EmailService {
         helper.setFrom("itbmshop359@gmail.com", "ITBMS Team");
 
         System.out.println("Password reset URL: " + resetUrl);
-        System.out.println("Running in mode: " + (getHostPath().contains("localhost") ? "DEVELOPMENT" : "PRODUCTION"));
+        System.out.println("Running in mode: " + (frontendUrl.contains("localhost") ? "DEVELOPMENT" : "PRODUCTION"));
 
         mailSender.send(message);
     }

@@ -1,32 +1,28 @@
 services:
-  frontend:
-    container_name: itbms-fe-container
-    build:
-      context: ./itbms-frontend
-      dockerfile: dockerfile
+  ollama:
+    container_name: itbms-ollama-container
+    image: ollama/ollama:latest
     ports:
-      - "80:80"
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
     networks:
       - itbms-network
-    depends_on:
-      - backend
-
-  backend:
-    container_name: itbms-be-container
-    build:
-      context: ./itbms-backend
-      dockerfile: dockerfile
-    environment:
-      DB_URL: ${DB_URL}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "8080:8080"
-    networks:
-      - itbms-network
-    depends_on:
-      database:
-        condition: service_healthy
+    # Use 'deploy' for GPU support if available
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    
+    # Use entrypoint to run the server and pull a model
+    entrypoint:
+      - "/bin/bash"
+      - "-c"
+      - "ollama serve & ollama pull llama3 && wait"
+    restart: unless-stopped
 
   database:
     container_name: itbms-db-container
@@ -44,9 +40,41 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  
+  backend:
+    container_name: itbms-be-container
+    build:
+      context: ./itbms-backend
+      dockerfile: dockerfile
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8080:8080"
+    networks:
+      - itbms-network
+    depends_on:
+      database:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+  frontend:
+    container_name: itbms-fe-container
+    build:
+      context: ./itbms-frontend
+      dockerfile: dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - itbms-network
+    depends_on:
+      - backend
 
 networks:
   itbms-network:
 
 volumes:
   itbms-mysql-data:
+  ollama-data: 

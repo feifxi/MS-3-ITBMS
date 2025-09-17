@@ -99,7 +99,7 @@ const goToSignin = async () => {
 <template>
   <div
     v-if="isShowingChatbot"
-    class="fixed bottom-0 right-[10%] flex flex-col h-[600px] w-full max-w-sm mx-auto border border-neutral-300 rounded-lg overflow-hidden bg-white"
+    class="fixed z-50 bottom-0 right-[10%] flex flex-col h-[600px] w-full max-w-sm mx-auto border border-neutral-300 rounded-lg overflow-hidden bg-white"
   >
     <!-- Header -->
     <div

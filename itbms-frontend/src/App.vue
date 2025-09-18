@@ -6,6 +6,7 @@ import { useAuthStore } from './stores/auth';
 import {onMounted, ref } from 'vue';
 import { fetchWithAuth, refreshAccessToken } from './api';
 import Chatbot from './components/Chatbot.vue';
+import TicTacToeBot from './components/TicTacToeBot.vue';
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -55,6 +56,7 @@ loadProfile()
     <Navbar />
     <RouterView />
     <Chatbot />
+    <TicTacToeBot />
     <ToastMessage />
   </main>
 </template>

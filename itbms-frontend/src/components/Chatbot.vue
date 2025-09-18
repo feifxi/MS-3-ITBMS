@@ -19,28 +19,27 @@ const isTyping = ref(false);
 const messagesEndRef = ref(null);
 
 const handleSendMessage = async (e) => {
-  e.preventDefault();
-
-  if (!auth.user) {
-    handleShowDialog();
-    return;
-  }
-
-  const question = inputMessage.value;
-  if (!question.trim()) return;
-
-  const userMessage = {
-    id: Date.now().toString(),
-    text: question,
-    sender: "user",
-    timestamp: new Date(),
-  };
-
-  messages.value = [...messages.value, userMessage];
-  inputMessage.value = "";
-  isTyping.value = true;
-
   try {
+    e.preventDefault();
+
+    if (!auth.user) {
+      handleShowDialog();
+      return;
+    }
+
+    const question = inputMessage.value;
+    if (!question.trim()) return;
+
+    const userMessage = {
+      id: Date.now().toString(),
+      text: question,
+      sender: "user",
+      timestamp: new Date(),
+    };
+    messages.value = [...messages.value, userMessage];
+    inputMessage.value = "";
+    isTyping.value = true;
+
     const res = await askChatbot(question, auth);
     const result = await res.json();
     // console.log(result);

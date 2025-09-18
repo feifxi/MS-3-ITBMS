@@ -204,7 +204,7 @@ const goToSignin = async () => {
   <div
     v-else
     @click="handleToggleChatbotBox"
-    class="fixed cursor-pointer bottom-0 right-[2%] flex flex-col mx-auto border border-neutral-300 rounded-lg overflow-hidden"
+    class="fixed z-50 cursor-pointer bottom-0 right-[2%] flex flex-col mx-auto border border-neutral-300 rounded-lg overflow-hidden"
   >
     <div
       class="flex items-center gap-3 p-2 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500"

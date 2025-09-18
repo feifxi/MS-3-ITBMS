@@ -159,7 +159,7 @@ public class SaleItemService {
     }
 
     public SaleItemResponseDTO addSaleItem(SaleItemCreateRequestDTO saleItemDto, User seller) {
-        if (!seller.getUserType().equals(UserType.SELLER.toString())) {
+        if (!UserType.SELLER.equals(seller.getUserType())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User must be SELLER.");
         }
 
@@ -202,7 +202,7 @@ public class SaleItemService {
         if (!existingSaleItem.getSeller().getId().equals(seller.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot update saleItem of other seller.");
         }
-        if (!seller.getUserType().equals(UserType.SELLER.toString())) {
+        if (!UserType.SELLER.equals(seller.getUserType())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User must be SELLER.");
         }
 
@@ -276,7 +276,7 @@ public class SaleItemService {
         if (!existingSaleItem.getSeller().getId().equals(seller.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete saleItem of other seller.");
         }
-        if (!seller.getUserType().equals(UserType.SELLER.toString())) {
+        if (!UserType.SELLER.equals(seller.getUserType())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User must be SELLER.");
         }
 

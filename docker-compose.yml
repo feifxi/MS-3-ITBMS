@@ -3,9 +3,9 @@ services:
     container_name: itbms-ollama-container
     image: ollama/ollama:latest
     volumes:
-      - ollama-data:/root/.ollama
+      - itbms_ollama_data:/root/.ollama
     networks:
-      - itbms-network
+      - itbms_network
     # Use 'deploy' for GPU support if available
     # deploy:
     #   resources:
@@ -28,9 +28,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
     networks:
-      - itbms-network
+      - itbms_network
     volumes:
-      - itbms-mysql-data:/var/lib/mysql
+      - itbms_mysql_data:/var/lib/mysql
       - ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./itbms-database/insert.sql:/app/insert.sql
     healthcheck:
@@ -53,7 +53,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
     networks:
-      - itbms-network
+      - itbms_network
     depends_on:
       database:
         condition: service_healthy
@@ -68,13 +68,13 @@ services:
     ports:
       - "80:80"
     networks:
-      - itbms-network
+      - itbms_network
     depends_on:
       - backend
 
 networks:
-  itbms-network:
+  itbms_network:
 
 volumes:
-  itbms-mysql-data:
-  ollama-data: 
+  itbms_mysql_data:
+  itbms_ollama_data: 

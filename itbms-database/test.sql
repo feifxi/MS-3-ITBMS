@@ -1,13 +1,6 @@
 -- example of create view
 USE ms3_itbms_db;
 
--- View
-CREATE VIEW saleitems_storage_size_view AS
-SELECT DISTINCT storage_Gb FROM sale_items;
-
-SELECT * FROM saleitems_storage_size_view;
-
-
 -- Sale item
 SELECT * FROM sale_items s JOIN users u ON u.id = s.seller_id;
 
@@ -36,7 +29,13 @@ WHERE u.id = 8;
 UPDATE user_roles SET role_id = 1 WHERE user_id = 1;
 -- add role
 INSERT INTO user_roles VALUES (8,1);
+
 DELETE FROM refresh_tokens;
 
 SET SQL_SAFE_UPDATES = 0;
 
+-- Migration
+SELECT * FROM DATABASECHANGELOG;
+SELECT * FROM DATABASECHANGELOGLOCK;
+
+DESCRIBE users;

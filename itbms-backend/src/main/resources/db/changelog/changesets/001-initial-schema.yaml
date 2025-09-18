@@ -1,0 +1,423 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: feifxi
+      changes:
+        # Users Table
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nickname
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shop_name
+                  type: VARCHAR(255)
+              - column:
+                  name: phone
+                  type: VARCHAR(20)
+              - column:
+                  name: bank_account_number
+                  type: VARCHAR(50)
+              - column:
+                  name: bank_name
+                  type: VARCHAR(50)
+              - column:
+                  name: id_card_number
+                  type: VARCHAR(20)
+              - column:
+                  name: id_card_image_front
+                  type: VARCHAR(255)
+              - column:
+                  name: id_card_image_back
+                  type: VARCHAR(255)
+              - column:
+                  name: is_locked
+                  type: TINYINT(1)
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_type
+                  type: ENUM('BUYER','SELLER')
+                  defaultValue: 'BUYER'
+              - column:
+                  name: status
+                  type: ENUM('ACTIVE','INACTIVE')
+                  defaultValue: 'INACTIVE'
+              - column:
+                  name: verification_token
+                  type: VARCHAR(255)
+              - column:
+                  name: verification_token_expiry
+                  type: DATETIME
+              - column:
+                  name: created_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Roles Table
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: created_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # UserRoles Table
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            columnNames: user_id, role_id
+            tableName: user_roles
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_roles
+            constraintName: fk_user_roles_users
+            referencedColumnNames: id
+            referencedTableName: users
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseColumnNames: role_id
+            baseTableName: user_roles
+            constraintName: fk_user_roles_roles
+            referencedColumnNames: id
+            referencedTableName: roles
+            onDelete: CASCADE
+
+        # Addresses Table
+        - createTable:
+            tableName: addresses
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(100)
+              - column:
+                  name: phone
+                  type: VARCHAR(20)
+              - column:
+                  name: address_line
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: city
+                  type: VARCHAR(100)
+              - column:
+                  name: postal_code
+                  type: VARCHAR(20)
+              - column:
+                  name: country
+                  type: VARCHAR(50)
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: addresses
+            constraintName: fk_addresses_users
+            referencedColumnNames: id
+            referencedTableName: users
+            onDelete: CASCADE
+
+        # RefreshTokens Table
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_date
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: refresh_tokens
+            constraintName: fk_refresh_tokens_users
+            referencedColumnNames: id
+            referencedTableName: users
+            onDelete: CASCADE
+
+        # Brands Table
+        - createTable:
+            tableName: brands
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: website_url
+                  type: VARCHAR(40)
+              - column:
+                  name: is_active
+                  type: TINYINT(1)
+              - column:
+                  name: country_of_origin
+                  type: VARCHAR(80)
+              - column:
+                  name: created_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # SaleItems Table
+        - createTable:
+            tableName: sale_items
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: model
+                  type: VARCHAR(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: brand_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DECIMAL(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ram_Gb
+                  type: INT
+              - column:
+                  name: screen_size_inch
+                  type: DECIMAL(5,2)
+              - column:
+                  name: storage_Gb
+                  type: INT
+              - column:
+                  name: color
+                  type: TEXT
+              - column:
+                  name: quantity
+                  type: INT
+                  defaultValue: '1'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seller_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_on
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: brand_id
+            baseTableName: sale_items
+            constraintName: fk_sale_items_brands
+            referencedColumnNames: id
+            referencedTableName: brands
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseColumnNames: seller_id
+            baseTableName: sale_items
+            constraintName: fk_sale_items_users
+            referencedColumnNames: id
+            referencedTableName: users
+            onDelete: CASCADE
+
+        # SaleItemImages Table
+        - createTable:
+            tableName: sale_item_images
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: image_name
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: original_image_name
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sale_item_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_view_order
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: sale_item_id
+            baseTableName: sale_item_images
+            constraintName: fk_sale_item_images_sale_items
+            referencedColumnNames: id
+            referencedTableName: sale_items
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_email
+            tableName: users
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            indexName: idx_token
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: token
+        - createIndex:
+            indexName: idx_user_id
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_expiry_date
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: expiry_date

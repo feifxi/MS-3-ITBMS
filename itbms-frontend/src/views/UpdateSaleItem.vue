@@ -220,7 +220,7 @@ const submitForm = async (e) => {
 
         const res = await updateSaleItem(id, formData, auth)
         const result = await res.json()
-        // console.log(result)
+        console.log(result)
         if (!res.ok) throw new Error("Something went wrong")
         statusMessageStore.setStatusMessage("The sale item has been updated.")
     } catch (err) {

@@ -1,0 +1,67 @@
+package sit.int204.itbmsbackend.dto.saleItem;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+import sit.int204.itbmsbackend.entity.Brand;
+import sit.int204.itbmsbackend.util.Utils;
+
+@Data
+public class SaleItemCreateRequestDTO {
+    @JsonIgnore
+    private Integer id;
+
+    @NotBlank(message = "Model is required")
+    private String model;
+
+    @NotBlank(message = "Description is required")
+    private String description;
+
+    @Min(value = 0, message = "Price must be greater than 0")
+    private BigDecimal price;
+
+    @Min(value = 0, message = "ramGb must be greater than 0")
+    private Integer ramGb;
+
+    @Min(value = 0, message = "screenSizeInch must be greater than 0")
+    private BigDecimal screenSizeInch;
+
+    @Min(value = 0, message = "storageGb must be greater than 0")
+    private Integer storageGb;
+
+    private String color;
+
+    @Min(value = 0, message = "quantity must be greater than 0")
+    private Integer quantity;
+
+//    @NotNull(message = "Brand is required")
+    private Brand brand;
+    private Integer brandId;  // BrandId for testing
+
+    @Size(min = 1, max = 4, message = "You must upload between 1 and 4 images")
+    private List<MultipartFile> images = new ArrayList<>();
+
+    public void setModel(String model) {
+        this.model = Utils.trimOrSetNull(model);
+    }
+
+    public void setDescription(String description) {
+        this.description = Utils.trimOrSetNull(description);
+    }
+
+    public void setColor(String color) {
+        this.color = Utils.trimOrSetNull(color);
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity == null || quantity < 0 ? 1 : quantity;
+    }
+}

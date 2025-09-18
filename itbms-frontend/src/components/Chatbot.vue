@@ -1,7 +1,7 @@
 <script setup>
 import { useAuthStore } from "@/stores/auth";
 import { Bot, Send, User } from "lucide-vue-next";
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
 import Button from "./Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { askChatbot } from "@/api";
@@ -69,16 +69,6 @@ const scrollToBottom = () => {
   }
 };
 
-watch(
-  messages,
-  () => {
-    nextTick(() => {
-      scrollToBottom();
-    });
-  },
-  { deep: true }
-);
-
 const showLoginSuggestDialog = ref(false);
 
 const handleShowDialog = () => {
@@ -94,12 +84,37 @@ const goToSignin = async () => {
   isShowingChatbot.value = false
   router.push({ name: "login" });
 };
+
+// Close chatbot when clicking outside
+const handleClickOutside = (event) => {
+  const chatbot = event.target.closest('.itbms-chatbot')
+  if (!chatbot) isShowingChatbot.value = false
+}
+
+onMounted(async () => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+watch(
+  messages,
+  () => {
+    nextTick(() => {
+      scrollToBottom();
+    });
+  },
+  { deep: true }
+);
+
 </script>
 
 <template>
   <div
     v-if="isShowingChatbot"
-    class="fixed z-50 bottom-0 right-[10%] flex flex-col h-[600px] w-full max-w-sm mx-auto border border-neutral-300 rounded-lg overflow-hidden bg-white"
+    class="itbms-chatbot z-50 fixed bottom-0 right-[10%] flex flex-col h-[600px] w-full max-w-sm mx-auto border border-neutral-300 rounded-lg overflow-hidden bg-white"
   >
     <!-- Header -->
     <div
@@ -112,7 +127,7 @@ const goToSignin = async () => {
         <Bot class="w-6 h-6" />
       </div>
       <div>
-        <h3 class="font-semibold text-white">Chanombude Bot</h3>
+        <h3 class="font-semibold text-white">ChanomBot</h3>
         <p class="text-sm text-white">Online • Ready to brainrot</p>
       </div>
     </div>
@@ -204,7 +219,7 @@ const goToSignin = async () => {
   <div
     v-else
     @click="handleToggleChatbotBox"
-    class="fixed z-50 cursor-pointer bottom-0 right-[2%] flex flex-col mx-auto border border-neutral-300 rounded-lg overflow-hidden"
+    class="itbms-chatbot z-50 fixed cursor-pointer bottom-0 right-[2%] flex flex-col mx-auto border border-neutral-300 rounded-lg overflow-hidden"
   >
     <div
       class="flex items-center gap-3 p-2 border-b border-neutral-300 bg-gradient-to-r from-purple-500 to-rose-500"
@@ -215,7 +230,7 @@ const goToSignin = async () => {
         <Bot class="w-6 h-6" />
       </div>
       <div>
-        <h3 class="font-semibold text-white">Chanombude Bot</h3>
+        <h3 class="font-semibold text-white">ChanomBot</h3>
       </div>
     </div>
   </div>

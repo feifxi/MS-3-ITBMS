@@ -7,7 +7,7 @@ const statusMessageStore = useStatusMessageStore()
 <template>
     <div 
         :class="[
-            'fixed right-10 -bottom-100 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-100 shadow-lg font-medium text-base flex gap-3 items-center transition-all duration-700',
+            'z-50 fixed right-10 -bottom-100 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-100 shadow-lg font-medium text-base flex gap-3 items-center transition-all duration-700',
             statusMessageStore.isSuccess ? 'bg-white/90' : 'bg-white/90',
             {
                 'bottom-10 transform hover:scale-105 transition-all': statusMessageStore.isShowing 

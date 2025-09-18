@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sit.int204.itbmsbackend.security.UserDetailsServiceImpl;
-import sit.int204.itbmsbackend.utils.JwtUtils;
+import sit.int204.itbmsbackend.util.JwtUtils;
 
 import java.io.IOException;
 

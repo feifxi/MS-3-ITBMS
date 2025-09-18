@@ -4,8 +4,9 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import sit.int204.itbmsbackend.entities.Role;
-import sit.int204.itbmsbackend.entities.User;
+import sit.int204.itbmsbackend.constant.UserStatus;
+import sit.int204.itbmsbackend.entity.Role;
+import sit.int204.itbmsbackend.entity.User;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -26,7 +27,7 @@ public class UserPrincipal implements UserDetails {
         this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();
-        this.isEnabled = user.getStatus() != null && user.getStatus().equalsIgnoreCase("ACTIVE");
+        this.isEnabled = user.getStatus() != null && user.getStatus().equals(UserStatus.ACTIVE);
         this.roles.addAll(user.getRoles());
     }
 

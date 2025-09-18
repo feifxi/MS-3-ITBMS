@@ -5,7 +5,6 @@ DROP DATABASE IF EXISTS `ms3_itbms_db` ;
 CREATE SCHEMA IF NOT EXISTS `ms3_itbms_db` DEFAULT CHARACTER SET utf8 ;
 USE `ms3_itbms_db`;
 
-
 CREATE TABLE IF NOT EXISTS `ms3_itbms_db`.`users` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nickname VARCHAR(40) NOT NULL,

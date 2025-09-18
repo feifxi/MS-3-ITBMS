@@ -1,6 +1,10 @@
 spring:
   application:
     name: itbms-backend
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/ms3_itbms_db}
     username: ${DB_USER:root}
@@ -39,11 +43,32 @@ spring:
         options:
           model: llama3
 
+server:
+  port: 8080
+  servlet:
+    context-path: /itb-mshop
+  error:
+    include-stacktrace: on_param
+
+app:
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}
+
+team:
+  code: ms3
+
 # File Config
 file:
   upload-dir: upload_images
   max-size: 2MB
   allowed-types: image/jpeg,image/png,image/webp
+
+# MinIO
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:root}
+  secret-key: ${MINIO_SECRET_KEY:rootpass}
+  bucket-name: ${MINIO_BUCKET_NAME:itbms-files}
 
 # JWT Config
 jwt:
@@ -60,17 +85,3 @@ logging:
   level:
     org.springframework.security: DEBUG
     com.example.auth: DEBUG
-
-server:
-  port: 8080
-  servlet:
-    context-path: /itb-mshop
-  error:
-    include-stacktrace: on_param
-
-app:
-  frontend:
-    url: ${FRONTEND_URL:http://localhost:5173}
-
-team:
-  code: ms3

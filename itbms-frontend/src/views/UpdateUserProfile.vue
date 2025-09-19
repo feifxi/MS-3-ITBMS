@@ -205,19 +205,32 @@ onMounted(() => {
 </script>
 
 <template>
-    <main class="px-4 sm:px-16 py-8">
-        <BreadCrumb :links="[
-            { to: '/profile', label: 'Profile' },
-            { to: '#', label: 'Edit' },
-        ]" />
+      <div>
+        <div class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100 flex justify-center items-center p-6">
+            <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-10 w-full max-w-3xl border-4 border-pink-100 backdrop-blur-md">
+                
+                <!-- Header with large user icon -->
+                    <div class="text-center mb-8">
+                    <div class="relative inline-flex justify-center items-center w-48 h-48 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full mb-4 shadow-2xl drop-shadow-2xl">
+                        <!-- User head -->
+                        <div class="absolute top-5 w-15 h-15 bg-white rounded-full drop-shadow-lg"></div>
+                        <!-- User body -->
+                        <div class="absolute bottom-6 w-23 h-20 bg-white rounded-t-full drop-shadow-lg"></div>
+                    </div>
+                        <h1 class="text-2xl sm:text-4xl font-extrabold text-rose-500 tracking-widest drop-shadow-sm">Edit Profile</h1>
+                    </div>
 
-        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
-            <h1 class="text-3xl font-bold mb-6">Edit Profile</h1>
-            
-            <form @submit="submitForm" class="flex flex-col gap-6">
+            <form @submit.prevent="submitForm" class="space-y-6">
                 <!-- Editable Fields -->
-                <div class="flex flex-col gap-1">
-                    <label class="font-medium">
+                <div class="mb-6">
+                    <BreadCrumb :links="[
+                            { to: '/profile', label: 'Profile' },
+                            { to: '#', label: 'Edit' },
+                        ]" />
+                </div>
+
+                <div>
+                    <label class="block text-purple-700 font-semibold mb-2">
                         <span class="text-red-500 text-xl">*</span>
                         Nickname
                     </label>
@@ -225,11 +238,11 @@ onMounted(() => {
                         name="nickname" 
                         type="text" 
                         :class="[
-                            'input border rounded-lg p-3 transition-all duration-200',
+                            'w-full p-3 border rounded-full shadow-inner transition-all duration-200',
                             fieldValidation.nickname.isDirty && !fieldValidation.nickname.isValid 
-                                ? 'border-red-500 focus:ring-red-200' 
-                                : 'border-gray-300 focus:ring-blue-200',
-                            'focus:ring-2 focus:border-transparent focus:outline-none'
+                                ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-400' 
+                                : 'border-pink-200 bg-pink-50 focus:ring-2 focus:ring-rose-400',
+                            'focus:outline-none'
                         ]"
                         placeholder="Enter nickname..."
                         v-model="userProfile.nickname" 
@@ -237,13 +250,14 @@ onMounted(() => {
                         @focusout="handleFocusOut"
                         :maxlength="fieldRules.nickname.maxLength"
                     >
-                    <p v-if="fieldErrors.nickname" class="text-red-500 pl-2 text-sm">
+                    <p v-if="fieldErrors.nickname" class="text-red-500 pl-2 text-sm mt-1">
                         {{ fieldErrors.nickname }}
                     </p>
                 </div>
 
-                <div class="flex flex-col gap-1">
-                    <label class="font-medium">
+                <div>
+                <label class="block text-purple-700 font-semibold mb-2">
+         
                         <span class="text-red-500 text-xl">*</span>
                         Full Name
                     </label>
@@ -251,11 +265,11 @@ onMounted(() => {
                         name="fullName" 
                         type="text" 
                         :class="[
-                            'input border rounded-lg p-3 transition-all duration-200',
+                            'w-full p-3 border rounded-full shadow-inner transition-all duration-200',
                             fieldValidation.fullName.isDirty && !fieldValidation.fullName.isValid 
-                                ? 'border-red-500 focus:ring-red-200' 
-                                : 'border-gray-300 focus:ring-blue-200',
-                            'focus:ring-2 focus:border-transparent focus:outline-none'
+                                ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-400' 
+                                : 'border-purple-200 bg-purple-50 focus:ring-2 focus:ring-blue-400',
+                            'focus:outline-none'
                         ]"
                         placeholder="Enter full name..."
                         v-model="userProfile.fullName" 
@@ -263,115 +277,103 @@ onMounted(() => {
                         @focusout="handleFocusOut"
                         :maxlength="fieldRules.fullName.maxLength"
                     >
-                    <p v-if="fieldErrors.fullName" class="text-red-500 pl-2 text-sm">
+                    <p v-if="fieldErrors.fullName" class="text-red-500 pl-2 text-sm mt-1">
                         {{ fieldErrors.fullName }}
                     </p>
                 </div>
 
                 <!-- Read-only Fields -->
-                <div class="flex flex-col gap-1">
-                    <label class="font-medium">Email</label>
+                <div>
+                    <label class="block text-purple-700 font-semibold mb-2">Email</label>
                     <input 
                         type="text" 
-                        class="input border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
+                        class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-600 cursor-not-allowed opacity-70" 
                         :value="userProfile.email" 
                         readonly
                     >
                 </div>
-<!-- 
-                <div class="flex flex-col gap-1">
-                    <label class="font-medium">Password</label>
-                    <input 
-                        type="password" 
-                        class="input border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
-                        value="••••••••" 
-                        readonly
-                    >
-                </div> -->
 
                 <!-- Seller-specific fields -->
                 <template v-if="userProfile.userType === 'SELLER'">
-                    <div v-if="userProfile.mobileNumber" class="flex flex-col gap-1">
-                        <label class="font-medium">Mobile Number</label>
+                    <div v-if="userProfile.mobileNumber">
+                        <label class="block text-purple-700 font-semibold mb-2">Mobile Number</label>
                         <input 
                             type="text" 
-                            class="input border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
+                            class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-600 cursor-not-allowed opacity-70" 
                             :value="maskNumber(userProfile.mobileNumber)" 
                             readonly
                         >
                     </div>
 
-                    <div v-if="userProfile.bankAccountNumber" class="flex flex-col gap-1">
-                        <label class="font-medium">Bank Account Number</label>
+                    <div v-if="userProfile.bankAccountNumber">
+                        <label class="block text-purple-700 font-semibold mb-2">Bank Account Number</label>
                         <input 
                             type="text" 
-                            class="input border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
+                            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-600 cursor-not-allowed opacity-70" 
                             :value="maskNumber(userProfile.bankAccountNumber)" 
                             readonly
                         >
                     </div>
 
-                    <div v-if="userProfile.bankName" class="flex flex-col gap-1">
-                        <label class="font-medium">Bank Name</label>
+                    <div v-if="userProfile.bankName">
+                        <label class="block text-purple-700 font-semibold mb-2">Bank Name</label>
                         <input 
                             type="text" 
-                            class="input border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
+                            class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-600 cursor-not-allowed opacity-70" 
                             :value="userProfile.bankName" 
                             readonly
                         >
                     </div>
 
-                    <div v-if="userProfile.nationalIdNumber" class="flex flex-col gap-1">
-                        <label class="font-medium">National ID Number</label>
+                    <div v-if="userProfile.nationalIdNumber">
+                        <label class="block text-purple-700 font-semibold mb-2">National ID Number</label>
                         <input 
                             type="text" 
-                            class="input border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
+                            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-600 cursor-not-allowed opacity-70" 
                             :value="maskNumber(userProfile.nationalIdNumber)" 
                             readonly
                         >
                     </div>
 
-                    <div class="flex flex-col gap-1">
-                        <label class="font-medium">National ID Photo</label>
-                        <div class="border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 text-center">
+                    <div>
+                        <label class="block text-purple-700 font-semibold mb-2">National ID Photo</label>
+                        <div class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-600 text-center opacity-70">
                             Provided
                         </div>
                     </div>
                 </template>
 
-                <!-- <div class="flex flex-col gap-1">
-                    <label class="font-medium">User Type</label>
-                    <input 
-                        type="text" 
-                        class="input border border-gray-200 rounded-lg p-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
-                        :value="userProfile.userType" 
-                        readonly
-                    >
-                </div> -->
-
-                <div class="flex gap-3 items-center mt-8">
+                <div class="flex gap-4 pt-6 justify-center sm:justify-start">
                     <Button 
                         :variant="saveButtonState.variant"
-                        :onclick="submitForm" 
+                        @click="submitForm" 
                         :disabled="saveButtonState.disabled"
                         type="submit"
-                        class-name="px-6 py-3 min-w-[140px] transition-all duration-200"
-                    >
+                        :class="[
+                                'px-6 py-2.5 rounded-full transition-all duration-200 font-bold shadow-lg min-w-[140px]',
+                                saveButtonState.disabled 
+                                    ? 'bg-gray-300 cursor-not-allowed' 
+                                    : 'bg-gradient-to-r from-pink-400 to-rose-400 text-white hover:from-purple-400 hover:to-purple-400 drop-shadow-[0_1px_1px_rgba(0,0,0,1)]'
+                            ]"
+                        >
+                            <Save class="w-5 h-5 mr-2 inline" />
                         {{ saveButtonState.text }}
                     </Button>
 
                     <Button 
                         variant="ghost" 
-                        :onclick="goBack" 
+                        @click="goBack" 
                         type="button"
-                        class-name="px-6 py-3"
-                    >
+                        class="px-6 py-2.5 bg-white text-gray-700 rounded-full border border-gray-300 hover:bg-gray-100 transition font-medium shadow-lg"
+                        >
+                            <X class="w-5 h-5 mr-2 inline text-red-500" />
                         Cancel
                         
                     </Button>
                 </div>
             </form>
         </div>
+      </div>
 
         <!-- Confirm Modal -->
         <ConfirmModal
@@ -383,12 +385,12 @@ onMounted(() => {
             @confirm="confirmSave"
             @cancel="cancelSave"
         />
-    </main>
+    </div>
 </template>
 
 <style scoped>
-.input[readonly] {
-  background-color: #f9fafb;
+input[readonly] {
+  background-color: #fdf2f8;
   cursor: not-allowed;
 }
 </style>

@@ -1,30 +1,29 @@
 <script setup>
-import { useRouter } from "vue-router";
-import { useStatusMessageStore } from "@/stores/statusMessage";
-import { useAuthStore } from "@/stores/auth";
-import { onMounted, ref } from "vue";
-import { fetchUserProfile, updateUserProfile } from "@/api";
+import { useRouter } from 'vue-router'
+import { useStatusMessageStore } from '@/stores/statusMessage'
+import { useAuthStore } from '@/stores/auth'
+import { onMounted, ref } from 'vue'
+import { fetchUserProfile, updateUserProfile } from '@/api'
 
-const router = useRouter();
-const statusMessageStore = useStatusMessageStore();
+const router = useRouter()
+const statusMessageStore = useStatusMessageStore()
 const auth = useAuthStore()
 
 const userProfile = ref(null)
 const isLoading = ref(false)
 
-const loadUserProfile =  async () => {
+const loadUserProfile = async () => {
   try {
     isLoading.value = true
     const res = await fetchUserProfile(auth)
     const profile = await res.json()
     userProfile.value = profile
 
-    console.log(profile)  // print user profile
+    console.log(profile) // print user profile
   } catch (error) {
     console.log(error)
   }
 }
-
 
 const updateProfile = async () => {
   try {
@@ -40,17 +39,83 @@ const updateProfile = async () => {
 onMounted(async () => {
   loadUserProfile()
 })
-
 </script>
 
 <template>
-  <div class="px-16 py-8">
-    <div class="bg-white px-16 py-8 rounded-xl shadow">
-        <h1 class=" text-3xl font-bold">User Profile</h1>
-        <p>Nickname : {{ userProfile?.nickname || "-"}}</p>
-        <p>Fullname : {{ userProfile?.fullName || "-"}}</p>
-        <p>Email : {{ userProfile?.email || "-"}}</p>
-        <p>User type : {{ userProfile?.userType || "-"}}</p>
+  <div>
+    <div class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100 flex justify-center items-center p-6">
+      <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-10 w-full max-w-2xl border-4 border-pink-100 backdrop-blur-md">
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-rose-500 mb-8 sm:mb-10 text-center tracking-widest drop-shadow-sm">
+           <div class="text-center mb-8">
+                    <div class="relative inline-flex justify-center items-center w-48 h-48 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full mb-4 shadow-2xl drop-shadow-2xl">
+                        <!-- User head -->
+                        <div class="absolute top-5 w-15 h-15 bg-white rounded-full drop-shadow-lg"></div>
+                        <!-- User body -->
+                        <div class="absolute bottom-6 w-23 h-20 bg-white rounded-t-full drop-shadow-lg"></div>
+                    </div>
+                    </div>
+          <span class="inline-flex items-center gap-2">
+            <User class="w-6 h-6" />
+            User Profile<User class="w-6 h-6" />
+          </span>
+        </h1>
+        
+        <div class="space-y-6">
+          <!-- Nickname -->
+          <div>
+            <label class="block text-purple-700 font-semibold mb-2">
+              Nickname
+            </label>
+            <div
+              class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+              {{ userProfile?.nickname || '-' }}
+            </div>
+          </div>
+
+          <!-- Full Name -->
+          <div>
+            <label class="block text-purple-700 font-semibold mb-2">
+              Fullname
+            </label>
+            <div
+              class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-700">
+              {{ userProfile?.fullName || '-' }}
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-purple-700 font-semibold mb-2">
+              Email
+            </label>
+            <div
+              class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+              {{ userProfile?.email || '-' }}
+            </div>
+          </div>
+
+          <!-- User Type -->
+          <div>
+            <label class="block text-purple-700 font-semibold mb-2">
+              User Type
+            </label>
+            <div
+              class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-700">
+              {{ userProfile?.userType || '-' }}
+            </div>
+          </div>
+
+          <!-- Edit Button -->
+        <div class="mt-8 flex justify-center">
+          <router-link to="/profile/edit">
+            <button 
+              class="bg-red-400 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-red-600 transition">
+              Edit
+            </button>
+          </router-link>
+        </div>
+       </div>
+      </div>
     </div>
   </div>
 </template>

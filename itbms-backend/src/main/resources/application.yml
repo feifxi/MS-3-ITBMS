@@ -101,4 +101,3 @@ management:
       show-details: always
     prometheus:
       access: unrestricted
-    # enabled: true

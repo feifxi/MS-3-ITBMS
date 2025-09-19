@@ -278,7 +278,7 @@ onMounted(() => {
                         readonly
                     >
                 </div>
-
+<!-- 
                 <div class="flex flex-col gap-1">
                     <label class="font-medium">Password</label>
                     <input 
@@ -287,7 +287,7 @@ onMounted(() => {
                         value="••••••••" 
                         readonly
                     >
-                </div>
+                </div> -->
 
                 <!-- Seller-specific fields -->
                 <template v-if="userProfile.userType === 'SELLER'">

@@ -67,6 +67,7 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/error").permitAll()
+                    .requestMatchers("/actuator/prometheus").permitAll()
                     .requestMatchers(PUBLIC_MATCHERS).permitAll()
                     .anyRequest().authenticated()
             );

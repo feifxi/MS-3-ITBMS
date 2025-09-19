@@ -6,4 +6,4 @@ dev:
 dropdev: 
 	docker compose down -v 
 
-.PHONY: db rmdb ollama ollama-exec minio
+.PHONY: dev dropdev

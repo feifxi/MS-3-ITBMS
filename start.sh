@@ -1,1 +1,1 @@
-docker compose up -d && docker exec -it itbms-ollama ollama pull llama3
+docker compose up -d --build && docker exec -it itbms-ollama ollama pull llama3

@@ -16,6 +16,7 @@ import EmailVerificationView from '@/views/EmailVerificationView.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import { refreshAccessToken } from '@/api'
 import CartView from '@/views/CartView.vue'
+import UpdateUserProfile from '@/views/UpdateUserProfile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -102,6 +103,12 @@ const router = createRouter({
       path: '/chat-app',
       name: 'chatApp',
       component: Chat,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/profile/edit',
+      name: 'updatUserProfile',
+      component: UpdateUserProfile,
       meta: { requiresAuth: true },
     },
   ],

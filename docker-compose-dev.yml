@@ -1,0 +1,61 @@
+services:
+  # MySQL Database
+  database:
+    container_name: itbms-dev-mysql-db
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - itbms_dev_mysql_data:/var/lib/mysql
+      - ./itbms-database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./itbms-database/insert.sql:/app/insert.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    networks:
+      - itbms_dev_network
+  
+  # MinIO File Stroage Service
+  minio:
+    container_name: itbms-dev-minio
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - itbms_dev_minio_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-root}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-rootpass}
+      MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL:-http://localhost:9001}
+    networks:
+      - itbms_dev_network
+    command: server /data --console-address ":9001"
+    restart: unless-stopped    
+
+  # Ollama Local LLM Model
+  ollama:
+    container_name: itbms-dev-ollama
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - itbms_dev_ollama_data:/root/.ollama
+    networks:
+      - itbms_dev_network
+    # Use 'deploy' for GPU support if available
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]    
+    restart: unless-stopped
+
+networks:
+  itbms_dev_network:
+
+volumes:
+  itbms_dev_mysql_data:
+  itbms_dev_minio_data:
+  itbms_dev_ollama_data: 

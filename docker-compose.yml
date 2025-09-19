@@ -1,29 +1,7 @@
 services:
-  ollama:
-    container_name: itbms-ollama-container
-    image: ollama/ollama:latest
-    volumes:
-      - itbms_ollama_data:/root/.ollama
-    networks:
-      - itbms_network
-    # Use 'deploy' for GPU support if available
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
-    
-    # Use entrypoint to run the server and pull a model
-    entrypoint:
-      - "/bin/bash"
-      - "-c"
-      - "ollama serve & ollama pull llama3 && wait"
-    restart: unless-stopped
-
+  # MySQL Database
   database:
-    container_name: itbms-db-container
+    container_name: itbms-mysql-db
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
@@ -39,8 +17,9 @@ services:
       timeout: 5s
       retries: 3
   
+  # MinIO File Stroage Service
   minio:
-    container_name: itbms-minio-container
+    container_name: itbms-minio
     image: minio/minio:latest
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -63,9 +42,28 @@ services:
     ports:
       - "${MINIO_API_PORT:-9000}:9000"
       - "${MINIO_CONSOLE_PORT:-9001}:9001"
-  
+
+  # Ollama Local LLM Model
+  ollama:
+    container_name: itbms-ollama
+    image: ollama/ollama:latest
+    volumes:
+      - itbms_ollama_data:/root/.ollama
+    networks:
+      - itbms_network
+    # Use 'deploy' for GPU support if available
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    restart: unless-stopped
+
+  # Java Spring boot Backend API
   backend:
-    container_name: itbms-be-container
+    container_name: itbms-spring-boot-api
     build:
       context: ./itbms-backend
       dockerfile: dockerfile
@@ -77,22 +75,28 @@ services:
       MAIL_USER: ${MAIL_USER}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
+      # MinIO
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      # Expose actuator endpoints for Prometheus
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics,prometheus
+      MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: true
+      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: true
     networks:
       - itbms_network
     depends_on:
       database:
         condition: service_healthy
-      ollama:
-        condition: service_started
       minio:
         condition: service_healthy
+      ollama:
+        condition: service_started
 
+  # Nginx (with reverse proxy) + Vue frontend
   frontend:
-    container_name: itbms-fe-container
+    container_name: itbms-nginx-fe
     build:
       context: ./itbms-frontend
       dockerfile: dockerfile
@@ -103,10 +107,50 @@ services:
     depends_on:
       - backend
 
+  # Prometheus for metrics collection
+  prometheus:
+    container_name: itbms-prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - itbms_prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - itbms_network
+    restart: unless-stopped
+
+  # Grafana for visualization
+  grafana:
+    container_name: itbms-grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - itbms_grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: false
+    networks:
+      - itbms_network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
 networks:
   itbms_network:
 
 volumes:
   itbms_mysql_data:
-  itbms_ollama_data: 
   itbms_minio_data:
+  itbms_ollama_data: 
+  itbms_prometheus_data:
+  itbms_grafana_data:

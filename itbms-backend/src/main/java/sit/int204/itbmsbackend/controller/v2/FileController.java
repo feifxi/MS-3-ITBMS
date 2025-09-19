@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-//@RestController
+@RestController
 @RequestMapping("/v2/files")
 @RequiredArgsConstructor
 public class FileController {

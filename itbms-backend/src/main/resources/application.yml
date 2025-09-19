@@ -85,3 +85,20 @@ logging:
   level:
     org.springframework.security: DEBUG
     com.example.auth: DEBUG
+
+
+# Monitoring
+# Actuator endpoints configuration
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: unrestricted
+    # enabled: true

@@ -1,5 +1,6 @@
 package sit.int204.itbmsbackend.controller.v2;
 
+import io.micrometer.core.instrument.Timer;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import sit.int204.itbmsbackend.dto.auth.*;
 import sit.int204.itbmsbackend.dto.common.ApiResponse;
 import sit.int204.itbmsbackend.security.UserPrincipal;
 import sit.int204.itbmsbackend.service.AuthService;
+import sit.int204.itbmsbackend.service.MetricsService;
 
 import java.io.UnsupportedEncodingException;
 
@@ -26,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 public class AuthController {
     private final AuthService authService;
     private final Environment environment;
+    private final MetricsService metricsService;
     private final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
     private ResponseCookie generateCookie(String name, String value, int maxAge) {
@@ -58,14 +61,21 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthTokenResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        AuthTokenResponse authToken = authService.authenticateUser(loginRequest);
+        Timer.Sample sample = metricsService.startTimer();
+        try {
+            // Login Logic
+            AuthTokenResponse authToken = authService.authenticateUser(loginRequest);
 
-        // Set refresh token as http-only cookie
-        String refreshToken = authToken.getRefreshToken();
-        ResponseCookie cookie = generateCookie("refreshToken", refreshToken, COOKIE_MAX_AGE);
-        response.addHeader("Set-Cookie", cookie.toString());
+            // Set refresh token as http-only cookie
+            String refreshToken = authToken.getRefreshToken();
+            ResponseCookie cookie = generateCookie("refreshToken", refreshToken, COOKIE_MAX_AGE);
+            response.addHeader("Set-Cookie", cookie.toString());
 
-        return ResponseEntity.ok(authToken);
+            metricsService.incrementUserLogin();
+            return ResponseEntity.ok(authToken);
+        } finally {
+            metricsService.stopTimer(sample);
+        }
     }
 
     @PostMapping("/refresh")

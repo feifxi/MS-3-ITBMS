@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-//@Service
+@Service
 @RequiredArgsConstructor
 public class FileStorageService {
     private final MinioClient minioClient;

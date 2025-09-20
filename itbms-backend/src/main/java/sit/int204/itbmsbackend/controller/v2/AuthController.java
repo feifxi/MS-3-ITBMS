@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.dto.auth.*;
 import sit.int204.itbmsbackend.dto.common.ApiResponse;
+import sit.int204.itbmsbackend.entity.UserTracking;
+import sit.int204.itbmsbackend.repository.UserTrackingRepository;
 import sit.int204.itbmsbackend.security.UserPrincipal;
 import sit.int204.itbmsbackend.service.AuthService;
 import sit.int204.itbmsbackend.service.MetricsService;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/v2/auth")
@@ -29,6 +32,7 @@ public class AuthController {
     private final AuthService authService;
     private final Environment environment;
     private final MetricsService metricsService;
+    private final UserTrackingRepository userTracking;
     private final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
     private ResponseCookie generateCookie(String name, String value, int maxAge) {
@@ -71,7 +75,15 @@ public class AuthController {
             ResponseCookie cookie = generateCookie("refreshToken", refreshToken, COOKIE_MAX_AGE);
             response.addHeader("Set-Cookie", cookie.toString());
 
+            // Metric logging for monitoring
             metricsService.incrementUserLogin();
+            // Tracking User Activity
+            userTracking.save(new UserTracking(
+                    authToken.getId().toString(),
+                    authToken.getFullName(),
+                    "Logged in",
+                    LocalDateTime.now().toString()
+            ));
             return ResponseEntity.ok(authToken);
         } finally {
             metricsService.stopTimer(sample);

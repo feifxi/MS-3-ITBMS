@@ -14,7 +14,7 @@ services:
     networks:
       - itbms_dev_network
   
-  # MinIO File Stroage Service
+  # Minio File Stroage Service
   minio:
     container_name: itbms-dev-minio
     image: minio/minio:latest
@@ -52,6 +52,26 @@ services:
     #           capabilities: [gpu]    
     restart: unless-stopped
 
+  # MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: itbms-dev-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - itbms_dev_mongo_data:/data/db
+    networks:
+      - itbms_dev_network
+
+  # Redis
+  redis:
+    image: redis:7
+    container_name: itbms-dev-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - itbms_dev_network
+
 networks:
   itbms_dev_network:
 
@@ -59,3 +79,4 @@ volumes:
   itbms_dev_mysql_data:
   itbms_dev_minio_data:
   itbms_dev_ollama_data: 
+  itbms_dev_mongo_data:

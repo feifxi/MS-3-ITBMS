@@ -17,7 +17,7 @@ services:
       timeout: 5s
       retries: 3
   
-  # MinIO File Stroage Service
+  # Minio File Stroage Service
   minio:
     container_name: itbms-minio
     image: minio/minio:latest
@@ -69,21 +69,30 @@ services:
       dockerfile: dockerfile
     environment:
       FRONTEND_URL: ${FRONTEND_URL}
+      # DB
       DB_URL: ${DB_URL}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      # Mail
       MAIL_USER: ${MAIL_USER}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      # Ollama
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
-      # MinIO
+      # Minio
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
       # Expose actuator endpoints for Prometheus
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics,prometheus
-      # MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: true
       MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: true
+      # MongoDB
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_PORT: ${MONGO_PORT}
+      MONGO_DB: ${MONGO_DB}
+      # Redis
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     networks:
       - itbms_network
     depends_on:
@@ -144,6 +153,22 @@ services:
     depends_on:
       - prometheus
     restart: unless-stopped
+  
+  # MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: itbms-mongo
+    volumes:
+      - itbms_mongo_data:/data/db
+    networks:
+      - itbms_network
+  
+  # Redis
+  redis:
+    image: redis:7
+    container_name: itbms-redis
+    networks:
+      - itbms_network
 
 networks:
   itbms_network:
@@ -154,3 +179,4 @@ volumes:
   itbms_ollama_data: 
   itbms_prometheus_data:
   itbms_grafana_data:
+  itbms_mongo_data:

@@ -67,6 +67,3 @@ defineProps({
         </div>
     </RouterLink>
 </template>
-
-<!-- 7e49337c-db6a-46d3-ada3-3fb409e7fc89.webp -->
-<!-- 7e49337c-db6a-46d3-ada3-3fb409e7fc89.webp -->

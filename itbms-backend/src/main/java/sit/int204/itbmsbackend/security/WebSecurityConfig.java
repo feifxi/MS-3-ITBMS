@@ -30,6 +30,7 @@ public class WebSecurityConfig {
             "/v1/sale-items/images/*",
             "/v2/auth/**",
             "/v2/sale-items/**",
+            "/v2/users/images/*"
     };
 
     private final UserDetailsServiceImpl userDetailsService;

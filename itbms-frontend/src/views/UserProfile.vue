@@ -7,7 +7,7 @@ import { fetchUserProfile, updateUserProfile } from '@/api'
 import placeHolder from '@/assets/placeholder.svg' 
 
 const BASE_API = import.meta.env.VITE_BASE_API
-const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
+const IMAGE_ENDPOINT = BASE_API + "/v2/users/images/"
 
 const router = useRouter()
 const statusMessageStore = useStatusMessageStore()
@@ -23,9 +23,6 @@ const loadUserProfile = async () => {
     const profile = await res.json()
     userProfile.value = profile
     
-    console.log(IMAGE_ENDPOINT + userProfile.value?.idCardImageFront)
-    console.log(IMAGE_ENDPOINT + userProfile.value?.idCardImageBack)
-
     console.log(profile) // print user profile
   } catch (error) {
     console.log(error)
@@ -100,8 +97,8 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div v-if="userProfile?.userType === 'SELLER'">
-            <!-- Shopname -->
+          <div v-if="userProfile?.userType === 'SELLER'" class="space-y-6">
+            <!-- Shop Name -->
             <div>
               <label class="block text-purple-700 font-semibold mb-2">
                 Shop Name
@@ -122,15 +119,23 @@ onMounted(async () => {
               </div>
             </div>
             
-
+            <!-- National id card image -->
+            <label class="block text-purple-700 font-semibold mb-2">
+              National ID Card
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <img 
+                :src="IMAGE_ENDPOINT + userProfile?.idCardImageFront || placeHolder" 
+                alt="national id card" 
+                :class="'shadow-md'" 
+              />
+              <img 
+                :src="IMAGE_ENDPOINT + userProfile?.idCardImageBack || placeHolder" 
+                alt="national id card" 
+                :class="'shadow-md'" 
+              />
+            </div>
           </div>
-
-          <!-- National id card image -->
-           <img 
-              :src="IMAGE_ENDPOINT + userProfile?.idCardImageFront || placeHolder" 
-              alt="national id card" 
-              :class="'shadow-md cursor-pointer'" 
-            />
 
           
 

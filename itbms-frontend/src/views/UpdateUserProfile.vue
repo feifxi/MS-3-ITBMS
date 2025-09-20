@@ -268,12 +268,12 @@ onMounted(async () => {
                         </div>
                         
                         <!-- === ID PHOTO STATIC DISPLAY === -->
-                        <div>
+                        <!-- <div>
                             <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">National ID Photo</label>
                             <div class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-600 text-center opacity-70 text-sm md:text-base">
                                 Provided
                             </div>
-                        </div>
+                        </div> -->
                     </template>
 
                     <!-- Action Buttons -->

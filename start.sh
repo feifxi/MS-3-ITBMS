@@ -1,1 +1,4 @@
-docker compose up -d --build && docker exec -it itbms-ollama ollama pull llama3
+#!/bin/bash
+docker compose up -d --build --remove-orphans \
+&& docker exec itbms-ollama ollama pull llama3 \
+&& docker image prune -f

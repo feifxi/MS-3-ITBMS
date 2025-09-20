@@ -1,0 +1,22 @@
+# name: Simple Deploy
+
+# on:
+#   push:
+#     branches:
+#       - main   # deploy only when pushing to main
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Deploy via SSH
+#         uses: appleboy/ssh-action@v1.1.0
+#         with:
+#           host: ${{ secrets.VM_HOST }}
+#           username: ${{ secrets.VM_USER }}
+#           key: ${{ secrets.VM_KEY }}
+#           script: |
+#             cd ./../shared/MS-3-ITBMS
+#             git pull origin main
+#             bash start.sh

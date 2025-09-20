@@ -44,6 +44,7 @@ function sendMessage() {
     })
     message.value = ""
   }
+  console.log("Kuy jerb")
 }
 </script>
 

@@ -3,6 +3,7 @@ USE ms3_itbms_db;
 
 -- Sale item
 SELECT * FROM sale_items s JOIN users u ON u.id = s.seller_id;
+SELECT * FROM sale_item_images;
 
 -- User
 SELECT * FROM roles;

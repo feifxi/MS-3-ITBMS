@@ -96,7 +96,7 @@ public class SaleItemControllerV1 {
     public ResponseEntity<Resource> getImage(@PathVariable String filename) throws IOException {
         Resource resourceFile = imageService.getImage(filename);
         SaleItemImage saleItemImageInfo = saleItemImageRepository.findOneByImageName(filename).orElseThrow(
-                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, resourceFile.getFilename() +  "not found")
+                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, resourceFile.getFilename() +  " not found")
         );
         String originalImageName = saleItemImageInfo.getOriginalImageName();
 

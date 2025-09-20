@@ -4,7 +4,10 @@ import { useStatusMessageStore } from '@/stores/statusMessage'
 import { useAuthStore } from '@/stores/auth'
 import { onMounted, ref } from 'vue'
 import { fetchUserProfile, updateUserProfile } from '@/api'
-import { User } from 'lucide-vue-next'
+import placeHolder from '@/assets/placeholder.svg' 
+
+const BASE_API = import.meta.env.VITE_BASE_API
+const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
 
 const router = useRouter()
 const statusMessageStore = useStatusMessageStore()
@@ -19,6 +22,9 @@ const loadUserProfile = async () => {
     const res = await fetchUserProfile(auth)
     const profile = await res.json()
     userProfile.value = profile
+    
+    console.log(IMAGE_ENDPOINT + userProfile.value?.idCardImageFront)
+    console.log(IMAGE_ENDPOINT + userProfile.value?.idCardImageBack)
 
     console.log(profile) // print user profile
   } catch (error) {
@@ -93,6 +99,40 @@ onMounted(async () => {
               {{ userProfile?.email || '-' }}
             </div>
           </div>
+
+          <div v-if="userProfile?.userType === 'SELLER'">
+            <!-- Shopname -->
+            <div>
+              <label class="block text-purple-700 font-semibold mb-2">
+                Shop Name
+              </label>
+              <div
+                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.shopName || '-' }}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-purple-700 font-semibold mb-2">
+                Shop Name
+              </label>
+              <div
+                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.shopName || '-' }}
+              </div>
+            </div>
+            
+
+          </div>
+
+          <!-- National id card image -->
+           <img 
+              :src="IMAGE_ENDPOINT + userProfile?.idCardImageFront || placeHolder" 
+              alt="national id card" 
+              :class="'shadow-md cursor-pointer'" 
+            />
+
+          
 
           <!-- Edit Button -->
         <div class="mt-8 flex justify-end">

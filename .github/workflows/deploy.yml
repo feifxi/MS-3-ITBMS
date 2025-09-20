@@ -8,15 +8,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
+    steps:
+      # 1️⃣ Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # steps:
-    #   - name: Deploy via SSH
-    #     uses: appleboy/ssh-action@v1.1.0
-    #     with:
-    #       host: ${{ secrets.VM_HOST }}
-    #       username: ${{ secrets.VM_USER }}
-    #       key: ${{ secrets.VM_KEY }}
-    #       script: |
-    #         cd ./../shared/MS-3-ITBMS
-    #         git pull origin main
-    #         bash start.sh
+      # 2️⃣ Run a container to test
+      - name: Run test container
+        run: |
+          bash start.sh
+          echo "Container built successfully!"
+          bash stop.sh
+        
+      # Deploy
+      # - name: Deploy via SSH
+      #   uses: appleboy/ssh-action@v1.1.0
+      #   with:
+      #     host: ${{ secrets.VM_HOST }}
+      #     username: ${{ secrets.VM_USER }}
+      #     key: ${{ secrets.VM_KEY }}
+      #     script: |
+      #       cd ./../shared/MS-3-ITBMS
+      #       git pull origin main
+      #       bash start.sh

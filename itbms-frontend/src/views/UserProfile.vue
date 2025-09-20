@@ -111,11 +111,41 @@ onMounted(async () => {
 
             <div>
               <label class="block text-purple-700 font-semibold mb-2">
-                Shop Name
+                Phone
               </label>
               <div
                 class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
-                {{ userProfile?.shopName || '-' }}
+                {{ userProfile?.phone || '-' }}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-purple-700 font-semibold mb-2">
+                Bank
+              </label>
+              <div
+                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.bankName || '-' }}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-purple-700 font-semibold mb-2">
+                Bank Account Number
+              </label>
+              <div
+                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.bankAccountNumber || '-' }}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-purple-700 font-semibold mb-2">
+                Nation Id
+              </label>
+              <div
+                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.idCardNumber || '-' }}
               </div>
             </div>
             

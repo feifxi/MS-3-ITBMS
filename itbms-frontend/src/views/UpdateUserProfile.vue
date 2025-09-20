@@ -7,6 +7,7 @@ import Button from '@/components/Button.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useStatusMessageStore } from '@/stores/statusMessage'
 import { useAuthStore } from '@/stores/auth'
+import { Save, X } from 'lucide-vue-next'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -352,7 +353,7 @@ onMounted(() => {
                         :class="[
                                 'px-6 py-2.5 rounded-full transition-all duration-200 font-bold shadow-lg min-w-[140px]',
                                 saveButtonState.disabled 
-                                    ? 'bg-gray-300 cursor-not-allowed' 
+                                    ? 'bg-gray-300 !cursor-not-allowed' 
                                     : 'bg-gradient-to-r from-pink-400 to-rose-400 text-white hover:from-purple-400 hover:to-purple-400 drop-shadow-[0_1px_1px_rgba(0,0,0,1)]'
                             ]"
                         >
@@ -360,7 +361,7 @@ onMounted(() => {
                         {{ saveButtonState.text }}
                     </Button>
 
-                    <Button 
+                    <Button
                         variant="ghost" 
                         @click="goBack" 
                         type="button"
@@ -368,7 +369,6 @@ onMounted(() => {
                         >
                             <X class="w-5 h-5 mr-2 inline text-red-500" />
                         Cancel
-                        
                     </Button>
                 </div>
             </form>

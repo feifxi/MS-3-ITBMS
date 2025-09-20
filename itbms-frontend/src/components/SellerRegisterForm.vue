@@ -9,7 +9,7 @@ import placeHolder from "@/assets/placeholder.svg";
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
 
-const BANK_NAMES = ['BB', 'KSB', 'SCB', 'KTB']
+const BANK_NAMES = ['SCB', 'KBANK', 'KTB', 'BAY', 'GSB', 'TTB']
 
 const userData = reactive({
   nickname: "",
@@ -133,6 +133,11 @@ const validateAllField = () => {
       isValid = false;
       break;
     }
+  }
+  if (userData.idCardImageFront == ''  || userData.idCardImageFront == null ||
+      userData.idCardImageBack == ''  || userData.idCardImageBack == null) 
+  {
+    isValid = false 
   }
   isFormValid.value = isValid;
 };

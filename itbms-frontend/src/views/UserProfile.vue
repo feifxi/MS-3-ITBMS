@@ -40,6 +40,15 @@ const updateProfile = async () => {
   }
 }
 
+// Mask numbers: show 2nd, 3rd, 4th digits from end
+const maskNumber = (num) => {
+    if (!num || num.length < 4) return num
+    const str = num.toString()
+    const len = str.length
+    const visible = str.slice(-4, -1)
+    return 'x'.repeat(len - 4) + visible + 'x'
+}
+
 onMounted(async () => {
   loadUserProfile()
 })
@@ -70,19 +79,8 @@ onMounted(async () => {
               Nickname
             </label>
             <div
-              class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+              class="itbms-nickname w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
               {{ userProfile?.nickname || '-' }}
-            </div>
-          </div>
-
-          <!-- Full Name -->
-          <div>
-            <label class="block text-purple-700 font-semibold mb-2">
-              Fullname
-            </label>
-            <div
-              class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-700">
-              {{ userProfile?.fullName || '-' }}
             </div>
           </div>
 
@@ -92,14 +90,36 @@ onMounted(async () => {
               Email
             </label>
             <div
-              class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+              class="itbms-email w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
               {{ userProfile?.email || '-' }}
+            </div>
+          </div>
+
+          <!-- Full Name -->
+          <div>
+            <label class="block text-purple-700 font-semibold mb-2">
+              Fullname
+            </label>
+            <div
+              class="itbms-fullname w-full p-3 border border-purple-200 rounded-full bg-purple-50 shadow-inner text-gray-700">
+              {{ userProfile?.fullName || '-' }}
+            </div>
+          </div>
+
+          <!-- UserType -->
+          <div>
+            <label class="block text-purple-700 font-semibold mb-2">
+              Type
+            </label>
+            <div
+              class="itbms-type w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+              {{ userProfile?.userType || '-' }}
             </div>
           </div>
 
           <div v-if="userProfile?.userType === 'SELLER'" class="space-y-6">
             <!-- Shop Name -->
-            <div>
+            <!-- <div>
               <label class="block text-purple-700 font-semibold mb-2">
                 Shop Name
               </label>
@@ -107,25 +127,15 @@ onMounted(async () => {
                 class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
                 {{ userProfile?.shopName || '-' }}
               </div>
-            </div>
+            </div> -->
 
             <div>
               <label class="block text-purple-700 font-semibold mb-2">
                 Phone
               </label>
               <div
-                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
-                {{ userProfile?.phone || '-' }}
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-purple-700 font-semibold mb-2">
-                Bank
-              </label>
-              <div
-                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
-                {{ userProfile?.bankName || '-' }}
+                class="itbms-mobile w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.phone ? maskNumber(userProfile.phone) : '-' }}
               </div>
             </div>
 
@@ -134,12 +144,24 @@ onMounted(async () => {
                 Bank Account Number
               </label>
               <div
-                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
-                {{ userProfile?.bankAccountNumber || '-' }}
+                class="itbms-bankAccount w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.bankAccountNumber ? maskNumber(userProfile.bankAccountNumber) :'-' }}
               </div>
             </div>
 
             <div>
+              <label class="block text-purple-700 font-semibold mb-2">
+                Bank
+              </label>
+              <div
+                class="itbms-bankName w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
+                {{ userProfile?.bankName || '-' }}
+              </div>
+            </div>
+
+
+
+            <!-- <div>
               <label class="block text-purple-700 font-semibold mb-2">
                 Nation Id
               </label>
@@ -147,10 +169,10 @@ onMounted(async () => {
                 class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 shadow-inner text-gray-700">
                 {{ userProfile?.idCardNumber || '-' }}
               </div>
-            </div>
+            </div> -->
             
             <!-- National id card image -->
-            <label class="block text-purple-700 font-semibold mb-2">
+            <!-- <label class="block text-purple-700 font-semibold mb-2">
               National ID Card
             </label>
             <div class="grid grid-cols-2 gap-3">
@@ -164,7 +186,7 @@ onMounted(async () => {
                 alt="national id card" 
                 :class="'shadow-md'" 
               />
-            </div>
+            </div> -->
           </div>
 
           
@@ -173,7 +195,7 @@ onMounted(async () => {
         <div class="mt-8 flex justify-end">
           <router-link to="/profile/edit">
             <button 
-              class="bg-red-400 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-red-600 transition">
+              class="itbms-profile-button bg-red-400 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-red-600 transition">
               Edit
             </button>
           </router-link>

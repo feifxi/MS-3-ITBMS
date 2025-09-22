@@ -194,8 +194,9 @@ onMounted(async () => {
 
                 <form @submit.prevent="submit" class="space-y-4 md:space-y-6">
                     <BreadCrumb :links="[
-                        { to: '/profile', label: 'Profile' },
-                        { to: '#', label: 'Edit' }
+                    { to: '/', label: 'Home', class: 'itbms-home' },
+                    { to: '/profile', label: 'Profile' },
+                    { to: '#', label: 'Edit' }
                     ]" />
 
                     <!-- Nickname -->
@@ -211,6 +212,13 @@ onMounted(async () => {
                             :class="errors.nickname ? 'border-red-400 bg-red-50' : 'border-pink-200 bg-pink-50'"
                         >
                         <p v-if="errors.nickname" class="text-red-500 text-xs md:text-sm mt-1">{{ errors.nickname }}</p>
+                    </div>
+
+                    <!-- Read Fields -->
+                    <div>
+                        <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Email</label>
+                        <input :value="userProfile.email" readonly
+                            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                     </div>
 
                     <!-- Full Name -->
@@ -230,16 +238,16 @@ onMounted(async () => {
 
                     <!-- Read-only Fields -->
                     <div>
-                        <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Email</label>
-                        <input :value="userProfile.email" readonly
+                        <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Type</label>
+                        <input :value="userProfile.userType" readonly
                             class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                     </div>
 
-                    <div>
+                    <!-- <div>
                         <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Password</label>
                         <input type="password" value="••••••••" readonly
                             class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
-                    </div>
+                    </div> -->
 
                     <!-- Seller Fields -->
                     <template v-if="userProfile.userType === 'SELLER'">
@@ -261,12 +269,12 @@ onMounted(async () => {
                                 class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                         </div>
                         
-                        <div v-if="userProfile.idCardNumber">
+                        <!-- <div v-if="userProfile.idCardNumber">
                             <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">National ID</label>
                             <input :value="maskNumber(userProfile.idCardNumber)" readonly
                                 class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                         </div>
-                        
+                         -->
                         <!-- === ID PHOTO STATIC DISPLAY === -->
                         <!-- <div>
                             <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">National ID Photo</label>

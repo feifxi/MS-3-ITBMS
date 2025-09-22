@@ -208,7 +208,7 @@ onMounted(async () => {
                             v-model="userProfile.nickname"
                             @blur="validateField('nickname')"
                             maxlength="40"
-                            class="w-full p-3 border rounded-full shadow-inner focus:ring-2 focus:ring-rose-400 focus:outline-none text-sm md:text-base"
+                            class="itbms-nickname w-full p-3 border rounded-full shadow-inner focus:ring-2 focus:ring-rose-400 focus:outline-none text-sm md:text-base"
                             :class="errors.nickname ? 'border-red-400 bg-red-50' : 'border-pink-200 bg-pink-50'"
                         >
                         <p v-if="errors.nickname" class="text-red-500 text-xs md:text-sm mt-1">{{ errors.nickname }}</p>
@@ -218,7 +218,7 @@ onMounted(async () => {
                     <div>
                         <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Email</label>
                         <input :value="userProfile.email" readonly
-                            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
+                            class="itbms-email w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                     </div>
 
                     <!-- Full Name -->
@@ -230,7 +230,7 @@ onMounted(async () => {
                             v-model="userProfile.fullName"
                             @blur="validateField('fullName')"
                             maxlength="40"
-                            class="w-full p-3 border rounded-full shadow-inner focus:ring-2 focus:ring-blue-400 focus:outline-none text-sm md:text-base"
+                            class="itbms-fullname w-full p-3 border rounded-full shadow-inner focus:ring-2 focus:ring-blue-400 focus:outline-none text-sm md:text-base"
                             :class="errors.fullName ? 'border-red-400 bg-red-50' : 'border-purple-200 bg-purple-50'"
                         >
                         <p v-if="errors.fullName" class="text-red-500 text-xs md:text-sm mt-1">{{ errors.fullName }}</p>
@@ -240,7 +240,7 @@ onMounted(async () => {
                     <div>
                         <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Type</label>
                         <input :value="userProfile.userType" readonly
-                            class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
+                            class="itbms-type w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                     </div>
 
                     <!-- <div>
@@ -254,19 +254,19 @@ onMounted(async () => {
                         <div v-if="userProfile.phone">
                             <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Mobile</label>
                             <input :value="maskNumber(userProfile.phone)" readonly
-                                class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
+                                class="itbms-mobile w-full p-3 border border-purple-200 rounded-full bg-purple-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                         </div>
                         
                         <div v-if="userProfile.bankAccountNumber">
                             <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Bank Account</label>
                             <input :value="maskNumber(userProfile.bankAccountNumber)" readonly
-                                class="w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
+                                class="itbms-bankAccount w-full p-3 border border-pink-200 rounded-full bg-pink-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                         </div>
                         
                         <div v-if="userProfile.bankName">
                             <label class="block text-purple-700 font-semibold mb-2 text-sm md:text-base">Bank Name</label>
                             <input :value="userProfile.bankName" readonly
-                                class="w-full p-3 border border-purple-200 rounded-full bg-purple-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
+                                class="itbms-bankName w-full p-3 border border-purple-200 rounded-full bg-purple-50 text-gray-600 cursor-not-allowed opacity-70 text-sm md:text-base">
                         </div>
                         
                         <!-- <div v-if="userProfile.idCardNumber">
@@ -290,7 +290,7 @@ onMounted(async () => {
                             type="submit" 
                             :disabled="!canSave"
                             variant="primary"
-                            class-name="min-w-[140px] order-1 sm:order-1"
+                            class-name="itbms-save-button min-w-[140px] order-1 sm:order-1"
                         >
                             <Save class="w-4 h-4 md:w-5 md:h-5" />
                             {{ saveText }}
@@ -300,7 +300,7 @@ onMounted(async () => {
                             type="button" 
                             @click="router.push('/profile')"
                             variant="ghost"
-                            class-name="order-2 sm:order-2"
+                            class-name="itbms-cancel-button order-2 sm:order-2"
                         >
                             <X class="w-4 h-4 md:w-5 md:h-5 text-red-500" />
                             Cancel
@@ -319,5 +319,4 @@ onMounted(async () => {
             @confirm="confirmSave"
             @cancel="showConfirmModal = false" />
     </div>
-    
 </template>

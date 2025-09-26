@@ -91,10 +91,6 @@ public class UserController {
     @GetMapping("/{id}/orders")
     public ResponseEntity<List<OrderResponse>> getOrdersByBuyer(@PathVariable Integer id, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         userService.findById(id);
-
-        List<Order> orders = orderService.getOrdersByBuyer(id);
-        List<OrderResponse> orderListResponse = orders.stream().map(OrderController::mappedToDTO).toList();
-
-        return ResponseEntity.ok(orderListResponse);
+        return ResponseEntity.ok(orderService.getOrdersByBuyer(id));
     }
 }

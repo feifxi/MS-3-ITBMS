@@ -75,7 +75,7 @@ const confirmSignout = async () => {
   await authStore.logout()
   showConfirmSignoutDialog.value = false
   cartStore.clearCart()
-  router.push({ name: "login" })
+  router.push({ name: "SaleItemGallery" })
 }
 
 

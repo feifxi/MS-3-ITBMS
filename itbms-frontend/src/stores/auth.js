@@ -69,13 +69,13 @@ export const useAuthStore = defineStore('auth', () => {
       credentials: "include",
     })
 
-    if (!res.ok) throw new Error('Logout failed.')
+    if (!res.ok) throw new Error('Signout failed.')
     const data = await res.json()
 
     accessToken.value = null
     user.value = null
 
-    console.log('Logout success : ', data)
+    console.log('Signout success : ', data)
   }
 
   return {

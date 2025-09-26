@@ -26,17 +26,18 @@ defineProps({
 const auth = useAuthStore()
 const cartStore = useCartStore()
 const router = useRouter()
-const sttusMessageStore = useStatusMessageStore()
+const statusMessageStore = useStatusMessageStore()
 
 const addToCart = (saleItem) => {
   if (!auth.user) {
     return handleShowDialog()
   } 
   else if (auth.user.id === saleItem.sellerId) {
-    return sttusMessageStore.setStatusMessage("You cannot add your own item to cart.", false)
+    return statusMessageStore.setStatusMessage("You cannot add your own item to cart.", false)
   }
-  // console.log("Add:", saleItem)
   cartStore.addToCart(saleItem)
+  statusMessageStore.setStatusMessage("Add to cart success.")
+  // console.log("Add:", saleItem)
   // console.log("Cart items:", cartStore.items)
 }
 

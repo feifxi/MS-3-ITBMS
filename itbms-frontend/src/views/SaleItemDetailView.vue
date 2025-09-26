@@ -12,6 +12,8 @@ import DeleteConfirmModal from '@/components/ConfirmModal.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 import placeHolder from '@/assets/placeholder.svg' 
 import { useAuthStore } from '@/stores/auth';
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import { useCartStore } from '@/stores/cart';
 
 const BASE_API = import.meta.env.VITE_BASE_API
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
@@ -19,15 +21,14 @@ const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const statusMessageStore = useStatusMessageStore()
+const cartStore = useCartStore()
 
 const item = ref(null)
 const isLoading = ref(true)
 const isNotFound = ref(false)
-const isDeleting = ref(false)
-const showConfirmDialog = ref(false)
-const statusMessageStore = useStatusMessageStore()
-
 const selectedImageIndex = ref(0)
+const numberAddedToCart = ref(1)
 
 const fetchItem = async () => {
   isLoading.value = true
@@ -37,6 +38,7 @@ const fetchItem = async () => {
     if (!res.ok) throw new Error("Item not found")
     
     item.value = await res.json()
+    // console.log(item.value)
   } catch (err) {
     console.log(err)
     isNotFound.value = true
@@ -50,29 +52,43 @@ const goBack = () => {
   router.push('/sale-items')
 }
 
-const confirmDelete = async () => {
-  const id = route.params.id
-  
-  try {
-    isDeleting.value = true
-    const res = await deleteSaleItem(id, auth)
-    if (!res.ok) throw new Error('Deletion failed')
-
-    statusMessageStore.setStatusMessage('The sale item has been deleted.', true)
-    router.push('/sale-items')
-  } catch (err) {
-    console.error(err)
-    statusMessageStore.setStatusMessage(`The requested sale item does not exist.`, false)
-    router.push('/sale-items')
-  } finally {
-    isDeleting.value = false
-    showConfirmDialog.value = false
-  }
-}
-
 const handleChangeSelectedImage = (index) => {
-    selectedImageIndex.value = index
+  selectedImageIndex.value = index
 }
+
+const increaseNumberToCart = () => {
+  if (numberAddedToCart.value + 1 > item.value.quantity) return
+  numberAddedToCart.value = numberAddedToCart.value + 1
+}
+
+const decreaseNumberToCart = () => {
+  if (numberAddedToCart.value - 1 < 1) return
+  numberAddedToCart.value = numberAddedToCart.value - 1
+}
+
+const addToCart = () => {
+  const cartSaleItem = { ...item.value } 
+  if (!auth.user) {
+    return handleShowDialog()
+  } 
+  else if (auth.user.id === cartSaleItem.sellerId) {
+    return statusMessageStore.setStatusMessage("You cannot add your own item to cart.", false)
+  }
+  cartStore.addToCart(cartSaleItem, numberAddedToCart.value)
+  statusMessageStore.setStatusMessage("Add to cart success.")
+  // console.log("Add:", cartSaleItem)
+  // console.log("Cart items:", cartStore.items)
+}
+
+const showLoginSuggestDialog = ref(false);
+
+const handleShowDialog = () => {
+  showLoginSuggestDialog.value = true;
+};
+
+const handleCloseDialog = () => {
+  showLoginSuggestDialog.value = false;
+};
 
 onMounted(async () => {
   await fetchItem()
@@ -81,15 +97,6 @@ onMounted(async () => {
 
 <template>
   <div>
-    <!-- Delete Confirmation Modal -->
-    <DeleteConfirmModal
-      v-if="showConfirmDialog"
-      :title="'Delete Confirmation'"                
-      :message="'Do you want to delete this sale item?'"
-      :button-label="'Delete'"
-      @confirm="confirmDelete"
-      @cancel="showConfirmDialog = false"
-    />
     <main class="px-4 sm:px-16 py-8">
       <BreadCrumb v-if="item" :links="[
         { to: { name: 'SaleItemGallery'}, label: 'Sale Items' },
@@ -187,23 +194,35 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <!-- <div class="flex gap-3 items-center mt-10">
-                <RouterLink :to="`/sale-items/${item.id}/edit`" class="itbms-edit-button">
-                  <Button variant="secondary">Edit</Button>
-                </RouterLink>
-
-                <Button
-                  variant="destructive"
-                  @click="showConfirmDialog = true"
-                  :disabled="isDeleting"
-                  class="itbms-delete-button">
-                  {{ isDeleting ? 'Loading...' : 'Delete' }}
+              <div class="flex gap-3 items-center mt-10">
+                <div class="flex gap-3 items-center">
+                  <Button @click="decreaseNumberToCart" variant="secondary" class-name="!size-13 !text-xl">
+                    - 
+                  </Button>
+                  <span class="text-xl px-3">
+                    {{ numberAddedToCart }}
+                  </span>
+                  <Button @click="increaseNumberToCart" variant="secondary" class-name="!size-13 !text-xl">
+                    +
+                  </Button>
+                </div>
+                <Button @click="addToCart" variant="primary">
+                  Add to Cart
                 </Button>
-              </div> -->
+              </div> 
             </div>
           </section>
         </div>
       </div>
     </main>
   </div>
+
+  <ConfirmModal
+      v-if="showLoginSuggestDialog"
+      :title="'Login require'"
+      :message="`Login is require before added item to cart`"
+      :button-label="'Sign in'"
+      @confirm="goToSignin"
+      @cancel="handleCloseDialog"
+    />
 </template>

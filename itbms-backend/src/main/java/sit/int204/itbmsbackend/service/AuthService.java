@@ -18,9 +18,11 @@ import sit.int204.itbmsbackend.constant.UserRole;
 import sit.int204.itbmsbackend.constant.UserStatus;
 import sit.int204.itbmsbackend.constant.UserType;
 import sit.int204.itbmsbackend.dto.auth.*;
+import sit.int204.itbmsbackend.entity.Address;
 import sit.int204.itbmsbackend.entity.RefreshToken;
 import sit.int204.itbmsbackend.entity.Role;
 import sit.int204.itbmsbackend.entity.User;
+import sit.int204.itbmsbackend.repository.AddressRepository;
 import sit.int204.itbmsbackend.util.JwtUtils;
 import sit.int204.itbmsbackend.repository.RoleRepository;
 import sit.int204.itbmsbackend.repository.UserRepository;
@@ -39,6 +41,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final AddressRepository addressRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
@@ -59,6 +62,7 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public User registerUser(RegisterRequest request) throws MessagingException, UnsupportedEncodingException {
         User existUser = userRepository.findOneByEmail(request.getEmail()).orElse(null);
         if (existUser != null) {
@@ -117,6 +121,17 @@ public class AuthService {
 
         // Save user to db
         User newUser = userRepository.save(user);
+
+        // Assign user address
+        Address address = new Address();
+        address.setUser(newUser);
+        address.setAddressLine(user.getFullName() + " Home BangMod");
+        address.setCity("Bangkok");
+        address.setCountry("Thailand");
+        address.setPhone("099-999-999");
+        address.setPostalCode("11100");
+        address.setFullName(newUser.getFullName());
+        addressRepository.save(address);
 
         // Send email verification
         emailService.sendVerificationEmail(user.getEmail(), verifiedToken);

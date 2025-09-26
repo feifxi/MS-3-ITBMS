@@ -11,7 +11,6 @@ import sit.int204.itbmsbackend.dto.chatbot.ChatbotResponseDTO;
 @RestController
 @RequestMapping("/v2/chatbot")
 public class ChatbotController {
-
     private final ChatClient openAiChatClient;
     private final ChatClient ollamaChatClient;
 

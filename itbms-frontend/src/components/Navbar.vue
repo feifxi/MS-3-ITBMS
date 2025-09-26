@@ -5,10 +5,12 @@ import { RouterLink, useRouter , useRoute } from 'vue-router'
 import Button from './Button.vue';
 import { ref, watch } from 'vue';
 import ConfirmModal from './ConfirmModal.vue';
+import { useCartStore } from '@/stores/cart';
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 
 // Search Bar
 const searchKeyword = ref('') 
@@ -72,14 +74,10 @@ const handleCloseSignoutDialog = () => {
 const confirmSignout = async () => {
   await authStore.logout()
   showConfirmSignoutDialog.value = false
+  cartStore.clearCart()
   router.push({ name: "login" })
 }
 
-
-// Cart
-const handleClickCart = () => {
-  console.log("Open Cart")
-}
 
 </script>
 
@@ -121,10 +119,10 @@ const handleClickCart = () => {
 
           <!-- Cart -->
           <RouterLink :to="{ name: 'cart' }" class="itbms-shopnow">
-            <button class="relative cursor-pointer" @click="handleClickCart">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-              <span class="absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                3
+            <button class="relative cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+              <span v-if="cartStore.items.length > 0" class="cursor-pointer absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {{ cartStore.totalItems }}
               </span>
             </button>
           </RouterLink>
@@ -132,12 +130,16 @@ const handleClickCart = () => {
           <div class="flex gap-4">
             <!-- user profile -->
             <div v-if="authStore.user && authStore.accessToken" class="flex items-center gap-5">
+              <RouterLink :to="{ name: 'order' }" >
+                <button class="cursor-pointer bg-white text-rose-600 px-6 py-2 rounded-full font-medium hover:bg-opacity-90 transition-all transform hover:scale-105">
+                  Orders
+                </button>
+              </RouterLink>
               <RouterLink v-if="authStore.user.userType === 'SELLER'" :to="{ name: 'SaleItemList' }" class="itbms-shopnow">
                 <button class="cursor-pointer bg-white text-rose-600 px-6 py-2 rounded-full font-medium hover:bg-opacity-90 transition-all transform hover:scale-105">
                   Management
                 </button>
               </RouterLink>
-
               <RouterLink :to="{name: 'userProfile'}">
                 <button class="cursor-pointer w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>

@@ -13,6 +13,7 @@ import lombok.Data;
 import sit.int204.itbmsbackend.dto.saleItemImage.SaleItemImageDTO;
 import sit.int204.itbmsbackend.entity.Brand;
 import sit.int204.itbmsbackend.entity.SaleItemImage;
+import sit.int204.itbmsbackend.entity.User;
 
 @Data
 public class SaleItemResponseDTO {
@@ -30,9 +31,15 @@ public class SaleItemResponseDTO {
     private Instant createdOn;
     private Instant updatedOn;
     private List<SaleItemImage> saleItemImages = new ArrayList<>();
+    @JsonIgnore
+    private User seller;
 
     public String getBrandName() {
         return brand.getName();
+    }
+
+    public Integer getSellerId() {
+        return this.seller.getId();
     }
 
     public List<SaleItemImageDTO> getSaleItemImages() {

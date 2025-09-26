@@ -20,21 +20,12 @@ const loadUserProfile = async () => {
   try {
     isLoading.value = true
     const res = await fetchUserProfile(auth)
+    if (!res.ok) {
+      throw new Error('Failed to fetch user profile')
+    }
     const profile = await res.json()
+    // console.log(profile) // print user profile
     userProfile.value = profile
-    
-    console.log(profile) // print user profile
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const updateProfile = async () => {
-  try {
-    isLoading.value = true
-    const res = await updateUserProfile(userProfile, auth)
-    const result = await res.json()
-    console.log(result)
   } catch (error) {
     console.log(error)
   }

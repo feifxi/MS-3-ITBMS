@@ -17,6 +17,7 @@ import UserProfile from '@/views/UserProfile.vue'
 import { refreshAccessToken } from '@/api'
 import CartView from '@/views/CartView.vue'
 import UpdateUserProfile from '@/views/UpdateUserProfile.vue'
+import OrderView from '@/views/OrderView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -109,6 +110,12 @@ const router = createRouter({
       path: '/profile/edit',
       name: 'updatUserProfile',
       component: UpdateUserProfile,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/orders',
+      name: 'order',
+      component: OrderView,
       meta: { requiresAuth: true },
     },
   ],

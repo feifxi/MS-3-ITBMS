@@ -85,7 +85,6 @@ const loadData = async () => {
         isLoading.value = true
         const res = await fetchUserProfile(auth)
         if (!res.ok) throw new Error('Failed to load')
-        
         const data = await res.json()
         userProfile.value = data
         originalData = JSON.stringify(data)
@@ -194,7 +193,6 @@ onMounted(async () => {
 
                 <form @submit.prevent="submit" class="space-y-4 md:space-y-6">
                     <BreadCrumb :links="[
-                    { to: '/', label: 'Home', class: 'itbms-home' },
                     { to: '/profile', label: 'Profile' },
                     { to: '#', label: 'Edit' }
                     ]" />

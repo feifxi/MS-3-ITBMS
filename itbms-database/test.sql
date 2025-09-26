@@ -1,18 +1,21 @@
 -- example of create view
 USE ms3_itbms_db;
 
--- Sale item
-SELECT * FROM sale_items s JOIN users u ON u.id = s.seller_id;
-SELECT * FROM sale_item_images;
-
--- User
 SELECT * FROM roles;
 SELECT * FROM users;
-SELECT * FROM seller_profiles;
-SELECT * FROM buyer_profiles;
+SELECT * FROM addresses;
 SELECT * FROM user_roles;
--- Auth
 SELECT * FROM refresh_tokens;
+
+SELECT * FROM sale_items;
+SELECT * FROM sale_item_images;
+SELECT * FROM brands;
+
+SELECT * FROM orders;
+SELECT * FROM order_items;
+SELECT * FROM payments;
+
+
 -- Email Verified Exipires user
 SELECT * FROM users u WHERE u.verification_token_expiry < NOW();
 
@@ -34,6 +37,9 @@ INSERT INTO user_roles VALUES (8,1);
 DELETE FROM refresh_tokens;
 
 SET SQL_SAFE_UPDATES = 0;
+
+-- add sale item quantity
+UPDATE sale_items SET quantity = 5;
 
 -- Migration
 SELECT * FROM DATABASECHANGELOG;

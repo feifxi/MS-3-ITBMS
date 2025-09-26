@@ -181,6 +181,21 @@ export const askChatbot = async (message, authStore) => {
   }, authStore);
 }
 
+export const createOrderItems = async (orderItems, authStore) => {
+  return await fetchWithAuth(`/v2/orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderItems),
+  }, authStore);
+}
+
+export const getOrderItems = async (authStore) => {
+  return await fetchWithAuth(`/v2/users/${authStore.user.id}/orders`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }, authStore);
+}
+
 // ==================   Fetch with Auth  ===========================
 
 export async function fetchWithAuth(url, options = {}, authStore) {

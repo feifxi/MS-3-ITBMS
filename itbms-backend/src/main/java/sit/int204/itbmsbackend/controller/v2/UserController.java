@@ -12,18 +12,23 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.config.FileStorageProperties;
 import sit.int204.itbmsbackend.dto.common.ApiResponse;
+import sit.int204.itbmsbackend.dto.order.OrderItemResponse;
+import sit.int204.itbmsbackend.dto.order.OrderResponse;
 import sit.int204.itbmsbackend.dto.user.UpdateUserRequest;
 import sit.int204.itbmsbackend.dto.user.UserProfileResponse;
+import sit.int204.itbmsbackend.entity.Order;
 import sit.int204.itbmsbackend.entity.SaleItemImage;
 import sit.int204.itbmsbackend.entity.User;
 import sit.int204.itbmsbackend.security.UserPrincipal;
 import sit.int204.itbmsbackend.service.ImageStorageService;
+import sit.int204.itbmsbackend.service.OrderService;
 import sit.int204.itbmsbackend.service.UserService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v2/users")
@@ -31,6 +36,7 @@ import java.nio.file.Paths;
 public class UserController {
     private final UserService userService;
     private final ImageStorageService imageService;
+    private final OrderService orderService;
     private final FileStorageProperties properties;
 
     @GetMapping("/{id}")
@@ -79,5 +85,16 @@ public class UserController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .body(resourceFile);
+    }
+
+    // Get all orders by buyer
+    @GetMapping("/{id}/orders")
+    public ResponseEntity<List<OrderResponse>> getOrdersByBuyer(@PathVariable Integer id, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        userService.findById(id);
+
+        List<Order> orders = orderService.getOrdersByBuyer(id);
+        List<OrderResponse> orderListResponse = orders.stream().map(OrderController::mappedToDTO).toList();
+
+        return ResponseEntity.ok(orderListResponse);
     }
 }

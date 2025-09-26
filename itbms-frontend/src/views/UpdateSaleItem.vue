@@ -115,9 +115,16 @@ const fetchSaleItem = async () => {
     isLoading.value = true
     const res = await fetchSaleItemById(id)
     if (!res.ok) {
-        return router.push('/sale-items/' + id)
+        router.push({ name: "SaleItemList" })
+        return 
     }
     const saleItemData = await res.json()
+    if (saleItemData.sellerId !== auth.user.id) {
+        statusMessageStore.setStatusMessage("You are not authorized to edit this item.", false)
+        router.push({ name: "SaleItemList" })
+        return 
+    }
+    // console.log(saleItemData)
     saleItem.value = saleItemData
     saleItem.value.brand = { ...brands.value.find((brand)=> brand.name === saleItem.value.brandName) }
     delete saleItem.value.brandName

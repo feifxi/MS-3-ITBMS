@@ -1,5 +1,6 @@
 package sit.int204.itbmsbackend.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import sit.int204.itbmsbackend.constant.UserStatus;
 import sit.int204.itbmsbackend.constant.UserType;
@@ -27,6 +28,7 @@ public class UserProfileResponse {
     private UserStatus status;
     private LocalDateTime createdOn;
     private LocalDateTime updatedOn;
+    @JsonIgnore
     private Set<Address> addresses = new LinkedHashSet<>();
     private Set<String> roles = new LinkedHashSet<>();
 }

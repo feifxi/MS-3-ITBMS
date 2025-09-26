@@ -1,8 +1,13 @@
 <script setup>
 import { formatNumber } from "../libs/utils.js";
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { Heart, Plus } from "lucide-vue-next";
 import placeHolder from '@/assets/placeholder.svg' 
+import { useAuthStore } from "@/stores/auth.js";
+import ConfirmModal from "./ConfirmModal.vue";
+import { ref } from "vue";
+import { useCartStore } from "@/stores/cart.js";
+import { useStatusMessageStore } from "@/stores/statusMessage.js";
 
 const BASE_API = import.meta.env.VITE_BASE_API
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/"
@@ -17,13 +22,46 @@ defineProps({
       required: false
     }
 })
+
+const auth = useAuthStore()
+const cartStore = useCartStore()
+const router = useRouter()
+const sttusMessageStore = useStatusMessageStore()
+
+const addToCart = (saleItem) => {
+  if (!auth.user) {
+    return handleShowDialog()
+  } 
+  else if (auth.user.id === saleItem.sellerId) {
+    return sttusMessageStore.setStatusMessage("You cannot add your own item to cart.", false)
+  }
+  // console.log("Add:", saleItem)
+  cartStore.addToCart(saleItem)
+  // console.log("Cart items:", cartStore.items)
+}
+
+const showLoginSuggestDialog = ref(false);
+
+const handleShowDialog = () => {
+  showLoginSuggestDialog.value = true;
+};
+
+const handleCloseDialog = () => {
+  showLoginSuggestDialog.value = false;
+};
+
+const goToSignin = async () => {
+  handleCloseDialog();
+  router.push({ name: "login" });
+};
+
 </script>
     
 <template>
     <RouterLink :to="query 
       ? `/sale-items/${item.id}?${query}` 
       : `/sale-items/${item.id}`" 
-      class="itbms-row"
+      class="itbms-row relative"
     >
         <div class="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all    transform hover:-translate-y-1">
           <div class="relative">
@@ -32,7 +70,7 @@ defineProps({
               :alt="item.model" 
               class="w-full h-48 object-cover p-4" 
             />
-            <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white transition-colors">
+            <button class="cursor-pointer absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-rose-500 hover:bg-rose-500 hover:text-white transition-colors">
               <Heart class="size-4" />
             </button>
           </div>
@@ -58,12 +96,23 @@ defineProps({
                     <span class="itbms-price-unit text-rose-600 text-lg">Baht</span>
                 </span>
               </div>
-
-              <button class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors">
+              <button 
+                @click.stop.prevent="addToCart({...item})" 
+                class="cursor-pointer w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors"
+              >
                 <Plus class="size-4" />
               </button>
             </div>
           </div>
         </div>
     </RouterLink>
+
+    <ConfirmModal
+      v-if="showLoginSuggestDialog"
+      :title="'Login require'"
+      :message="`Login is require before added item to cart`"
+      :button-label="'Sign in'"
+      @confirm="goToSignin"
+      @cancel="handleCloseDialog"
+    />
 </template>

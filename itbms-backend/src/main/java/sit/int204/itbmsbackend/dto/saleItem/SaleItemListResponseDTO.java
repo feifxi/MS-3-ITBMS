@@ -12,6 +12,7 @@ import lombok.Data;
 import sit.int204.itbmsbackend.dto.saleItemImage.SaleItemImageDTO;
 import sit.int204.itbmsbackend.entity.Brand;
 import sit.int204.itbmsbackend.entity.SaleItemImage;
+import sit.int204.itbmsbackend.entity.User;
 
 @Data
 public class SaleItemListResponseDTO {
@@ -21,9 +22,16 @@ public class SaleItemListResponseDTO {
     private Integer ramGb;
     private Integer storageGb;
     private String color;
+    private Integer quantity;
     @JsonIgnore
     private Brand brand;
     private List<SaleItemImage> saleItemImages = new ArrayList<>();
+    @JsonIgnore
+    private User seller;
+
+    public Integer getSellerId() {
+        return this.seller.getId();
+    }
 
     public List<SaleItemImageDTO> getSaleItemImages() {
         return saleItemImages.stream()

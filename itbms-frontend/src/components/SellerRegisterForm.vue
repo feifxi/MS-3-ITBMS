@@ -170,9 +170,14 @@ const submitForm = async (e) => {
     if (res.ok) {
       statusMessageStore.setStatusMessage("The user account has been successfully registered.");
       router.push({ name: "login" });
-    } else if (res.status === 400) {
+    } 
+    else if (res.status === 409) {
+      statusMessageStore.setStatusMessage("User with this email already exists.", false);
+    } 
+    else if (res.status === 400) {
       statusMessageStore.setStatusMessage(result.message, false);
-    } else {
+    } 
+    else {
       throw new Error("Something went wrong");
     }
   } catch (err) {

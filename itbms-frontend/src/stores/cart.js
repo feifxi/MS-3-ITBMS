@@ -1,6 +1,7 @@
 // stores/cart.js
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
+import { useStatusMessageStore } from './statusMessage'
 
 export const useCartStore = defineStore('cart', () => {
     // Initialize from localStorage or empty array
@@ -12,12 +13,14 @@ export const useCartStore = defineStore('cart', () => {
     }, { deep: true })
 
     function addToCart(saleItem, quantity = 1) {
+        const statusMessageStore = useStatusMessageStore();
         const existing = items.value.find(i => i.id === saleItem.id)
         if (existing) {
             existing.quantity += quantity
         } else {
-            items.value.push({ ...saleItem, quantity })
+            items.value.push({ ...saleItem, availableQuantity: saleItem.quantity, quantity })
         }
+        // console.log(items.value)
     }
 
     function removeFromCart(saleItemId) {

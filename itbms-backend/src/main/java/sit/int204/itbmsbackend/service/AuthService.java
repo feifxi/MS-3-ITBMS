@@ -72,7 +72,7 @@ public class AuthService {
             ) {
                 userRepository.delete(existUser);   // remove expires verify-token user
             } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already in use!");
             }
         }
 

@@ -7,14 +7,17 @@ import {onMounted, ref } from 'vue';
 import { fetchWithAuth, refreshAccessToken } from './api';
 import Chatbot from './components/Chatbot.vue';
 import TicTacToeBot from './components/TicTacToeBot.vue';
+import { useCartStore } from './stores/cart';
 
 const router = useRouter()
 const auth = useAuthStore()
+const cartStore = useCartStore()
+
 const isLoading = ref(false)
 
 const loadProfile = async () => {
-  isLoading.value = true
   try {
+    isLoading.value = true
     // fetch access token
     await refreshAccessToken(auth)
 
@@ -36,6 +39,7 @@ const loadProfile = async () => {
 
     // console.log("Logged in as:", profile);
   } catch (err) {
+    cartStore.clearCart()
     console.error("Auth error:", err.message);
   } finally {
     isLoading.value = false

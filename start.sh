@@ -1,9 +1,11 @@
 #!/bin/bash
-docker compose build --no-cache --pull \
-&& docker compose up -d --remove-orphans
+set -e
 
-# wait a few seconds for container to start
+docker compose build --no-cache --pull
+docker compose up -d --remove-orphans
+
+# wait for Ollama container to start
 sleep 5
 
-docker exec itbms-ollama ollama pull llama3 \
-&& docker image prune -f
+docker exec itbms-ollama ollama pull llama3
+docker image prune -f

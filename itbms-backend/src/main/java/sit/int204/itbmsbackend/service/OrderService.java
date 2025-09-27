@@ -22,8 +22,6 @@ public class OrderService {
     private final SaleItemRepository saleItemRepository;
     private final UserRepository userRepository;
 
-
-
     @Transactional
     public List<OrderResponse> createOrder(Integer buyerId, List<CreateOrderRequest> orderRequests) {
         List<OrderResponse> resultOrders = new LinkedList<>();

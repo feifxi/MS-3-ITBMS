@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-docker compose build --no-cache --pull
-docker compose up -d --remove-orphans
+docker compose up -d --build --remove-orphans
 
 # wait for Ollama container to start
 sleep 5

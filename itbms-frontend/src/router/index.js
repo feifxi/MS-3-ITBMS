@@ -18,6 +18,7 @@ import { refreshAccessToken } from '@/api'
 import CartView from '@/views/CartView.vue'
 import UpdateUserProfile from '@/views/UpdateUserProfile.vue'
 import OrderView from '@/views/OrderView.vue'
+import OrderDetailView from '@/views/OrderDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -116,6 +117,12 @@ const router = createRouter({
       path: '/orders',
       name: 'order',
       component: OrderView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/orders/:id',
+      name: 'orderDetail',
+      component: OrderDetailView,
       meta: { requiresAuth: true },
     },
   ],

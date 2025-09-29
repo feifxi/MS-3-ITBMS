@@ -196,6 +196,13 @@ export const getOrderItems = async (authStore) => {
   }, authStore);
 }
 
+export const getOrderItemsById = async (orderId, authStore) => {
+  return await fetchWithAuth(`/v2/orders/${orderId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }, authStore);
+}
+
 // ==================   Fetch with Auth  ===========================
 
 export async function fetchWithAuth(url, options = {}, authStore) {

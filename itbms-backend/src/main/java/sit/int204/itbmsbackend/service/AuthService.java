@@ -240,7 +240,7 @@ public class AuthService {
                 imageStorageService.deleteImage(user.getIdCardImageFront());
                 imageStorageService.deleteImage(user.getIdCardImageBack());
             }
-            userRepository.delete(user);
         }
+        userRepository.deleteNonVerifiedUsers(LocalDateTime.now());
     }
 }

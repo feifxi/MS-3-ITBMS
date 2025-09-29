@@ -1,5 +1,5 @@
 <script setup>
-import { useRouter } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { useAuthStore } from "@/stores/auth";
 import { onMounted, ref } from "vue";
@@ -51,7 +51,9 @@ onMounted(async () => {
         <div v-else>
           <ul class="space-y-4">
             <li v-for="order in orders" :key="order.id" class="border p-3 rounded-lg" >
-              <h2 class="text-xl font-semibold mb-2">Order #{{ order.orderId }} - {{ order.orderStatus }}</h2>
+              <RouterLink :to="{ name: 'orderDetail', params: { id: order.orderId } }" class="text-xl font-semibold text-blue-600 hover:underline">
+                Order #{{ order.orderId }} - {{ order.orderStatus }}
+              </RouterLink>
               <p class="mb-2">Order Date: {{ new Date(order.orderDate).toLocaleString() }}</p>
               <p class="mb-2">Shipping Address: {{ order.shippingAddress }}</p>
               <p class="mb-2">Order Note: {{ order.orderNote }}</p>

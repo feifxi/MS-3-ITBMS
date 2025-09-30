@@ -108,6 +108,8 @@ public class OrderService {
             OrderItemResponse itemResponse = new OrderItemResponse();
             itemResponse.setSaleItemId(item.getSaleItem().getId());
             itemResponse.setSaleItemName(item.getSaleItem().getModel());
+            SaleItemImage firstImage = item.getSaleItem().getSaleItemImages().stream().findFirst().orElse(null);
+            itemResponse.setSaleItemImage(firstImage.getImageName());
             itemResponse.setQuantity(item.getQuantity());
             return itemResponse;
         }).toList();

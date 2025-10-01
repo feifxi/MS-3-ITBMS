@@ -550,10 +550,11 @@ watch(() => route.query.search, (newSearch) => {
       </div>
     </div>
 
-    <!-- Loading -->
-    <section v-if="loading" class="text-center text-blue-500 animate-pulse text-3xl font-bold">
-      Loading...
-    </section>
+    <!-- Loading State -->
+      <div v-if="loading" class="text-center py-16">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mb-4"></div>
+        <p class="text-gray-600 text-lg">Loading your orders...</p>
+      </div>
 
     <!-- No SaleItems -->
     <section v-else-if="saleitems.length === 0" class="text-center text-3xl text-gray-500 mt-10 font-bold">

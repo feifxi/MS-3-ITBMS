@@ -133,13 +133,6 @@ onMounted(async () => {
                   {{ new Date(order.orderDate).toLocaleString() }}
                 </p>
                 
-                <!-- <div class="flex items-center justify-center sm:justify-start gap-2 text-sm text-purple-600 font-medium">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                  </svg>
-                  <span>{{ order.orderItems?.length || 0 }} {{ order.orderItems?.length === 1 ? 'item' : 'items' }}</span>
-                </div>
-              -->
               <div class="flex flex-col gap-2 text-sm text-purple-600 font-medium">
                 <div v-for="item in order.orderItems" :key="item.id" class="flex items-center justify-between">
                   <div>
@@ -164,41 +157,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-<!-- <template>
-  <div class="px-16 py-8">
-    <div class="bg-white px-16 py-8 rounded-xl shadow">
-        <h1 class=" text-3xl font-bold">Orders</h1>
-        <div v-if="isLoading">Loading...</div>
-        <div v-else-if="!orders || orders.length === 0">No Orders</div>
-        <div v-else>
-          <ul class="space-y-4">
-            <li v-for="order in orders" :key="order.id" class="border p-3 rounded-lg" >
-              <RouterLink :to="{ name: 'orderDetail', params: { id: order.orderId } }" class="text-xl font-semibold text-blue-600 hover:underline">
-                Order #{{ order.orderId }} - {{ order.orderStatus }}
-              </RouterLink>
-              <p class="mb-2">Order Date: {{ new Date(order.orderDate).toLocaleString() }}</p>
-              <p class="mb-2">Shipping Address: {{ order.shippingAddress }}</p>
-              <p class="mb-2">Order Note: {{ order.orderNote }}</p>
-              <h3 class="font-semibold mt-4 mb-2">Items:</h3>
-              <ul class="flex gap-3">
-                <li v-for="item in order.orderItems" :key="item.id" class="mb-2 border rounded-lg p-2 w-60">
-                  <div class="flex items-center">
-                    <img 
-                      :src="placeHolderImage" 
-                      alt="Item Image" 
-                      class="w-16 h-16 object-cover mr-4" />
-                    <div>
-                      <p class="font-semibold">{{ item.saleItemName }}</p>
-                      <p>Quantity: {{ item.quantity }}</p>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-                <p class="mb-2">Total: ฿{{ order.totalAmount.toFixed(2) }}</p>
-            </li>
-          </ul>
-        </div>
-    </div>
-  </div>
-</template> -->

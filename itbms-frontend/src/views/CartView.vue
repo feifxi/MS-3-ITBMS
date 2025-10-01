@@ -81,20 +81,19 @@ onMounted(async () => {
   <!-- Update my cart UI  -->
   <div class="px-16 py-8">
     <div class="bg-white px-16 py-8 rounded-xl shadow">
-        <h1 class=" text-5xl font-bold text-purple-500 text-center">Cart</h1><br>
-        <div v-if="isLoading">Loading...</div>
-        <div v-else-if="!cartStore.items || cartStore.items.length === 0">No items in cart</div>
+         <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 mb-6 border-4 border-pink-100 backdrop-blur-md">
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-rose-500 text-center tracking-widest drop-shadow-sm">
+            🛍️ Shopping Cart
+          </h1>
+        </div>
+        <div v-if="isLoading" class="text-purple-400">
+          Loading...
+        </div>
+        <div v-else-if="!cartStore.items || cartStore.items.length === 0" class="text-center text-purple-400 font-bold text-3xl">
+          No items in cart
+        </div>
         <div v-else>
-        
-          <!-- DO UI HERE ... ทำตรงนี้นะ -->   
           <div class="max-w-4xl mx-auto">
-          <!-- Header -->
-            <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 mb-6 border-4 border-pink-100 backdrop-blur-md">
-              <h1 class="text-3xl sm:text-4xl font-extrabold text-rose-500 text-center tracking-widest drop-shadow-sm">
-                🛍️ Shopping Cart
-              </h1>
-            </div>
-
           <!-- Cart Items -->
           <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 border-4 border-pink-100 backdrop-blur-md">
             <ul class="space-y-4">
@@ -128,7 +127,7 @@ onMounted(async () => {
             <div class="flex items-center gap-3">
               <button
                 @click="decreaseQuantity(item)"
-                class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-rose-500 hover:to-pink-500 transition-all duration-300 hover:scale-110"
+                class="cursor-pointer w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-rose-500 hover:to-pink-500 transition-all duration-300 hover:scale-110"
               >
                 -
               </button>
@@ -137,7 +136,7 @@ onMounted(async () => {
               </div>
               <button
                 @click="increaseQuantity({...item})"
-                class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-400 to-rose-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-purple-500 hover:to-rose-500 transition-all duration-300 hover:scale-110"
+                class="cursor-pointer w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-400 to-rose-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-purple-500 hover:to-rose-500 transition-all duration-300 hover:scale-110"
               >
                 +
               </button>
@@ -161,7 +160,7 @@ onMounted(async () => {
             <!-- Place Order Button -->
                   <button 
                   @click="handlePlaceOrder" 
-                  class="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white px-8 py-4 rounded-full text-xl sm:text-2xl font-bold shadow-2xl hover:from-purple-400 hover:to-purple-500 transition-all duration-300 hover:scale-105 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] mt-4"
+                  class="cursor-pointer w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white px-8 py-4 rounded-full text-xl sm:text-2xl font-bold shadow-2xl hover:from-purple-400 hover:to-purple-500 transition-all duration-300 hover:scale-105 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] mt-4"
                   >
                   🎉 Place Order Now
                 </button>

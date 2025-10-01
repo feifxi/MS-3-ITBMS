@@ -118,7 +118,6 @@ onMounted(async () => {
             </div>
           </div>
 
-          <!-- Order Items -->
 <!-- Order Items -->
 <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-purple-100 lg:row-span-2">
   <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b-2 border-purple-100">
@@ -135,13 +134,13 @@ onMounted(async () => {
   <div class="p-6 max-h-[550px] overflow-y-auto">
     <ul class="grid grid-cols-1 gap-4">
       <li
-        v-for="item in order.orderItems"
-        :key="item.id"
+        v-for="(item, index) in order.orderItems"
+        :key="index"
         class="bg-gradient-to-br from-purple-50/50 to-pink-50/50 border-2 border-purple-100 rounded-xl p-4 hover:shadow-2xl hover:scale-105 transition-all duration-300 hover:border-purple-300"
       >
         <div class="flex items-center gap-4">
           <img
-            :src="item.saleItemImage || placeHolderImage"
+            :src="item.saleItemImage ? `${IMAGE_ENDPOINT}${item.saleItemImage}` : placeHolderImage"
             alt="Item Image"
             class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border-2 border-purple-200 shadow-md flex-shrink-0"
           />
@@ -152,7 +151,7 @@ onMounted(async () => {
             <div
               class="inline-block px-4 py-1.5 bg-white border-2 border-purple-200 rounded-lg font-bold text-gray-700 shadow-sm"
             >
-              Quantity: {{ item.quantity }}
+              Quantity: {{ item.quantity}}
             </div>
           </div>
         </div>
@@ -224,45 +223,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
- <!-- <template>
-  <div class="px-16 py-8">
-    <div class="bg-white px-16 py-8 rounded-xl shadow">
-      <h1 class="text-3xl font-bold">Order #{{ orderId }}</h1>
-      <div v-if="isLoading">
-        Loading...
-      </div>
-      <div v-else class="border p-3 rounded-lg">
-        <h2 class="text-xl font-semibold mb-2">
-          Status : {{ order.orderStatus }}
-        </h2>
-        <p class="mb-2">
-          Order Date: {{ new Date(order.orderDate).toLocaleString() }}
-        </p>
-        <p class="mb-2">Shipping Address: {{ order.shippingAddress }}</p>
-        <p class="mb-2">Order Note: {{ order.orderNote }}</p>
-        <h3 class="font-semibold mt-4 mb-2">Items:</h3>
-        <ul class="flex gap-3">
-          <li
-            v-for="item in order.orderItems"
-            :key="item.id"
-            class="mb-2 border rounded-lg p-2 w-60"
-          >
-            <div class="flex items-center">
-              <img
-                :src="order.saleItemImage || placeHolderImage"
-                alt="Item Image"
-                class="w-16 h-16 object-cover mr-4"
-              />
-              <div>
-                <p class="font-semibold">{{ item.saleItemName }}</p>
-                <p>Quantity: {{ item.quantity }}</p>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <p class="mb-2">Total: ฿{{ order.totalAmount.toFixed(2) }}</p>
-      </div>
-    </div>
-  </div>
-</template>  -->

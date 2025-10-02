@@ -38,7 +38,6 @@ public class OrderItem {
     @Column(name = "price_at_purchase", nullable = false, precision = 12, scale = 2)
     private BigDecimal priceAtPurchase;
 
-//    @ColumnDefault("(`quantity` * `price_at_purchase`)")
     @Column(name = "subtotal", precision = 12, scale = 2, insertable = false, updatable = false)
     private BigDecimal subtotal;
 }

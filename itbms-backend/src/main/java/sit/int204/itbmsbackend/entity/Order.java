@@ -49,6 +49,12 @@ public class Order {
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
+    @Column(name = "order_note")
+    private String orderNote;
+
+    @Column(name = "shipping_address_note")
+    private String shippingAddressNote;
+
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;
 

@@ -35,8 +35,7 @@ const addToCart = (saleItem) => {
   else if (auth.user.id === saleItem.sellerId) {
     return statusMessageStore.setStatusMessage("You cannot add your own item to cart.", false)
   }
-  cartStore.addToCart(saleItem)
-  statusMessageStore.setStatusMessage("Add to cart success.")
+  cartStore.addToCart({ ...saleItem })
   // console.log("Add:", saleItem)
   // console.log("Cart items:", cartStore.items)
 }
@@ -90,7 +89,10 @@ const goToSignin = async () => {
                 <span class="itbms-storageGb">{{ item.storageGb || '-' }}</span>
                 <span class="itbms-storageGb-unit">GB</span>
             </p>
-            <div class="flex items-center justify-between mt-2">
+            <div>
+               <span class="text-xs text-gray-500">{{ item.quantity }} in stock</span>
+            </div>
+            <div class="flex items-center justify-between">
               <div>
                 <span class="itbms-price text-lg font-bold text-rose-600">
                     {{ formatNumber(item.price) }}

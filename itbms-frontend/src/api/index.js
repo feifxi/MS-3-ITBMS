@@ -203,6 +203,14 @@ export const getOrderItemsById = async (orderId, authStore) => {
   }, authStore);
 }
 
+export const validateCartItems = async (orderItems, authStore) => {
+  return await fetchWithAuth(`/v2/orders/validate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderItems),
+  }, authStore);
+}
+
 // ==================   Fetch with Auth  ===========================
 
 export async function fetchWithAuth(url, options = {}, authStore) {

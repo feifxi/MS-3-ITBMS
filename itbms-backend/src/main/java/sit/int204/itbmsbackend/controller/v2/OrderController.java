@@ -7,11 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import sit.int204.itbmsbackend.dto.order.CreateOrderRequest;
-import sit.int204.itbmsbackend.dto.order.OrderItemResponse;
-import sit.int204.itbmsbackend.dto.order.OrderResponse;
-import sit.int204.itbmsbackend.dto.order.SellerResponse;
-import sit.int204.itbmsbackend.entity.Order;
+import sit.int204.itbmsbackend.dto.order.*;
 import sit.int204.itbmsbackend.security.UserPrincipal;
 import sit.int204.itbmsbackend.service.OrderService;
 
@@ -23,6 +19,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+
+    // Validate order item before place order
+    @PostMapping("/validate")
+    public ResponseEntity<OrderValidationResponse> validateCart(@Valid @RequestBody List<CreateOrderRequest> ordersRequest, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.validateOrders(
+                userPrincipal.getId(),
+                ordersRequest
+        ));
+    }
 
     // Create a new order
     @PostMapping

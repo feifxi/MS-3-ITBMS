@@ -13,13 +13,27 @@ export const useCartStore = defineStore('cart', () => {
     }, { deep: true })
 
     function addToCart(saleItem, quantity = 1) {
-        const statusMessageStore = useStatusMessageStore();
+        const statusMessageStore = useStatusMessageStore()
+
+        if (saleItem.quantity <= 0) {
+            const statusMessageStore = useStatusMessageStore()
+            statusMessageStore.setStatusMessage('Item is out of stock', false)
+            return
+        }
+        
         const existing = items.value.find(i => i.id === saleItem.id)
         if (existing) {
+            if (existing.quantity + quantity > existing.availableQuantity) {
+                statusMessageStore.setStatusMessage(`Cannot add more than available quantity (${existing.availableQuantity})`, false)
+                return
+            }
+
             existing.quantity += quantity
         } else {
-            items.value.push({ ...saleItem, availableQuantity: saleItem.quantity, quantity })
+            items.value.push({ ...saleItem, availableQuantity: saleItem.quantity, quantity: quantity })
         }
+        statusMessageStore.setStatusMessage('Item added to cart')
+        // console.log('Adding to cart:', saleItem, 'Quantity:', quantity)
         // console.log(items.value)
     }
 
@@ -41,6 +55,29 @@ export const useCartStore = defineStore('cart', () => {
         items.value = []
     }
 
+    function updateItem(saleItemId, newPrice, newAvailableQuantity) {
+        // Remove item if no longer available
+        if (newAvailableQuantity <= 0) {
+            removeFromCart(saleItemId)
+            return
+        }
+        // Update item details
+        items.value = items.value.map(item => {
+            if (item.id === saleItemId) {
+                const newData = {
+                    ...item,
+                    price: newPrice, 
+                    availableQuantity: newAvailableQuantity,
+                    quantity: item.quantity > newAvailableQuantity ? newAvailableQuantity : item.quantity,
+                }
+                // console.log('Updating item:', {...item}, 'to', newData)
+                return newData
+            } else {
+                return item
+            }
+        })
+    }
+
     const totalItems = computed(() =>
         items.value.reduce((sum, i) => sum + i.quantity, 0)
     )
@@ -55,6 +92,7 @@ export const useCartStore = defineStore('cart', () => {
         removeFromCart,
         decreaseQuantity,
         clearCart,
+        updateItem,
         totalItems,
         totalPrice,
     }

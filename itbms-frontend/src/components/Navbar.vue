@@ -95,7 +95,7 @@ const confirmSignout = async () => {
         </RouterLink>
 
 
-        <div class="max-sm:hidden flex items-center gap-8">
+        <div class="max-md:hidden flex items-center gap-8">
           <!-- Search bar -->
           <div class="relative">
             <input 
@@ -166,7 +166,7 @@ const confirmSignout = async () => {
             </div>
           </div>
         </div>
-        <div class="sm:hidden">
+        <div class="md:hidden">
           <Menu ></Menu>
         </div>
       </div>

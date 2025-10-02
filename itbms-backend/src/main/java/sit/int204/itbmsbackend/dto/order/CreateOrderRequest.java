@@ -17,9 +17,10 @@ public class CreateOrderRequest {
     @NotNull
     private List<CreateOrderItemRequest> orderItems;
     @NotNull
-    private String orderNote;
-    @NotNull
     private String shippingAddress;
+
+    private String orderNote;
+
     @NotNull
     private LocalDateTime orderDate;
 }

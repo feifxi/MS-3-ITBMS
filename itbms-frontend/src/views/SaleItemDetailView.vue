@@ -1,14 +1,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { fetchSaleItemById, deleteSaleItem } from '../api'
 import { formatNumber } from '@/libs/utils';
 import ItemNotFound from '../components/ItemNotFound.vue';
-import mockPhone from '@/assets/image/mockPhone.webp'
 import BreadCrumb from '@/components/BreadCrumb.vue';
 import Button from '@/components/Button.vue';
-import DeleteConfirmModal from '@/components/ConfirmModal.vue';
 import { useStatusMessageStore } from '@/stores/statusMessage';
 import placeHolder from '@/assets/placeholder.svg' 
 import { useAuthStore } from '@/stores/auth';
@@ -75,7 +73,6 @@ const addToCart = () => {
     return statusMessageStore.setStatusMessage("You cannot add your own item to cart.", false)
   }
   cartStore.addToCart(cartSaleItem, numberAddedToCart.value)
-  statusMessageStore.setStatusMessage("Add to cart success.")
   // console.log("Add:", cartSaleItem)
   // console.log("Cart items:", cartStore.items)
 }

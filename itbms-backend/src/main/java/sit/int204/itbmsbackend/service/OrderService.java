@@ -22,6 +22,44 @@ public class OrderService {
     private final SaleItemRepository saleItemRepository;
     private final UserRepository userRepository;
 
+    public OrderValidationResponse validateOrders(Integer buyerId, List<CreateOrderRequest> orderRequests) {
+        OrderValidationResponse orderValidateRes = new OrderValidationResponse();
+        List<UpdatedCartItemResponse>  updatedCartItems = new ArrayList<>();
+        boolean isValid = true;
+
+        // Validate each item if there are any update data
+        for (CreateOrderRequest orderReq : orderRequests) {
+            for (CreateOrderItemRequest reqItem : orderReq.getOrderItems()) {
+                SaleItem existSaleItem = saleItemRepository.findById(reqItem.getSaleItemId()).orElse(null);
+                UpdatedCartItemResponse updateItem = new UpdatedCartItemResponse();
+
+                if (existSaleItem == null) {
+                    updateItem.setMessage("The "+ reqItem.getModel() +" has been deleted");
+                    isValid = false;
+                }
+                else {
+                    if (existSaleItem.getQuantity() - reqItem.getQuantity() < 0) {
+                        updateItem.setMessage("Only " + existSaleItem.getQuantity() + " left in stock for " + reqItem.getModel() + ".");
+                        isValid = false;
+                    }
+                    else if (existSaleItem.getPrice().compareTo(reqItem.getPrice()) != 0) {
+                        updateItem.setMessage("The price of " + reqItem.getModel() + " has been updated to " + existSaleItem.getPrice() + ".");
+                        isValid = false;
+                    }
+                    updateItem.setSaleItemId(existSaleItem.getId());
+                    updateItem.setAvailableQuantity(existSaleItem.getQuantity());
+                    updateItem.setNewPrice(existSaleItem.getPrice());
+                }
+
+                updatedCartItems.add(updateItem);
+            }
+        }
+
+        orderValidateRes.setValid(isValid);
+        orderValidateRes.setUpdateItems(updatedCartItems);
+        return orderValidateRes;
+    }
+
     @Transactional
     public List<OrderResponse> createOrder(Integer buyerId, List<CreateOrderRequest> orderRequests) {
         List<OrderResponse> resultOrders = new LinkedList<>();
@@ -31,13 +69,13 @@ public class OrderService {
             Set<OrderItem> orderItems = new LinkedHashSet<>();
             Order order = new Order();
 
-            for (CreateOrderItemRequest item :orderRequest.getOrderItems()) {
+            for (CreateOrderItemRequest item : orderRequest.getOrderItems()) {
                 SaleItem saleItem = saleItemRepository.findById(item.getSaleItemId())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Sale item not found"));
 
-//                if (saleItem.getQuantity() < item.getQuantity()) {
-//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, saleItem.getModel() + " quantity is less than the requested quantity :: " + item.getQuantity());
-//                }
+                if (saleItem.getQuantity() < item.getQuantity()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, saleItem.getModel() + " quantity is less than the requested quantity :: " + item.getQuantity());
+                }
                 BigDecimal price = saleItem.getPrice();
                 BigDecimal subtotal = price.multiply(new BigDecimal(item.getQuantity()));
                 orderTotalAmount = orderTotalAmount.add(subtotal);
@@ -51,8 +89,8 @@ public class OrderService {
                 orderItems.add(orderItem);
 
                 // Decrease stock sale item
-//                saleItem.setQuantity(saleItem.getQuantity() - item.getQuantity());
-//                saleItemRepository.save(saleItem);
+                saleItem.setQuantity(saleItem.getQuantity() - item.getQuantity());
+                saleItemRepository.save(saleItem);
             }
 
             User buyer = userRepository.findById(buyerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Buyer not found"));
@@ -64,6 +102,8 @@ public class OrderService {
             order.setBuyer(buyer);
             order.setSeller(seller);
             order.setAddress(buyerAddress);
+            order.setShippingAddressNote(orderRequest.getShippingAddress());
+            order.setOrderNote(orderRequest.getOrderNote());
             order.setStatus(OrderStatus.PENDING);
             order.setPaymentStatus(PaymentStatus.PENDING);
             // Set payment
@@ -84,7 +124,7 @@ public class OrderService {
     }
 
     public List<OrderResponse> getOrdersByBuyer(Integer buyerId) {
-        return orderRepository.findByBuyer_Id(buyerId).stream().map((this::mappedToDTO)).toList();
+        return orderRepository.findByBuyer_IdOrderByCreatedOnDesc(buyerId).stream().map((this::mappedToDTO)).toList();
     }
 
     public OrderResponse getOrderById(Integer orderId) {
@@ -99,18 +139,20 @@ public class OrderService {
         orderResponse.setOrderId(order.getId());
         orderResponse.setOrderDate(order.getCreatedOn());
         orderResponse.setBuyerId(order.getBuyer().getId());
-        orderResponse.setOrderNote("Noob Note");
+        orderResponse.setOrderNote(order.getOrderNote());
         orderResponse.setOrderStatus(order.getStatus());
         orderResponse.setTotalAmount(order.getTotalAmount());
-        orderResponse.setShippingAddress(order.getAddress().getAddressLine() + " " +  order.getAddress().getCity());
+//        orderResponse.setShippingAddress(order.getAddress().getAddressLine() + " " +  order.getAddress().getCity());
+        orderResponse.setShippingAddress(order.getShippingAddressNote());
         // Order Item
         List<OrderItemResponse> orderItemRes = order.getOrderItems().stream().map((item) -> {
             OrderItemResponse itemResponse = new OrderItemResponse();
             itemResponse.setSaleItemId(item.getSaleItem().getId());
             itemResponse.setSaleItemName(item.getSaleItem().getModel());
+            itemResponse.setQuantity(item.getQuantity());
+            itemResponse.setPriceAtPurchase(item.getPriceAtPurchase());
             SaleItemImage firstImage = item.getSaleItem().getSaleItemImages().stream().findFirst().orElse(null);
             itemResponse.setSaleItemImage(firstImage.getImageName());
-            itemResponse.setQuantity(item.getQuantity());
             return itemResponse;
         }).toList();
         orderResponse.setOrderItems(orderItemRes);

@@ -71,6 +71,7 @@ const handlePlaceOrder = async () => {
 
     // console.log(orders)
 
+    isLoading.value = true;
     // Checkout if cart is validated
     if (validatedCart.value) {
       await handleCheckout(orders);
@@ -109,6 +110,8 @@ const handlePlaceOrder = async () => {
   } catch (err) {
     console.log(err);
     statusMessageStore.setStatusMessage("Something went wrong.", false);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -144,13 +147,23 @@ onMounted(async () => {});
           🛍️ Shopping Cart
         </h1>
       </div>
-      <div v-if="isLoading" class="text-purple-400">Loading...</div>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="text-center py-16">
+        <div
+          class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mb-4"
+        ></div>
+        <p class="text-gray-600 text-lg">Ordering...</p>
+      </div>
+
+      <!-- Empty State -->
       <div
         v-else-if="!cartStore.items || cartStore.items.length === 0"
         class="text-center text-purple-400 font-bold text-3xl"
       >
         No items in cart
       </div>
+
+      <!-- Cart Items and Summary -->
       <div v-else>
         <div class="max-w-4xl mx-auto">
           <!-- Cart Items -->

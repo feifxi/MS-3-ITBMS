@@ -2,7 +2,7 @@ services:
   # MySQL Database
   database:
     container_name: itbms-dev-mysql-db
-    image: mysql:latest
+    image: mysql:8.0
     ports:
       - "3306:3306"
     volumes:
@@ -35,7 +35,7 @@ services:
   # Ollama Local LLM Model
   ollama:
     container_name: itbms-dev-ollama
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.12.1
     ports:
       - "11434:11434"
     volumes:
@@ -54,7 +54,7 @@ services:
 
   # MongoDB
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0.24
     container_name: itbms-dev-mongo
     ports:
       - "27017:27017"

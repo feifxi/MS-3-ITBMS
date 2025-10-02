@@ -222,7 +222,7 @@ onMounted(async () => {
                       >
                         <p>Price: ฿{{ item.priceAtPurchase }}</p>
                         <p>Quantity: {{ item.quantity }}</p>
-                      </div>    
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -259,10 +259,42 @@ onMounted(async () => {
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   ></path>
                 </svg>
-                Delivery Details
+                Details
               </h2>
             </div>
             <div class="p-6 space-y-4">
+              <!-- Shipping Address -->
+              <div
+                class="flex items-start gap-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 p-5 rounded-xl border-2 border-purple-100 shadow-sm"
+              >
+                <div
+                  class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-full p-2.5 flex-shrink-0 shadow-md"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-user text-white"
+                  >
+                    <circle cx="12" cy="8" r="5" />
+                    <path d="M20 21a8 8 0 0 0-16 0" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-gray-600 font-bold mb-1">Seller</p>
+                  <p class="text-gray-800 font-medium text-base">
+                    {{ order.seller.nickname }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Shipping Address -->
               <div
                 class="flex items-start gap-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 p-5 rounded-xl border-2 border-purple-100 shadow-sm"
               >
@@ -293,6 +325,7 @@ onMounted(async () => {
                 </div>
               </div>
 
+              <!-- Order Note (if exists) -->
               <div
                 v-if="order.orderNote"
                 class="flex items-start gap-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 p-5 rounded-xl border-2 border-purple-100 shadow-sm"

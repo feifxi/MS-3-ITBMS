@@ -125,39 +125,6 @@ onMounted(async () => {
           <div
             class="flex flex-col sm:flex-row items-start gap-4 p-6 bg-gradient-to-r from-purple-50/50 to-pink-50/50"
           >
-            <!-- Product Image -->
-            <div class="flex-shrink-0 mx-auto sm:mx-0">
-              <img
-                v-if="
-                  order.orderItems.length > 0 &&
-                  order.orderItems[0].saleItemImages &&
-                  order.orderItems[0].saleItemImages.length > 0
-                "
-                :src="`${IMAGE_ENDPOINT}${order.orderItems[0].saleItemImages[0]}`"
-                alt="product"
-                class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border-2 border-purple-200 shadow-md"
-                @error="(event) => (event.target.src = placeHolderImage)"
-              />
-              <div
-                v-else
-                class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border-2 border-purple-200 shadow-md"
-              >
-                <svg
-                  class="w-10 h-10 sm:w-12 sm:h-12 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                  ></path>
-                </svg>
-              </div>
-            </div>
-
             <!-- Order Info -->
             <div
               class="flex-1 min-w-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full"
@@ -199,13 +166,10 @@ onMounted(async () => {
                 </p>
 
                 <div class="flex gap-2 text-sm text-purple-600 font-medium">
-                  <div
-                    v-for="(item, index) of order.orderItems"
-                    :key="index"
-                  >
+                  <div v-for="(item, index) of order.orderItems" :key="index">
                     <div
                       v-if="index < 2"
-                      class="flex items-center bg-white rounded-xl p-3 shadow-md border-2 border-purple-100"
+                      class="flex gap-3 items-center bg-white rounded-xl p-3 shadow-md border-2 border-purple-100"
                     >
                       <img
                         :src="
@@ -226,8 +190,8 @@ onMounted(async () => {
                       v-if="index === 2"
                       class="flex items-center bg-white rounded-xl p-3 shadow-md border-2 border-purple-100"
                     >
-                    +{{ order.orderItems.length - 2 }} more
-                  </div>
+                      +{{ order.orderItems.length - 2 }} more
+                    </div>
                   </div>
                 </div>
               </div>

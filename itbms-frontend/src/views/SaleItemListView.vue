@@ -225,15 +225,16 @@ watch(
         </Button>
       </div>
     </div>
-
-    <!-- Loading / Empty / Table -->
-    <div
-      v-if="isLoading"
-      class="text-center text-blue-500 text-xl animate-pulse"
-    >
-      Loading...
+  
+    <!-- Loading State -->
+    <div v-if="isLoading" class="text-center py-16">
+      <div
+        class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mb-4"
+      ></div>
+      <p class="text-gray-600 text-lg">Loading...</p>
     </div>
 
+    <!-- Empty State -->
     <div
       v-else-if="saleItems.length === 0"
       class="text-center text-gray-500 text-lg"
@@ -241,6 +242,7 @@ watch(
       No sale item found.
     </div>
 
+    <!-- Sale Item List -->
     <div v-else class="overflow-x-auto rounded-lg">
       <!-- Page Size & Sorting Option -->
       <div class="p-3 rounded-xl mb-4 bg-white">

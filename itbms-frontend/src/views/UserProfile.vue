@@ -28,6 +28,8 @@ const loadUserProfile = async () => {
     userProfile.value = profile
   } catch (error) {
     console.log(error)
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -46,7 +48,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <!-- Loading State -->
+  <div v-if="isLoading" class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100 flex justify-center items-center">
+      <div class="text-center">
+          <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-rose-500"></div>
+          <p class="text-rose-500 text-2xl font-bold mt-4">Loading...</p>
+      </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div v-else class="itbms-user-profile">
     <div class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-100 to-purple-100 flex justify-center items-center p-6">
       <div class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-10 w-full max-w-2xl border-4 border-pink-100 backdrop-blur-md">
         <h1 class="text-2xl sm:text-4xl font-extrabold text-rose-500 mb-8 sm:mb-10 text-center tracking-widest drop-shadow-sm">

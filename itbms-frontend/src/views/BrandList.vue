@@ -68,8 +68,15 @@ function handleDeleted(deletedBrandId) {
       </div>
     </div>
 
-    <!-- Loading / Empty States -->
-    <div v-if="isLoading" class="text-center text-blue-500 text-xl animate-pulse">Loading...</div>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="text-center py-16">
+      <div
+        class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mb-4"
+      ></div>
+      <p class="text-gray-600 text-lg">Loading...</p>
+    </div>
+
+    <!-- Empty State -->
     <div v-else-if="brands.length === 0" class="text-center text-gray-500 text-lg">No brand found.</div>
 
     <!-- Table Content -->

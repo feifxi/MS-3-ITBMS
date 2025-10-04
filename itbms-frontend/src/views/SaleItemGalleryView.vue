@@ -121,6 +121,7 @@ const fetchSaleItems = async () => {
       pagination.first = first
       pagination.last = last
       pagination.totalPages = totalPages
+      // console.log(content)
   } catch (err) {
     console.error('Failed to fetch item: ', err)
   } finally {
@@ -553,7 +554,7 @@ watch(() => route.query.search, (newSearch) => {
     <!-- Loading State -->
       <div v-if="loading" class="text-center py-16">
         <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mb-4"></div>
-        <p class="text-gray-600 text-lg">Loading your orders...</p>
+        <p class="text-gray-600 text-lg">Loading...</p>
       </div>
 
     <!-- No SaleItems -->

@@ -75,6 +75,9 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     user.value = null
 
+    localStorage.clear();
+    sessionStorage.clear();
+
     console.log('Signout success : ', data)
   }
 

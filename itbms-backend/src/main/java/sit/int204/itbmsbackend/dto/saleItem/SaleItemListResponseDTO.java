@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import sit.int204.itbmsbackend.dto.order.SellerResponse;
 import sit.int204.itbmsbackend.dto.saleItemImage.SaleItemImageDTO;
 import sit.int204.itbmsbackend.entity.Brand;
 import sit.int204.itbmsbackend.entity.SaleItemImage;
@@ -26,11 +27,21 @@ public class SaleItemListResponseDTO {
     @JsonIgnore
     private Brand brand;
     private List<SaleItemImage> saleItemImages = new ArrayList<>();
-    @JsonIgnore
     private User seller;
 
     public Integer getSellerId() {
         return this.seller.getId();
+    }
+
+    public SellerResponse getSeller() {
+        SellerResponse sellerResponse = new SellerResponse();
+        sellerResponse.setId(this.seller.getId());
+        sellerResponse.setNickname(this.seller.getNickname());
+        sellerResponse.setFullName(this.seller.getFullName());
+        sellerResponse.setEmail(this.seller.getEmail());
+        sellerResponse.setPhone(this.seller.getPhone());
+        sellerResponse.setShopName(this.seller.getShopName());
+        return sellerResponse;
     }
 
     public List<SaleItemImageDTO> getSaleItemImages() {

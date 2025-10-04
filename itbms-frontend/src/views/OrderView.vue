@@ -2,10 +2,11 @@
 import { RouterLink, useRouter } from "vue-router";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { useAuthStore } from "@/stores/auth";
-import { onMounted, ref } from "vue";
-import { fetchUserProfile, getOrderItems, updateUserProfile } from "@/api";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { getOrderByBuyerId, getOrderBySellerId } from "@/api";
 import { useCartStore } from "@/stores/cart";
 import placeHolderImage from "@/assets/placeholder.svg";
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, List, Store } from "lucide-vue-next";
 
 const BASE_API = import.meta.env.VITE_BASE_API;
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/";
@@ -15,19 +16,67 @@ const statusMessageStore = useStatusMessageStore();
 const auth = useAuthStore();
 const cartStore = useCartStore();
 
+const getSessionStorageItem = (key) => {
+  return sessionStorage.getItem(key);
+};
+
+const lastVisitedTab = getSessionStorageItem("lastVisitedTabOrderView");
+
+const currentTab = ref(
+  lastVisitedTab === "SELLER" && auth.user && auth.user.userType === "SELLER"
+  ? "SELLER"
+  : "BUYER"
+); // SELLER or BUYER
+
 const orders = ref([]);
 const isLoading = ref(false);
 
 const fetchOrders = async () => {
   try {
     isLoading.value = true;
-    const res = await getOrderItems(auth);
+    const res = await getOrderByBuyerId(
+      auth,
+      pagination.page,
+      pagination.size,
+      sortOption.sortField,
+      sortOption.sortDirection
+    );
     if (!res.ok) {
       throw new Error("Failed to fetch orders");
     }
-    const ordersRes = await res.json();
-    orders.value = ordersRes;
-    // console.log(ordersRes)
+    const data = await res.json();
+    orders.value = data.content;
+    pagination.first = data.first;
+    pagination.last = data.last;
+    pagination.totalPages = data.totalPages;
+    // console.log(data);
+  } catch (error) {
+    console.error("Failed to load orders:", error);
+    statusMessageStore.setStatusMessage("Failed to load orders", false);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const fetchOrdersSellerView = async () => {
+  try {
+    isLoading.value = true;
+    const res = await getOrderBySellerId(
+      auth,
+      pagination.page,
+      pagination.size,
+      sortOption.sortField,
+      sortOption.sortDirection
+    );
+    if (!res.ok) {
+      throw new Error("Failed to fetch orders");
+    }
+    const data = await res.json();
+    orders.value = data.content;
+    pagination.first = data.first;
+    pagination.last = data.last;
+    pagination.totalPages = data.totalPages;
+    // console.log(orders.value)
   } catch (error) {
     console.error("Failed to load orders:", error);
     statusMessageStore.setStatusMessage("Failed to load orders", false);
@@ -37,44 +86,310 @@ const fetchOrders = async () => {
 };
 
 onMounted(async () => {
-  await fetchOrders();
+  if (!auth.user) {
+    router.push({ name: "Login" });
+    return;
+  }
+  if (currentTab.value === "BUYER") {
+    await fetchOrders();
+  } else if (currentTab.value === "SELLER") {
+    await fetchOrdersSellerView();
+  }
 });
+
+// Pagination and Sorting
+const persistPaginationOptionJSON = getSessionStorageItem(
+  currentTab.value === "BUYER"
+    ? "paginationOptionOrderBuyer"
+    : "paginationOptionOrderSeller"
+);
+const persistPaginationOption = persistPaginationOptionJSON
+  ? JSON.parse(persistPaginationOptionJSON)
+  : {
+      pageNumber: 0,
+      size: 10,
+    };
+
+const persistSortOptionJSON = getSessionStorageItem(
+  currentTab.value === "BUYER"
+    ? "sortOptionOrderBuyer"
+    : "sortOptionOrderSeller"
+);
+const persistSortOption = persistSortOptionJSON
+  ? JSON.parse(persistSortOptionJSON)
+  : {
+      sortField: "createdOn",
+      sortDirection: null,
+    };
+
+const pagination = reactive({
+  last: false,
+  first: false,
+  totalPages: 0,
+  totalElements: 0,
+  page: persistPaginationOption.pageNumber,
+  size: persistPaginationOption.size,
+});
+
+const sortOption = reactive({
+  sortField: persistSortOption.sortField,
+  sortDirection: persistSortOption.sortDirection,
+});
+
+const paginatedPages = computed(() => {
+  const current = pagination.page;
+  const total = pagination.totalPages;
+  const maxVisible = 10;
+  let start = Math.max(current - Math.floor(maxVisible / 2), 1);
+  let end = start + maxVisible - 1;
+  if (end > total) {
+    end = total;
+    start = Math.max(end - maxVisible + 1, 1);
+  }
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+});
+
+// Sorting
+const handleSortDefault = () => {
+  pagination.page = 0;
+  sortOption.sortField = "createdOn";
+  sortOption.sortDirection = null;
+};
+
+const handleSortAsc = () => {
+  pagination.page = 0;
+  sortOption.sortField = "createdOn";
+  sortOption.sortDirection = "asc";
+};
+
+const handleSortDesc = () => {
+  pagination.page = 0;
+  sortOption.sortField = "createdOn";
+  sortOption.sortDirection = "desc";
+};
+
+// Pagination
+const handleChangePage = (pageNumber) => {
+  pagination.page = pageNumber;
+  currentTab.value === "BUYER" ? fetchOrders() : fetchOrdersSellerView();
+};
+
+const handleGoFirst = () => {
+  pagination.page = 0;
+};
+
+const handleGoLast = () => {
+  pagination.page = pagination.totalPages - 1;
+};
+
+const handleClickNext = () => {
+  if (pagination.page + 1 >= pagination.totalPages) return;
+  pagination.page += 1;
+};
+
+const handleClickPrev = () => {
+  if (pagination.page <= 0) return;
+  pagination.page -= 1;
+};
+
+const saveSessionData = () => {
+  sessionStorage.setItem(
+    currentTab.value === "BUYER"
+      ? "sortOptionOrderBuyer"
+      : "sortOptionOrderSeller",
+    JSON.stringify({
+      sortField: sortOption.sortField,
+      sortDirection: sortOption.sortDirection,
+    })
+  );
+
+  sessionStorage.setItem(
+    currentTab.value === "BUYER"
+      ? "paginationOptionOrderBuyer"
+      : "paginationOptionOrderSeller",
+    JSON.stringify({
+      pageNumber: pagination.page,
+      size: pagination.size,
+    })
+  );
+
+  sessionStorage.setItem(
+    "lastVisitedTabOrderView",
+    currentTab.value === "BUYER" ? "BUYER" : "SELLER"
+  );
+};
+
+
+watch(
+  () => pagination.page,
+  () => {
+    saveSessionData();
+    currentTab.value === "BUYER" ? fetchOrders() : fetchOrdersSellerView();
+  }
+);
+
+watch(
+  [() => pagination.size, sortOption, currentTab],
+  () => {
+    pagination.page = 0;
+    saveSessionData();
+    currentTab.value === "BUYER" ? fetchOrders() : fetchOrdersSellerView();
+  },
+  { deep: true }
+);
+
+// console.log("Auth User:", auth.user);
 </script>
 
 <template>
   <div
     class="px-4 sm:px-16 py-8 bg-gradient-to-br from-purple-50 via-pink-50 to-white min-h-screen"
   >
+    <!-- Tab Buttons -->
+    <div
+      class="mb-3 max-w-7xl mx-auto"
+      v-if="auth.user && auth.user.userType === 'SELLER'"
+    >
+      <button
+        @click="currentTab = 'BUYER'"
+        :class="
+          currentTab === 'BUYER'
+            ? 'bg-purple-600 text-white'
+            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+        "
+        class="px-6 py-2 rounded-l-lg font-semibold transition-colors duration-300"
+      >
+        BUYER VIEW
+      </button>
+      <button
+        @click="currentTab = 'SELLER'"
+        :class="
+          currentTab === 'SELLER'
+            ? 'bg-purple-600 text-white'
+            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+        "
+        class="px-6 py-2 rounded-r-lg font-semibold transition-colors duration-300"
+      >
+        SELLER VIEW
+      </button>
+    </div>
+
+    <!-- Page Size & Sorting Option -->
+    <div class="p-3 rounded-xl mb-4 bg-white max-w-7xl mx-auto">
+      <div class="flex max-md:flex-col gap-5 md:items-start">
+        <div class="flex-1 flex justify-start gap-3">
+          <div class="flex gap-2 items-center">
+            <h3>show</h3>
+            <select
+              v-model="pagination.size"
+              class="itbms-page-size input sm:!w-30"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+
+          <div class="flex">
+            <button
+              @click="handleSortDefault"
+              :class="[
+                'itbms-brand-none paginationBtn !bg-purple-50 border border-white',
+                {
+                  '!bg-purple-200': 
+                    sortOption.sortDirection === null &&
+                    sortOption.sortField === 'createdOn',
+                },
+              ]"
+            >
+              <List />
+            </button>
+
+            <button
+              @click="handleSortAsc"
+              :class="[
+                'itbms-brand-asc paginationBtn !bg-purple-50 border border-white',
+                {
+                  '!bg-purple-200':
+                    sortOption.sortDirection === 'asc' &&
+                    sortOption.sortField === 'createdOn',
+                },
+              ]"
+            >
+              <ArrowUpWideNarrow />
+            </button>
+
+            <button
+              @click="handleSortDesc"
+              :class="[
+                'itbms-brand-desc paginationBtn !bg-purple-50 border border-white',
+                {
+                  '!bg-purple-200':
+                    sortOption.sortDirection === 'desc' &&
+                    sortOption.sortField === 'createdOn',
+                },
+              ]"
+            >
+              <ArrowDownWideNarrow />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div
       class="bg-white px-4 sm:px-16 py-8 rounded-2xl shadow-2xl max-w-7xl mx-auto border border-purple-100"
     >
-      <!-- Header -->
       <div class="mb-8 pb-6 border-b-2 border-purple-200">
-        <div class="flex items-center justify-center gap-3 mb-3">
-          <div
-            class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-3"
-          >
-            <svg
-              class="w-8 h-8 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <!-- Buyer Header -->
+        <div v-if="currentTab === 'BUYER'">
+          <div class="flex items-center justify-center gap-3 mb-3">
+            <div
+              class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-3"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              ></path>
-            </svg>
+              <svg
+                class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                ></path>
+              </svg>
+            </div>
+            <h1
+              class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            >
+              My Orders
+            </h1>
           </div>
-          <h1
-            class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-          >
-            Your Orders
-          </h1>
+          <p class="text-center text-gray-600">
+            Track and manage your purchases
+          </p>
         </div>
-        <p class="text-center text-gray-600">Track and manage your purchases</p>
+
+        <!-- Seller Header -->
+        <div v-else-if="currentTab === 'SELLER'">
+          <div class="flex items-center justify-center gap-3 mb-3">
+            <div
+              class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-3"
+            >
+              <Store class="w-8 h-8 text-white" />
+            </div>
+            <h1
+              class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            >
+              Customer Orders
+            </h1>
+          </div>
+          <p class="text-center text-gray-600">
+            See who ordered your products and track their status.
+          </p>
+        </div>
       </div>
 
       <!-- Loading State -->
@@ -82,7 +397,7 @@ onMounted(async () => {
         <div
           class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-200 border-t-purple-600 mb-4"
         ></div>
-        <p class="text-gray-600 text-lg">Loading your orders...</p>
+        <p class="text-gray-600 text-lg">Loading...</p>
       </div>
 
       <!-- Empty State -->
@@ -105,8 +420,11 @@ onMounted(async () => {
           </svg>
         </div>
         <h3 class="text-2xl font-bold text-gray-700 mb-2">No Orders Yet</h3>
-        <p class="text-gray-500 mb-6">Start shopping to see your orders here</p>
+        <p v-if="currentTab === 'BUYER'" class="text-gray-500 mb-6">
+          Start shopping to see your orders here
+        </p>
         <RouterLink
+          v-if="currentTab === 'BUYER'"
           :to="{ name: 'SaleItemGallery' }"
           class="inline-block px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
         >
@@ -204,13 +522,63 @@ onMounted(async () => {
                 <p
                   class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
                 >
-                  ฿{{ order.totalAmount.toFixed(2) }}
+                  ฿{{ order.totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                 </p>
               </div>
             </div>
           </div>
         </RouterLink>
       </div>
+    </div>
+
+    <!-- Pagination -->
+    <div
+      :v-show="paginatedPages.length > 1"
+      class="max-w-7xl mx-auto p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold"
+    >
+      <button
+        @click="handleGoFirst"
+        class="itbms-page-first paginationBtn !px-4"
+        :disabled="pagination.first"
+      >
+        First
+      </button>
+      <button
+        @click="handleClickPrev"
+        class="itbms-page-prev paginationBtn !px-4"
+        :disabled="pagination.first"
+      >
+        Prev
+      </button>
+
+      <button
+        v-for="pageIndex in paginatedPages"
+        :key="pageIndex"
+        :class="[
+          `itbms-page-${pageIndex - 1} paginationBtn w-10`,
+          {
+            '!bg-rose-500': pagination.page + 1 === pageIndex,
+          },
+        ]"
+        @click="() => handleChangePage(pageIndex - 1)"
+      >
+        {{ pageIndex }}
+      </button>
+
+      <button
+        @click="handleClickNext"
+        class="itbms-page-next paginationBtn !px-4"
+        :disabled="pagination.last"
+      >
+        Next
+      </button>
+      <button
+        @click="handleGoLast"
+        class="itbms-page-last paginationBtn !px-4"
+        :disabled="pagination.last"
+      >
+        Last
+      </button>
     </div>
   </div>
 </template>

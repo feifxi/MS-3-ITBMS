@@ -6,15 +6,17 @@ import { onMounted, ref } from "vue";
 import { createOrderItems, validateCartItems } from "@/api";
 import { useCartStore } from "@/stores/cart";
 import placeHolder from "@/assets/placeholder.svg";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
 const auth = useAuthStore();
 const cartStore = useCartStore();
 
+// console.log(cartStore.itemsGroupedBySeller);
+
 const orderNote = ref("");
 const shippingAddress = ref("");
-const validatedCart = ref(false);
 
 const BASE_API = import.meta.env.VITE_BASE_API;
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/";
@@ -26,7 +28,23 @@ const increaseQuantity = (item) => {
 };
 
 const decreaseQuantity = (item) => {
+  if (item.quantity === 1) {
+    handleShowRemoveDialog(item.id);
+    return;
+  }
   cartStore.decreaseQuantity(item.id);
+};
+
+const handleSelectItem = (itemId, event) => {
+  cartStore.selectItem(itemId, event.target.checked);
+};
+
+const handleSelectItemsBySeller = (sellerId, event) => {
+  cartStore.selectItemsBySeller(sellerId, event.target.checked);
+};
+
+const handleSelectAll = (event) => {
+  cartStore.selectAll(event.target.checked);
 };
 
 const handlePlaceOrder = async () => {
@@ -42,26 +60,19 @@ const handlePlaceOrder = async () => {
       return;
     }
 
-    // The order will be grouped by sellerId
-    const groupedOrderItems = cartStore.items.reduce((acc, item) => {
-      if (!acc[item.sellerId]) {
-        acc[item.sellerId] = [];
-      }
-      acc[item.sellerId].push({ ...item });
-      return acc;
-    }, {});
-
     const orders = [];
-    for (const sellerId in groupedOrderItems) {
+    for (const sellerId in cartStore.selectedItemsGroupedBySeller) {
       orders.push({
         sellerId: parseInt(sellerId),
         buyerId: auth.user.id,
-        orderItems: groupedOrderItems[sellerId].map((item) => ({
-          saleItemId: item.id,
-          model: item.model,
-          quantity: item.quantity,
-          price: item.price,
-        })),
+        orderItems: cartStore.selectedItemsGroupedBySeller[sellerId].map(
+          (item) => ({
+            saleItemId: item.id,
+            model: item.model,
+            quantity: item.quantity,
+            price: item.price,
+          })
+        ),
         orderDate: new Date().toISOString(),
         orderNote: orderNote.value ? orderNote.value : null,
         shippingAddress: shippingAddress.value ? shippingAddress.value : null,
@@ -72,40 +83,34 @@ const handlePlaceOrder = async () => {
     // console.log(orders)
 
     isLoading.value = true;
-    // Checkout if cart is validated
-    if (validatedCart.value) {
+
+    const validateRes = await validateCartItems(orders, auth);
+    if (!validateRes.ok) throw new Error("Something went wrong");
+
+    const validateResult = await validateRes.json();
+    // console.log(validateResult);
+
+    if (validateResult.valid) {
       await handleCheckout(orders);
       return;
-    }
-    // Validate cart if it not
-    else {
-      const validateRes = await validateCartItems(orders, auth);
-      if (!validateRes.ok) throw new Error("Something went wrong");
+    } else {
+      const updatedProductMessage = validateResult.updateItems
+        .map((item) => (item.message ? "‣ " + item.message : null))
+        .filter((msg) => msg) // Filter out empty messages
+        .join("<br>");
+      const HTMLMessage = `<div class="flex flex-col gap-1 items-start justify-start">
+        ${updatedProductMessage}
+      </div>`;
+      handleShowNotiItemUpdateDialog(HTMLMessage);
 
-      const validateResult = await validateRes.json();
-      // console.log(validateResult);
-
-      if (validateResult.valid) {
-        await handleCheckout(orders);
-        return;
-      } else {
-        alert("Item in cart is changed are you sure to continue?");
-
-        // Update cart items
-        validateResult.updateItems.forEach((updatedItem) => {
-          cartStore.updateItem(
-            updatedItem.saleItemId,
-            updatedItem.newPrice,
-            updatedItem.availableQuantity
-          );
-        });
-
-        statusMessageStore.setStatusMessage(
-          "Cart is updated, please review before checkout",
-          false
+      // Update cart items
+      validateResult.updateItems.forEach((updatedItem) => {
+        cartStore.updateItem(
+          updatedItem.saleItemId,
+          updatedItem.newPrice,
+          updatedItem.availableQuantity
         );
-        validatedCart.value = true;
-      }
+      });
     }
   } catch (err) {
     console.log(err);
@@ -122,7 +127,7 @@ const handleCheckout = async (orders) => {
     // console.log(result)
     if (!res.ok) throw new Error("Something went wrong");
 
-    cartStore.clearCart();
+    cartStore.clearSelected();
     statusMessageStore.setStatusMessage("Order success.");
     // router.push({ name: "order" })
   } catch (err) {
@@ -131,7 +136,38 @@ const handleCheckout = async (orders) => {
   }
 };
 
-onMounted(async () => {});
+// remove from cart confirmation dialog
+const showConfirmDialog = ref(false);
+const removeId = ref(false);
+
+const handleShowRemoveDialog = (itemId) => {
+  showConfirmDialog.value = true;
+  removeId.value = itemId;
+};
+
+const handleCloseRemoveDialog = () => {
+  showConfirmDialog.value = false;
+  removeId.value = null;
+};
+
+const handleConfirmRemoveDialog = () => {
+  cartStore.removeFromCart(removeId.value);
+  handleCloseRemoveDialog();
+};
+
+// item in cart noti dialog
+const showNotiItemUpdateDialog = ref(false);
+const itemUpdatedMessage = ref("");
+
+const handleShowNotiItemUpdateDialog = (message) => {
+  showNotiItemUpdateDialog.value = true;
+  itemUpdatedMessage.value = message;
+};
+
+const handleCloseNotiItemUpdateDialog = () => {
+  showNotiItemUpdateDialog.value = false;
+  itemUpdatedMessage.value = "";
+};
 </script>
 
 <template>
@@ -141,11 +177,33 @@ onMounted(async () => {});
       <div
         class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 mb-6 border-4 border-pink-100 backdrop-blur-md"
       >
-        <h1
-          class="text-3xl sm:text-4xl font-extrabold text-rose-500 text-center tracking-widest drop-shadow-sm"
+      <div class="flex items-center justify-center gap-4">
+        <div
+              class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-3"
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                ></path>
+              </svg>
+            </div>
+
+             <h1
+              class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
         >
-          🛍️ Shopping Cart
+          
+         Shopping Cart
         </h1>
+      </div>
+       
       </div>
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-16">
@@ -163,73 +221,127 @@ onMounted(async () => {});
         No items in cart
       </div>
 
-      <!-- Cart Items and Summary -->
+      <!-- Cart Items -->
       <div v-else>
         <div class="max-w-4xl mx-auto">
           <!-- Cart Items -->
           <div
-            class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 border-4 border-pink-100 backdrop-blur-md"
+            class="space-y-4 bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 border-4 border-pink-100 backdrop-blur-md"
           >
-            <ul class="space-y-4">
-              <li
-                v-for="item in cartStore.items"
-                :key="item.id"
-                class="bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-2xl p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <!-- Product Image -->
-                <div class="flex-shrink-0">
-                  <img
-                    :src="
-                      item.saleItemImages[0]
-                        ? `${IMAGE_ENDPOINT}${item.saleItemImages[0].fileName}`
-                        : placeHolder
-                    "
-                    alt="product"
-                    class="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-xl border-4 border-white shadow-md"
-                    @error="(event) => (event.target.src = placeHolder)"
+            <div class="mb-4">
+              <label class="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  class="w-5 h-5 cursor-pointer"
+                  @change="handleSelectAll"
+                  :checked="
+                    cartStore.totalSelectedItems === cartStore.totalItems &&
+                    cartStore.totalItems > 0
+                  "
+                />
+                <span class="ml-2 text-lg font-bold text-purple-600"
+                  >Select All</span
+                >
+              </label>
+            </div>
+            <div>
+              <hr class="border-purple-200 mb-4" />
+            </div>
+
+            <div
+              v-for="itemsGroupedBySeller in cartStore.itemsGroupedBySeller"
+              class=""
+            >
+              <div class="flex gap-3 items-center mb-4">
+                <input
+                  type="checkbox"
+                  :id="`select-seller-${itemsGroupedBySeller[0].seller.id}`"
+                  class="w-5 h-5 cursor-pointer"
+                  @change="
+                    handleSelectItemsBySeller(
+                      itemsGroupedBySeller[0].seller.id,
+                      $event
+                    )
+                  "
+                  :checked="itemsGroupedBySeller.every((item) => item.selected)"
+                />
+                <label
+                  :for="`select-seller-${itemsGroupedBySeller[0].seller.id}`"
+                  class="text-xl font-bold text-purple-600"
+                >
+                  {{ itemsGroupedBySeller[0].seller.shopName }}
+                </label>
+              </div>
+
+              <ul class="space-y-4">
+                <li
+                  v-for="item of itemsGroupedBySeller"
+                  :key="item.id"
+                  class="bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-2xl p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <input
+                    type="checkbox"
+                    :id="`select-item-${item.id}`"
+                    class="w-5 h-5 cursor-pointer"
+                    @change="handleSelectItem(item.id, $event)"
+                    :checked="item.selected"
                   />
-                </div>
 
-                <!-- Product Info -->
-                <div class="flex-1 text-center sm:text-left">
-                  <p class="text-lg sm:text-xl">
-                    <span class="font-extrabold text-purple-700">{{
-                      item.brandName
-                    }}</span>
-                  </p>
-                  <p class="text-base sm:text-lg text-gray-700 mt-1">
-                    {{ item.model }}
-                  </p>
-                  <p class="font-extrabold text-purple-700">
-                    {{ item.availableQuantity }} in stock
-                  </p>
-                  <p class="text-xl sm:text-2xl font-bold text-rose-500 mt-2">
-                    ฿{{ (item.price * item.quantity).toFixed(2) }}
-                  </p>
-                </div>
-
-                <!-- Quantity Controls -->
-                <div class="flex items-center gap-3">
-                  <button
-                    @click="decreaseQuantity(item)"
-                    class="cursor-pointer w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-rose-500 hover:to-pink-500 transition-all duration-300 hover:scale-110"
-                  >
-                    -
-                  </button>
-                  <div
-                    class="w-12 sm:w-16 h-10 sm:h-12 bg-white border-2 border-purple-300 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold text-purple-700 shadow-inner"
-                  >
-                    {{ item.quantity }}
+                  <!-- Product Image -->
+                  <div class="flex-shrink-0">
+                    <img
+                      :src="
+                        item.saleItemImages[0]
+                          ? `${IMAGE_ENDPOINT}${item.saleItemImages[0].fileName}`
+                          : placeHolder
+                      "
+                      alt="product"
+                      class="w-28 h-28 object-cover rounded-xl border-4 border-white shadow-md"
+                      @error="(event) => (event.target.src = placeHolder)"
+                    />
                   </div>
-                  <button
-                    @click="increaseQuantity(item)"
-                    class="cursor-pointer w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-400 to-rose-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-purple-500 hover:to-rose-500 transition-all duration-300 hover:scale-110"
-                  >
-                    +
-                  </button>
-                </div>
-              </li>
-            </ul>
+
+                  <!-- Product Info -->
+                  <div class="flex-1 text-center sm:text-left">
+                    <p class="text-md">
+                      <span class="font-extrabold text-purple-700">{{
+                        item.brandName
+                      }}</span>
+                    </p>
+                    <p class="text-base sm:text-md text-gray-700 mt-1">
+                      {{ item.model }}
+                    </p>
+                    <p class="font-extrabold text-purple-700">
+                      {{ item.availableQuantity }} in stock
+                    </p>
+                    <p class="text-xl sm:text-lg font-bold text-rose-500 mt-2">
+                      ฿{{ (item.price * item.quantity).toFixed(2) }}
+                    </p>
+                  </div>
+
+                  <!-- Quantity Controls -->
+                  <div class="flex items-center gap-3">
+                    <button
+                      @click="decreaseQuantity(item)"
+                      class="cursor-pointer w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-rose-500 hover:to-pink-500 transition-all duration-300 hover:scale-110"
+                    >
+                      -
+                    </button>
+                    <div
+                      class="w-12 sm:w-16 h-10 sm:h-12 bg-white border-2 border-purple-300 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold text-purple-700 shadow-inner"
+                    >
+                      {{ item.quantity }}
+                    </div>
+                    <button
+                      @click="increaseQuantity(item)"
+                      class="cursor-pointer w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-400 to-rose-400 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg hover:from-purple-500 hover:to-rose-500 transition-all duration-300 hover:scale-110"
+                    >
+                      +
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
 
             <!-- Summary Section -->
             <div
@@ -310,7 +422,7 @@ onMounted(async () => {});
                   >
                   <span
                     class="text-2xl sm:text-3xl font-extrabold text-rose-500"
-                    >{{ cartStore.totalItems }}</span
+                    >{{ cartStore.totalSelectedItems }}</span
                   >
                 </div>
 
@@ -322,16 +434,28 @@ onMounted(async () => {});
                   >
                   <span
                     class="text-3xl sm:text-4xl font-extrabold text-rose-500"
-                    >฿{{ cartStore.totalPrice.toFixed(2) }}</span
+                    >฿{{ cartStore.totalSelectedItemPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}}</span
                   >
                 </div>
 
                 <!-- Place Order Button -->
                 <button
                   @click="handlePlaceOrder"
-                  class="cursor-pointer w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white px-8 py-4 rounded-full text-xl sm:text-2xl font-bold shadow-2xl hover:from-purple-400 hover:to-purple-500 transition-all duration-300 hover:scale-105 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] mt-4"
+                  :disabled="
+                    isLoading ||
+                    shippingAddress === '' ||
+                    cartStore.totalSelectedItemPrice === 0
+                  "
+                  :class="[
+                    isLoading ||
+                    shippingAddress === '' ||
+                    cartStore.totalSelectedItemPrice === 0
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-rose-500 to-purple-500 cursor-pointer',
+                    'w-full text-white text-xl sm:text-2xl font-extrabold py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center',
+                  ]"
                 >
-                  🎉 Place Order Now
+                  Place Order Now
                 </button>
               </div>
             </div>
@@ -340,4 +464,21 @@ onMounted(async () => {});
       </div>
     </div>
   </div>
+
+  <ConfirmModal
+    v-if="showConfirmDialog"
+    :title="'Remove this item from cart?'"
+    :message="``"
+    :button-label="'remove'"
+    @confirm="handleConfirmRemoveDialog"
+    @cancel="handleCloseRemoveDialog"
+  />
+
+  <ConfirmModal
+    v-if="showNotiItemUpdateDialog"
+    :title="'Item in cart is changed, please review before checkout'"
+    :message="itemUpdatedMessage"
+    :is-disabled="true"
+    @cancel="handleCloseNotiItemUpdateDialog"
+  />
 </template>

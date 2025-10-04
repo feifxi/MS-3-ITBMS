@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int204.itbmsbackend.config.FileStorageProperties;
 import sit.int204.itbmsbackend.dto.common.ApiResponse;
+import sit.int204.itbmsbackend.dto.common.PageDTO;
 import sit.int204.itbmsbackend.dto.order.OrderItemResponse;
 import sit.int204.itbmsbackend.dto.order.OrderResponse;
 import sit.int204.itbmsbackend.dto.user.UpdateUserRequest;
@@ -89,8 +90,15 @@ public class UserController {
 
     // Get all orders by buyer
     @GetMapping("/{id}/orders")
-    public ResponseEntity<List<OrderResponse>> getOrdersByBuyer(@PathVariable Integer id, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<PageDTO<OrderResponse>> getOrdersByBuyer(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Integer id,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "createdOn") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDirection
+    ) {
         userService.findById(id);
-        return ResponseEntity.ok(orderService.getOrdersByBuyer(id));
+        return ResponseEntity.ok(orderService.getOrdersByBuyer(id,  page, size, sortField, sortDirection));
     }
 }

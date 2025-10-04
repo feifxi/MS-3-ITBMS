@@ -189,8 +189,39 @@ export const createOrderItems = async (orderItems, authStore) => {
   }, authStore);
 }
 
-export const getOrderItems = async (authStore) => {
-  return await fetchWithAuth(`/v2/users/${authStore.user.id}/orders`, {
+export const getOrderByBuyerId = async (authStore, page = 0, size = 10, sortField, sortDirection) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString()
+  });
+
+  if (sortField) {
+    params.append('sortField', sortField);
+    if (sortDirection) {
+        params.append('sortDirection', sortDirection);
+    }
+  }
+
+  return await fetchWithAuth(`/v2/users/${authStore.user.id}/orders?${params.toString()}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }, authStore);
+}
+
+export const getOrderBySellerId = async (authStore, page = 0, size = 10, sortField, sortDirection) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString()
+  });
+
+  if (sortField) {
+    params.append('sortField', sortField);
+    if (sortDirection) {
+        params.append('sortDirection', sortDirection);
+    }
+  }
+
+  return await fetchWithAuth(`/v2/sellers/${authStore.user.id}/orders?${params.toString()}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   }, authStore);

@@ -4,10 +4,7 @@ import { useStatusMessageStore } from "@/stores/statusMessage";
 import { useAuthStore } from "@/stores/auth";
 import { onMounted, ref } from "vue";
 import {
-  fetchUserProfile,
-  getOrderItems,
   getOrderItemsById,
-  updateUserProfile,
 } from "@/api";
 import { useCartStore } from "@/stores/cart";
 import placeHolderImage from "@/assets/placeholder.svg";
@@ -123,8 +120,9 @@ onMounted(async () => {
                 Status
               </h2>
             </div>
-            <div class="p-6">
-              <div class="space-y-4">
+            <div class="p-6 flex gap-3">
+              <!-- Order Status -->
+              <div class="space-y-4 flex-1">
                 <div class="text-center">
                   <p class="text-sm text-gray-600 mb-2 font-semibold">
                     Order Status
@@ -156,6 +154,49 @@ onMounted(async () => {
                 >
                   <p class="text-sm text-gray-600 mb-1 font-semibold">
                     Order Date
+                  </p>
+                  <p class="text-gray-800 font-bold">
+                    {{ new Date(order.orderDate).toLocaleDateString() }}
+                  </p>
+                  <p class="text-sm text-gray-600 font-medium">
+                    {{ new Date(order.orderDate).toLocaleTimeString() }}
+                  </p>
+                </div>
+              </div>
+              <!-- Payment status -->
+              <div class="space-y-4 flex-1">
+                <div class="text-center">
+                  <p class="text-sm text-gray-600 mb-2 font-semibold">
+                    Payment Status
+                  </p>
+                  <span
+                    class="inline-block px-6 py-2 rounded-full text-base font-bold border-2 shadow-md"
+                    :class="{
+                      // 'bg-yellow-100 text-yellow-800 border-yellow-300':
+                      //   order.orderStatus === 'PENDING',
+                      'bg-green-100 text-green-800 border-green-300':
+                        true || order.orderStatus === 'COMPLETED',
+                      // 'bg-red-100 text-red-800 border-red-300':
+                      //   order.orderStatus === 'CANCELLED',
+                      // 'bg-blue-100 text-blue-800 border-blue-300':
+                      //   order.orderStatus === 'PROCESSING',
+                      'bg-gray-100 text-gray-800 border-gray-300': ![
+                        'PENDING',
+                        'COMPLETED',
+                        'CANCELLED',
+                        'PROCESSING',
+                      ].includes(order.orderStatus),
+                    }"
+                  >
+                    <!-- {{ order.orderStatus }} -->
+                    {{ order.paymentStatus || 'COMPLETED' }}
+                  </span>
+                </div>
+                <div
+                  class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 text-center border-2 border-purple-100 shadow-md"
+                >
+                  <p class="text-sm text-gray-600 mb-1 font-semibold">
+                    Payment Date
                   </p>
                   <p class="text-gray-800 font-bold">
                     {{ new Date(order.orderDate).toLocaleDateString() }}
@@ -220,7 +261,7 @@ onMounted(async () => {
                       <div
                         class="inline-block px-4 py-1.5 bg-white border-2 border-purple-200 rounded-lg font-bold text-gray-700 shadow-sm"
                       >
-                        <p>Price: ฿{{ item.priceAtPurchase }}</p>
+                        <p>Price: ฿{{ item.priceAtPurchase.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
                         <p>Quantity: {{ item.quantity }}</p>
                       </div>
                     </div>
@@ -369,7 +410,7 @@ onMounted(async () => {
               <div class="text-center sm:text-left">
                 <p class="text-purple-100 text-base font-bold mb-2">Total</p>
                 <p class="text-white text-5xl font-bold drop-shadow-lg">
-                  ฿{{ order.totalAmount.toFixed(2) }}
+                  ฿{{ order.totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                 </p>
               </div>
               <div

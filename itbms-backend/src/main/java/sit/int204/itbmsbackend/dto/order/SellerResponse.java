@@ -11,4 +11,5 @@ public class SellerResponse {
     private String nickname;
     private String fullName;
     private String phone;
+    private String shopName;
 }

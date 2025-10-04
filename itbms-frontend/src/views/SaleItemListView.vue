@@ -1,9 +1,8 @@
 <script setup>
 import { ref, onMounted, reactive, computed, watch } from "vue";
-import { fetchAllSaleItems, fetchAllSaleItemsBySeller } from "@/api/index.js";
+import { fetchAllSaleItemsBySeller } from "@/api/index.js";
 import CardItemList from "@/components/CardItemList.vue";
 import Button from "@/components/Button.vue";
-
 import { useRouter } from "vue-router";
 import {
   CirclePlus,
@@ -22,9 +21,7 @@ const getSessionStorageItem = (key) => {
   return sessionStorage.getItem(key);
 };
 
-const persistPaginationOptionJSON = getSessionStorageItem(
-  "paginationOptionSeller"
-);
+const persistPaginationOptionJSON = getSessionStorageItem("paginationOptionSeller");
 const persistPaginationOption = persistPaginationOptionJSON
   ? JSON.parse(persistPaginationOptionJSON)
   : {

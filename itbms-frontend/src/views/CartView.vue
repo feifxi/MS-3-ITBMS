@@ -315,7 +315,7 @@ const handleCloseNotiItemUpdateDialog = () => {
                       {{ item.availableQuantity }} in stock
                     </p>
                     <p class="text-xl sm:text-lg font-bold text-rose-500 mt-2">
-                      ฿{{ (item.price * item.quantity).toFixed(2) }}
+                      ฿{{ (item.price * item.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
                     </p>
                   </div>
 

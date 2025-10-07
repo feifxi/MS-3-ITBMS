@@ -109,8 +109,11 @@ services:
     build:
       context: ./itbms-frontend
       dockerfile: dockerfile
+    volumes:
+      - ./itbms-frontend/ssl/:/etc/cert/
     ports:
       - "80:80"
+      - "443:443"
     networks:
       - itbms_network
     depends_on:

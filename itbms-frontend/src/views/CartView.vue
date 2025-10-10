@@ -7,6 +7,7 @@ import { createOrderItems, validateCartItems } from "@/api";
 import { useCartStore } from "@/stores/cart";
 import placeHolder from "@/assets/placeholder.svg";
 import ConfirmModal from "@/components/ConfirmModal.vue";
+import { CircleAlert } from "lucide-vue-next";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
@@ -90,15 +91,18 @@ const handlePlaceOrder = async () => {
     const validateResult = await validateRes.json();
     // console.log(validateResult);
 
+    // if (true) { // <------- open this to skip validation
     if (validateResult.valid) {
       await handleCheckout(orders);
       return;
     } else {
       const updatedProductMessage = validateResult.updateItems
-        .map((item) => (item.message ? "‣ " + item.message : null))
+        .map((item) => item.errorMessages ? item.errorMessages.map((msg) =>  `<li>${msg}</li>`).join("") : null)
         .filter((msg) => msg) // Filter out empty messages
-        .join("<br>");
-      const HTMLMessage = `<div class="flex flex-col gap-1 items-start justify-start">
+        .join("");
+      // console.log(updatedProductMessage)
+      const HTMLMessage = 
+      `<div class="flex flex-col gap-1 items-start justify-start text-left">
         ${updatedProductMessage}
       </div>`;
       handleShowNotiItemUpdateDialog(HTMLMessage);
@@ -111,6 +115,7 @@ const handlePlaceOrder = async () => {
           updatedItem.availableQuantity
         );
       });
+      // console.log(cartStore.items);
     }
   } catch (err) {
     console.log(err);
@@ -171,39 +176,36 @@ const handleCloseNotiItemUpdateDialog = () => {
 </script>
 
 <template>
-  <!-- Update my cart UI  -->
   <div class="px-16 py-8">
     <div class="bg-white px-16 py-8 rounded-xl shadow">
       <div
         class="bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 mb-6 border-4 border-pink-100 backdrop-blur-md"
       >
-      <div class="flex items-center justify-center gap-4">
-        <div
-              class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-3"
+        <div class="flex items-center justify-center gap-4">
+          <div
+            class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-3"
+          >
+            <svg
+              class="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                class="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                ></path>
-              </svg>
-            </div>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              ></path>
+            </svg>
+          </div>
 
-             <h1
-              class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-        >
-          
-         Shopping Cart
-        </h1>
-      </div>
-       
+          <h1
+            class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+          >
+            Shopping Cart
+          </h1>
+        </div>
       </div>
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-16">
@@ -223,7 +225,7 @@ const handleCloseNotiItemUpdateDialog = () => {
 
       <!-- Cart Items -->
       <div v-else>
-        <div class="max-w-4xl mx-auto">
+        <div class="mx-auto">
           <!-- Cart Items -->
           <div
             class="space-y-4 bg-white bg-opacity-80 shadow-2xl shadow-pink-200 rounded-3xl p-6 sm:p-8 border-4 border-pink-100 backdrop-blur-md"
@@ -272,13 +274,20 @@ const handleCloseNotiItemUpdateDialog = () => {
                   {{ itemsGroupedBySeller[0].seller.shopName }}
                 </label>
               </div>
-
+              
               <ul class="space-y-4">
                 <li
                   v-for="item of itemsGroupedBySeller"
                   :key="item.id"
-                  class="bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-2xl p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 shadow-lg hover:shadow-xl transition-all duration-300"
+                  class="relative bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-2xl p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
+                  <!-- Updated Item Alert -->
+                  <div v-if="item.isUpdated" class="absolute left-3 top-0.5 flex items-center gap-1">
+                    <CircleAlert class="text-red-500" />
+                    <p class="text-red-500 max-lg:hidden">This item has been updated</p>
+                  </div>
+
+                  <!-- Select Item Checkbox -->
                   <input
                     type="checkbox"
                     :id="`select-item-${item.id}`"
@@ -296,7 +305,7 @@ const handleCloseNotiItemUpdateDialog = () => {
                           : placeHolder
                       "
                       alt="product"
-                      class="w-28 h-28 object-cover rounded-xl border-4 border-white shadow-md"
+                      class="w-35 h-35 object-cover rounded-xl border-4 border-white shadow-md"
                       @error="(event) => (event.target.src = placeHolder)"
                     />
                   </div>
@@ -311,12 +320,40 @@ const handleCloseNotiItemUpdateDialog = () => {
                     <p class="text-base sm:text-md text-gray-700 mt-1">
                       {{ item.model }}
                     </p>
-                    <p class="font-extrabold text-purple-700">
-                      {{ item.availableQuantity }} in stock
-                    </p>
-                    <p class="text-xl sm:text-lg font-bold text-rose-500 mt-2">
-                      ฿{{ (item.price * item.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
-                    </p>
+                   
+                    <div
+                      v-if="item.isUpdated && (item.oldAvailableQuantity !== item.availableQuantity)"
+                      class="flex flex-wrap gap-2 items-center"
+                    >
+                      <p class="font-extrabold text-purple-700">
+                        New Quantity : {{ String(item.availableQuantity).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                      </p>
+                      <p class="bg-white border-2 py-1 px-2 border-purple-300 rounded-full flex items-center font-bold text-purple-700 shadow-inner">
+                        Old Quantity : {{ String(item.oldAvailableQuantity).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                      </p>
+                    </div>
+                    <div v-else class="font-extrabold text-purple-700">
+                      {{ String(item.availableQuantity).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} available
+                    </div>
+
+                    <div
+                      v-if="item.isUpdated && (item.oldPrice !== item.price)"
+                      class="flex gap-2 flex-wrap items-center"
+                    >
+                      <p class="font-extrabold text-purple-700">
+                        New Price : ฿{{ item.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                      </p>
+                      <p class="bg-white border-2 py-1 px-2 border-purple-300 rounded-full flex items-center font-bold text-purple-700 shadow-inner">
+                        Old Price : ฿{{ item.oldPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                      </p>
+                    </div>
+                    <div v-else class="text-xl sm:text-lg font-bold text-purple-700 mt-2">
+                      Unit Price: ฿{{ item.price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                    </div>
+
+                    <div class="text-xl sm:text-lg font-bold text-rose-500 mt-2">
+                      {{ item.isUpdated ? 'New Total:' : 'Total:' }} ฿{{ (item.price * item.quantity).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+                    </div>
                   </div>
 
                   <!-- Quantity Controls -->
@@ -434,7 +471,11 @@ const handleCloseNotiItemUpdateDialog = () => {
                   >
                   <span
                     class="text-3xl sm:text-4xl font-extrabold text-rose-500"
-                    >฿{{ cartStore.totalSelectedItemPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}}</span
+                    >฿{{
+                      cartStore.totalSelectedItemPrice
+                        .toFixed(2)
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }}</span
                   >
                 </div>
 
@@ -476,7 +517,7 @@ const handleCloseNotiItemUpdateDialog = () => {
 
   <ConfirmModal
     v-if="showNotiItemUpdateDialog"
-    :title="'Item in cart is changed, please review before checkout'"
+    :title="'Some items in your cart have been updated. Please review before checkout.'"
     :message="itemUpdatedMessage"
     :is-disabled="true"
     @cancel="handleCloseNotiItemUpdateDialog"

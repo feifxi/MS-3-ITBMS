@@ -15,6 +15,14 @@ const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
 const auth = useAuthStore();
 const cartStore = useCartStore();
+const orderStatus = [
+  'PENDING',
+  'PAID',
+  'SHIPPED',
+  'DELIVERED',
+  'CANCELLED',
+  'RETURNED'
+];
 
 const getSessionStorageItem = (key) => {
   return sessionStorage.getItem(key);
@@ -28,6 +36,15 @@ const currentTab = ref(
   : "BUYER"
 ); // SELLER or BUYER
 
+
+// Order Status Filter
+const persistSelectedOrderStatusJSON = getSessionStorageItem("selectedOrderStatus");
+const persistSelectedOrderStatus = persistSelectedOrderStatusJSON
+  ? JSON.parse(persistSelectedOrderStatusJSON)
+  : "";
+const selectedOrderStatus = ref(persistSelectedOrderStatus);
+
+// Orders Data
 const orders = ref([]);
 const isLoading = ref(false);
 
@@ -39,7 +56,8 @@ const fetchOrders = async () => {
       pagination.page,
       pagination.size,
       sortOption.sortField,
-      sortOption.sortDirection
+      sortOption.sortDirection,
+      selectedOrderStatus.value,
     );
     if (!res.ok) {
       throw new Error("Failed to fetch orders");
@@ -66,7 +84,8 @@ const fetchOrdersSellerView = async () => {
       pagination.page,
       pagination.size,
       sortOption.sortField,
-      sortOption.sortDirection
+      sortOption.sortDirection,
+      selectedOrderStatus.value,
     );
     if (!res.ok) {
       throw new Error("Failed to fetch orders");
@@ -84,18 +103,6 @@ const fetchOrdersSellerView = async () => {
     isLoading.value = false;
   }
 };
-
-onMounted(async () => {
-  if (!auth.user) {
-    router.push({ name: "Login" });
-    return;
-  }
-  if (currentTab.value === "BUYER") {
-    await fetchOrders();
-  } else if (currentTab.value === "SELLER") {
-    await fetchOrdersSellerView();
-  }
-});
 
 // Pagination and Sorting
 const persistPaginationOptionJSON = getSessionStorageItem(
@@ -204,6 +211,11 @@ const saveSessionData = () => {
   );
 
   sessionStorage.setItem(
+    "selectedOrderStatus",
+    JSON.stringify(selectedOrderStatus.value)
+  );
+
+  sessionStorage.setItem(
     currentTab.value === "BUYER"
       ? "paginationOptionOrderBuyer"
       : "paginationOptionOrderSeller",
@@ -219,6 +231,17 @@ const saveSessionData = () => {
   );
 };
 
+onMounted(async () => {
+  if (!auth.user) {
+    router.push({ name: "Login" });
+    return;
+  }
+  if (currentTab.value === "BUYER") {
+    await fetchOrders();
+  } else if (currentTab.value === "SELLER") {
+    await fetchOrdersSellerView();
+  }
+});
 
 watch(
   () => pagination.page,
@@ -229,7 +252,7 @@ watch(
 );
 
 watch(
-  [() => pagination.size, sortOption, currentTab],
+  [() => pagination.size, sortOption, currentTab, selectedOrderStatus],
   () => {
     pagination.page = 0;
     saveSessionData();
@@ -239,6 +262,7 @@ watch(
 );
 
 // console.log("Auth User:", auth.user);
+
 </script>
 
 <template>
@@ -332,6 +356,19 @@ watch(
             >
               <ArrowDownWideNarrow />
             </button>
+          </div>
+
+          <div class="flex gap-2 items-center ml-auto">
+            <h3>status</h3>
+            <select
+              v-model="selectedOrderStatus"
+              class="input sm:!w-50"
+            >
+              <option value="">All</option>
+              <option v-for="status in orderStatus" :key="status" :value="status">
+                {{ status }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -533,7 +570,7 @@ watch(
 
     <!-- Pagination -->
     <div
-      :v-show="paginatedPages.length > 1"
+      v-show="paginatedPages.length > 1"
       class="max-w-7xl mx-auto p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold"
     >
       <button

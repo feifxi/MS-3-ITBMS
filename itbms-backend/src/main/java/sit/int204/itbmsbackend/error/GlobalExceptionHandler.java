@@ -1,4 +1,4 @@
-package sit.int204.itbmsbackend.exception;
+package sit.int204.itbmsbackend.error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

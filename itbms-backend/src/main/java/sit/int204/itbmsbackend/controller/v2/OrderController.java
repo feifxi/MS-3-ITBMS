@@ -40,7 +40,10 @@ public class OrderController {
 
     // Get a single order detail
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<OrderResponse> getOrderById(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
         OrderResponse order = orderService.getOrderById(id);
         if (!order.getBuyerId().equals(userPrincipal.getId()) && !order.getSeller().getId().equals(userPrincipal.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);

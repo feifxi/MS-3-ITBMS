@@ -90,7 +90,8 @@ const goToSignin = async () => {
                 <span class="itbms-storageGb-unit">GB</span>
             </p>
             <div>
-               <span class="text-xs text-gray-500">{{ item.quantity }} in stock</span>
+               <span v-if="item.quantity > 0" class="text-xs text-gray-500">{{ String(item.quantity).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }} available</span>
+               <span v-else class="text-xs text-gray-500">Out of stock</span>
             </div>
             <div class="flex items-center justify-between">
               <div>
@@ -100,6 +101,7 @@ const goToSignin = async () => {
                 </span>
               </div>
               <button 
+                v-if="item.quantity > 0"
                 @click.stop.prevent="addToCart({...item})" 
                 class="cursor-pointer w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors"
               >

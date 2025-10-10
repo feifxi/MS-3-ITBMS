@@ -27,7 +27,7 @@ const emit = defineEmits(['confirm', 'cancel'])
       </div>
       
       <h2 class="text-xl font-bold text-gray-800 mb-3">{{ title }}</h2>
-      <p class="itbms-message text-gray-600 mb-6" v-html="message"></p>
+      <p class="itbms-message text-gray-600 mb-6 px-5" v-html="message"></p>
 
       <div class="flex justify-center gap-4">
         <button v-if="!isDisabled"

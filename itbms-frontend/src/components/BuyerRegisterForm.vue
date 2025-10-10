@@ -48,10 +48,11 @@ const fieldIntegrity = {
   },
   password: {
     checkConstraint: (data) => {
-      // return 7 < data.length && data.length <= 40;
-      return data.length <= 14 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data);
+      if (typeof data !== "string") return false;
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,14}$/;
+      return regex.test(data);
     },
-    errorMessage: "Password must be between 8 - 14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
+    errorMessage: "Password must be 8-14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
   },
 };
 

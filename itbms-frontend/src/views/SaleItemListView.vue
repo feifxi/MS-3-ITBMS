@@ -333,7 +333,7 @@ watch(
 
       <!-- Pagination -->
       <div
-        :v-show="paginatedPages.length > 1"
+        v-show="paginatedPages.length > 1"
         class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold"
       >
         <button

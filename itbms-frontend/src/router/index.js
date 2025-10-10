@@ -126,6 +126,10 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    // Always scroll to top when navigating to a new route
+    return { top: 0 }
+  },
 })
 
 

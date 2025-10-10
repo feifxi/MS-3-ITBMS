@@ -30,10 +30,7 @@ import sit.int204.itbmsbackend.security.UserPrincipal;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,15 +49,33 @@ public class AuthService {
     private int emailVerifiedExpirationHr;
 
     private void validateSellerField(RegisterRequest seller) {
-        if (seller.getShopName() == null ||
-                seller.getPhone() == null ||
-                seller.getBankAccountNumber() == null ||
-                seller.getBankName() == null ||
-                seller.getIdCardNumber() == null
-        ) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid seller fields.");
+        Map<String, String> errors = new HashMap<>();
+        // Shop name
+        if (seller.getShopName() == null || seller.getShopName().isBlank()) {
+            errors.put("shopName", "Shop name is required.");
+        }
+        // Phone
+        if (seller.getPhone() == null || !seller.getPhone().matches("^\\+?[0-9]{8,15}$")) {
+            errors.put("phone", "Phone number must contain only digits (8–15 digits, optional + at start).");
+        }
+        // Bank account number
+        if (seller.getBankAccountNumber() == null || !seller.getBankAccountNumber().matches("^[0-9]{6,16}$")) {
+            errors.put("bankAccountNumber", "Bank account number must contain only digits (6–16 characters).");
+        }
+        // Bank name
+        if (seller.getBankName() == null || seller.getBankName().isBlank()) {
+            errors.put("bankName", "Bank name is required.");
+        }
+        // ID card number
+        if (seller.getIdCardNumber() == null || !seller.getIdCardNumber().matches("^[0-9]{13}$")) {
+            errors.put("idCardNumber", "ID Card Number must contain exactly 13 digits.");
+        }
+        // If any errors exist, throw exception with all
+        if (!errors.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid fields: " + errors.toString());
         }
     }
+
 
     @Transactional
     public User registerUser(RegisterRequest request) throws MessagingException, UnsupportedEncodingException {

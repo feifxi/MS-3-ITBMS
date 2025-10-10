@@ -572,7 +572,7 @@ watch(() => route.query.search, (newSearch) => {
       </div>
       
       <!-- Pagination -->
-      <div :v-show="paginatedPages.length > 1" class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold">
+      <div v-show="paginatedPages.length > 1" class="p-4 mt-5 flex gap-3 rounded-xl bg-white justify-center text-white font-bold">
         <button @click="handleGoFirst" class='itbms-page-first paginationBtn !px-4' :disabled="pagination.first">
           First
         </button>

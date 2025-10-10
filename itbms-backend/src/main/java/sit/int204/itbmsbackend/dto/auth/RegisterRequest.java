@@ -19,7 +19,7 @@ public class RegisterRequest {
     @NotNull
     private String fullName;
 
-    @Size(max = 100)
+    @Size(max = 50)
     @NotNull
     private String email;
 

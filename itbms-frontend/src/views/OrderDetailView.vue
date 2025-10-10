@@ -8,6 +8,7 @@ import {
 } from "@/api";
 import { useCartStore } from "@/stores/cart";
 import placeHolderImage from "@/assets/placeholder.svg";
+import BreadCrumb from "@/components/BreadCrumb.vue";
 
 const BASE_API = import.meta.env.VITE_BASE_API;
 const IMAGE_ENDPOINT = BASE_API + "/v1/sale-items/images/";
@@ -30,7 +31,6 @@ const fetchOrder = async () => {
       throw new Error("Failed to fetch order");
     }
     const orderRes = await res.json();
-
     order.value = orderRes;
     // console.log(orderRes);
   } catch (error) {
@@ -51,6 +51,12 @@ onMounted(async () => {
     class="px-4 sm:px-16 py-8 bg-gradient-to-br from-purple-50 via-pink-50 to-white min-h-screen"
   >
     <div class="max-w-6xl mx-auto">
+      <BreadCrumb
+        :links="[
+          { to: { name: 'order' }, label: 'Orders' },
+          { to: '#', label: `Order #${orderId}` },
+        ]"
+      />
       <!-- Header -->
       <div
         class="bg-white rounded-2xl shadow-2xl mb-8 overflow-hidden border border-purple-100"
@@ -328,9 +334,12 @@ onMounted(async () => {
                   </svg>
                 </div>
                 <div class="flex-1">
-                  <p class="text-sm text-gray-600 font-bold mb-1">Seller</p>
+                  <p class="text-sm text-gray-600 font-bold mb-1">
+                    {{ auth.user.id != order.buyer.id ? 'Buyer' : 'Seller' }}
+                  </p>
                   <p class="text-gray-800 font-medium text-base">
-                    {{ order.seller.nickname }}
+                    {{ auth.user.id != order.buyer.id ? order.buyer.nickname : order.seller.shopName }}
+                    <!-- {{ order.seller.nickname }} -->
                   </p>
                 </div>
               </div>

@@ -64,10 +64,11 @@ const fieldIntegrity = {
   },
   password: {
     checkConstraint: (data) => {
-      // return 7 < data.length && data.length <= 40;
-      return data.length <= 14 && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data);
+      if (typeof data !== "string") return false;
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,14}$/;
+      return regex.test(data);
     },
-    errorMessage: "Password must be between 8 - 14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
+    errorMessage: "Password must be 8-14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
   },
   shopName: {
     checkConstraint: (data) => {
@@ -77,9 +78,10 @@ const fieldIntegrity = {
   },
   phone: {
     checkConstraint: (data) => {
-      return 0 < data.length && data.length <= 20;
+      // Allows only digits, optional + at start, 8–15 digits total
+      return /^\+?[0-9]{8,15}$/.test(data);
     },
-    errorMessage: "Phone must be 1-20 characters long.",
+    errorMessage: "Phone number must contain only digits (8-15 digits, optional + at start).",
   },
   bankName: {
     checkConstraint: (data) => {
@@ -89,16 +91,18 @@ const fieldIntegrity = {
   },
   bankAccountNumber: {
     checkConstraint: (data) => {
-      return 0 < data.length && data.length <= 40;
+      // Must be 6–16 digits, only numbers allowed
+      return /^[0-9]{6,16}$/.test(data)
     },
-    errorMessage: "Must choose bank.",
+    errorMessage: "Bank account number must contain only digits (6-16 characters).",
   },
   idCardNumber: {
     checkConstraint: (data) => {
-      return 0 < data.length && data.length <= 40;
+      // Must be exactly 13 digits, all numeric
+      return /^[0-9]{13}$/.test(data);
     },
-    errorMessage: "ID Card Number must be 1-40 characters long.",
-  },
+    errorMessage: "ID Card Number must contain exactly 13 digits.",
+  } 
 };
 
 const handleFocusIn = (e) => {
@@ -166,7 +170,7 @@ const submitForm = async (e) => {
     // });
     const res = await registerUser(formData);
     const result = await res.json();
-    console.log(result);
+    // console.log(result);
     if (res.ok) {
       statusMessageStore.setStatusMessage("The user account has been successfully registered.");
       router.push({ name: "login" });

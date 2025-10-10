@@ -189,16 +189,20 @@ export const createOrderItems = async (orderItems, authStore) => {
   }, authStore);
 }
 
-export const getOrderByBuyerId = async (authStore, page = 0, size = 10, sortField, sortDirection) => {
+export const getOrderByBuyerId = async (authStore, page = 0, size = 10, sortField, sortDirection, status) => {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString()
   });
 
+  if (status) {
+    params.append('status', status);
+  }
+
   if (sortField) {
     params.append('sortField', sortField);
     if (sortDirection) {
-        params.append('sortDirection', sortDirection);
+      params.append('sortDirection', sortDirection);
     }
   }
 
@@ -208,16 +212,20 @@ export const getOrderByBuyerId = async (authStore, page = 0, size = 10, sortFiel
   }, authStore);
 }
 
-export const getOrderBySellerId = async (authStore, page = 0, size = 10, sortField, sortDirection) => {
+export const getOrderBySellerId = async (authStore, page = 0, size = 10, sortField, sortDirection, status) => {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString()
   });
 
+  if (status) {
+    params.append('status', status);
+  }
+
   if (sortField) {
     params.append('sortField', sortField);
     if (sortDirection) {
-        params.append('sortDirection', sortDirection);
+      params.append('sortDirection', sortDirection);
     }
   }
 

@@ -14,6 +14,7 @@ public class OrderResponse {
     private Integer orderId;
     private SellerResponse seller;
     private Integer buyerId;
+    private BuyerResponse buyer;
     private List<OrderItemResponse> orderItems;
     private String orderNote;
     private String shippingAddress;

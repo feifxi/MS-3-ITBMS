@@ -92,11 +92,15 @@ export const useCartStore = defineStore('cart', () => {
                     price: newPrice, 
                     availableQuantity: newAvailableQuantity,
                     quantity: item.quantity > newAvailableQuantity ? newAvailableQuantity : item.quantity,
+                    // For reference
+                    isUpdated: true,
+                    oldPrice: item.price,
+                    oldAvailableQuantity: item.availableQuantity,
                 }
-                // console.log('Updating item:', {...item}, 'to', newData)
+                // console.log(newData)
                 return newData
             } else {
-                return item
+                return {...item}
             }
         })
     }

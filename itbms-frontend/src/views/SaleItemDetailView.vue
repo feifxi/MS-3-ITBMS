@@ -173,7 +173,7 @@ onMounted(async () => {
                   }}</span>
                   <span class="itbms-price-unit text-gray-600">Baht</span>
                 </div>
-                <div class="flex items-center gap-3 mb-6">
+                <div v-if="item.quantity > 0" class="flex items-center gap-3 mb-6">
                   <span class="inline-flex items-center gap-1">
                     <span class="w-3 h-3 rounded-full bg-green-500"></span>
                     <span class="text-green-600 font-medium">In Stock</span>
@@ -184,6 +184,12 @@ onMounted(async () => {
                       >{{ item.quantity || 0 }} units available</span
                     >
                   </div>
+                </div>
+                <div v-else class="flex items-center gap-3 mb-6">
+                  <span class="inline-flex items-center gap-1">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span class="text-red-600 font-medium">Out of Stock</span>
+                  </span>
                 </div>
               </div>
 
@@ -244,7 +250,7 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <div class="flex gap-3 items-center mt-10">
+              <div v-if="item.quantity > 0" class="flex gap-3 items-center mt-10">
                 <div class="flex gap-3 items-center">
                   <Button
                     @click="decreaseNumberToCart"

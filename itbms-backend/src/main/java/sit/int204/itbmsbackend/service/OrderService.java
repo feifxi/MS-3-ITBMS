@@ -15,7 +15,6 @@ import sit.int204.itbmsbackend.constant.PaymentMethod;
 import sit.int204.itbmsbackend.constant.PaymentStatus;
 import sit.int204.itbmsbackend.dto.common.PageDTO;
 import sit.int204.itbmsbackend.dto.order.*;
-import sit.int204.itbmsbackend.dto.saleItem.SaleItemListResponseDTO;
 import sit.int204.itbmsbackend.entity.*;
 import sit.int204.itbmsbackend.repository.*;
 import sit.int204.itbmsbackend.util.ListMapper;
@@ -42,30 +41,40 @@ public class OrderService {
             for (CreateOrderItemRequest reqItem : orderReq.getOrderItems()) {
                 SaleItem existSaleItem = saleItemRepository.findById(reqItem.getSaleItemId()).orElse(null);
                 UpdatedCartItemResponse updateItem = new UpdatedCartItemResponse();
+                List<String> errorCases =  new ArrayList<>();
+                List<String> errorMessages =  new ArrayList<>();
 
                 if (existSaleItem == null) {
-                    updateItem.setMessage("The "+ reqItem.getModel() +" has been deleted");
+                    errorCases.add("DELETED");
+                    errorMessages.add("The "+ reqItem.getModel() +" has been deleted");
                     isValid = false;
                 }
                 else {
                     if (existSaleItem.getQuantity() == 0) {
-                        updateItem.setMessage(reqItem.getModel() + " is out of stock.");
+                        errorCases.add("OUT_OF_QUANTITY");
+                        errorMessages.add(reqItem.getModel() + " is out of stock.");
                         isValid = false;
                     }
                     else if (existSaleItem.getQuantity() - reqItem.getQuantity() < 0) {
-                        updateItem.setMessage("Only " + existSaleItem.getQuantity() + " left in stock for " + reqItem.getModel() + ".");
+                        errorCases.add("NOT_ENOUGH_QUANTITY");
+                        errorMessages.add("Only " + existSaleItem.getQuantity() + " left in stock for " + reqItem.getModel() + ".");
                         isValid = false;
                     }
-                    else if (existSaleItem.getPrice().compareTo(reqItem.getPrice()) != 0) {
-                        updateItem.setMessage("The price of " + reqItem.getModel() + " has been updated to ฿" + existSaleItem.getPrice() + ".");
+                    if (existSaleItem.getPrice().compareTo(reqItem.getPrice()) != 0) {
+                        errorCases.add("PRICE_INCORRECT");
+                        errorMessages.add("The price of " + reqItem.getModel() + " has been updated from ฿"+ reqItem.getPrice()  +" to ฿" + existSaleItem.getPrice());
                         isValid = false;
                     }
                     updateItem.setSaleItemId(existSaleItem.getId());
                     updateItem.setAvailableQuantity(existSaleItem.getQuantity());
                     updateItem.setNewPrice(existSaleItem.getPrice());
                 }
+                updateItem.setErrorCase(errorCases);
+                updateItem.setErrorMessages(errorMessages);
 
-                updatedCartItems.add(updateItem);
+                if (!updateItem.getErrorCase().isEmpty() && !updateItem.getErrorMessages().isEmpty()) {
+                    updatedCartItems.add(updateItem);
+                }
             }
         }
 
@@ -82,14 +91,21 @@ public class OrderService {
             BigDecimal orderTotalAmount = BigDecimal.ZERO;
             Set<OrderItem> orderItems = new LinkedHashSet<>();
             Order order = new Order();
+            OrderStatus orderStatus = OrderStatus.PENDING;
 
             for (CreateOrderItemRequest item : orderRequest.getOrderItems()) {
                 SaleItem saleItem = saleItemRepository.findById(item.getSaleItemId())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Sale item not found"));
 
                 if (saleItem.getQuantity() < item.getQuantity()) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, saleItem.getModel() + " quantity is less than the requested quantity :: " + item.getQuantity());
+                    orderStatus = OrderStatus.CANCELLED;
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, saleItem.getModel() + " quantity is less than the requested quantity :: " + item.getQuantity());
                 }
+                else if (saleItem.getPrice().compareTo(item.getPrice()) != 0) {
+                    orderStatus = OrderStatus.CANCELLED;
+//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The price of " + saleItem.getModel() + " has been updated from ฿"+ item.getPrice()  +" to ฿" + saleItem.getPrice());
+                }
+
                 BigDecimal price = saleItem.getPrice();
                 BigDecimal subtotal = price.multiply(new BigDecimal(item.getQuantity()));
                 orderTotalAmount = orderTotalAmount.add(subtotal);
@@ -103,7 +119,8 @@ public class OrderService {
                 orderItems.add(orderItem);
 
                 // Decrease stock sale item
-                saleItem.setQuantity(saleItem.getQuantity() - item.getQuantity());
+                Integer currentQuantity = saleItem.getQuantity() - item.getQuantity();
+                saleItem.setQuantity(currentQuantity);
                 saleItemRepository.save(saleItem);
             }
 
@@ -118,7 +135,7 @@ public class OrderService {
             order.setAddress(buyerAddress);
             order.setShippingAddressNote(orderRequest.getShippingAddress());
             order.setOrderNote(orderRequest.getOrderNote());
-            order.setStatus(OrderStatus.PENDING);
+            order.setStatus(orderStatus);
             order.setPaymentStatus(PaymentStatus.PENDING);
             // Set payment
             Payment payment = new Payment();
@@ -142,18 +159,25 @@ public class OrderService {
             Integer page,
             Integer size,
             String sortField,
-            String sortDirection
+            String sortDirection,
+            OrderStatus status
     ) {
         Sort sort = "desc".equalsIgnoreCase(sortDirection)
                 ? Sort.by(sortField).descending().and(Sort.by("id").ascending())
                 : Sort.by(sortField).ascending().and(Sort.by("id").ascending());
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Order> orders = orderRepository.findByBuyer_Id(buyerId, pageable);
+
+        Page<Order> orders;
+        if (status != null) {
+            orders = orderRepository.findByBuyer_IdAndStatus(buyerId, status, pageable);
+        }
+        else {
+            orders = orderRepository.findByBuyer_Id(buyerId, pageable);
+        }
         List<OrderResponse> content = orders.getContent().stream().map((this::mappedToDTO)).toList();
         PageDTO<OrderResponse> res = listMapper.toPageDTO(orders, OrderResponse.class, modelMapper);
         res.setContent(content);
         return res;
-//        return orderRepository.findByBuyer_IdOrderByCreatedOnDesc(buyerId).stream().map((this::mappedToDTO)).toList();;
     }
 
     public PageDTO<OrderResponse> getOrdersBySeller(
@@ -161,13 +185,21 @@ public class OrderService {
             Integer page,
             Integer size,
             String sortField,
-            String sortDirection
+            String sortDirection,
+            OrderStatus status
     ) {
         Sort sort = "desc".equalsIgnoreCase(sortDirection)
                 ? Sort.by(sortField).descending().and(Sort.by("id").ascending())
                 : Sort.by(sortField).ascending().and(Sort.by("id").ascending());
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Order> orders = orderRepository.findBySeller_Id(sellerId, pageable);
+
+        Page<Order> orders;
+        if (status != null) {
+            orders = orderRepository.findBySeller_IdAndStatus(sellerId, status, pageable);
+        }
+        else {
+            orders = orderRepository.findBySeller_Id(sellerId, pageable);
+        }
         List<OrderResponse> content = orders.getContent().stream().map((this::mappedToDTO)).toList();
         PageDTO<OrderResponse> res = listMapper.toPageDTO(orders, OrderResponse.class, modelMapper);
         res.setContent(content);
@@ -205,13 +237,20 @@ public class OrderService {
         orderResponse.setOrderItems(orderItemRes);
         // Seller
         SellerResponse sellerResponse = new SellerResponse();
+        sellerResponse.setId(order.getSeller().getId());
         sellerResponse.setFullName(order.getSeller().getFullName());
         sellerResponse.setNickname(order.getSeller().getNickname());
         sellerResponse.setEmail(order.getSeller().getEmail());
         sellerResponse.setPhone(order.getSeller().getPhone());
-        sellerResponse.setId(order.getSeller().getId());
-
+        sellerResponse.setShopName(order.getSeller().getShopName());
         orderResponse.setSeller(sellerResponse);
+        // Buyer
+        BuyerResponse buyerResponse = new BuyerResponse();
+        buyerResponse.setId(order.getBuyer().getId());
+        buyerResponse.setFullName(order.getBuyer().getFullName());
+        buyerResponse.setNickname(order.getBuyer().getNickname());
+        buyerResponse.setEmail(order.getBuyer().getEmail());
+        orderResponse.setBuyer(buyerResponse);
 
         return orderResponse;
     }

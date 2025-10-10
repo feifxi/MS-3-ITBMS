@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import sit.int204.itbmsbackend.constant.OrderStatus;
 import sit.int204.itbmsbackend.dto.common.PageDTO;
 import sit.int204.itbmsbackend.dto.order.OrderResponse;
 import sit.int204.itbmsbackend.dto.saleItem.SaleItemListResponseDTO;
@@ -46,12 +47,13 @@ public class SellerController {
     public ResponseEntity<PageDTO<OrderResponse>> getOrdersBySeller(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Integer id,
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "createdOn") String sortField,
-            @RequestParam(defaultValue = "desc") String sortDirection
+            @RequestParam(defaultValue = "desc") String sortDirection,
+            @RequestParam(required = false) OrderStatus status
     ) {
         userService.findById(id);
-        return ResponseEntity.ok(orderService.getOrdersBySeller(id,  page, size, sortField, sortDirection));
+        return ResponseEntity.ok(orderService.getOrdersBySeller(id,  page, size, sortField, sortDirection, status));
     }
 }

@@ -261,14 +261,16 @@ onMounted(async () => {
                       class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border-2 border-purple-200 shadow-md flex-shrink-0"
                     />
                     <div class="flex-1 min-w-0 flex flex-col">
-                      <p class="font-bold text-gray-800 mb-2 line-clamp-2">
-                        {{ item.saleItemName }}
-                      </p>
+                      <RouterLink :to="{ name: 'SaleItemDetail', params: { id: item.saleItemId } }" class="hover:underline font-bold text-gray-800 mb-2 line-clamp-2 text-left">
+                         {{ item.saleItemBrand }} - {{ item.saleItemName }}
+                      </RouterLink>
                       <div
                         class="inline-block px-4 py-1.5 bg-white border-2 border-purple-200 rounded-lg font-bold text-gray-700 shadow-sm"
                       >
                         <p>Price: ฿{{ item.priceAtPurchase.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</p>
                         <p>Quantity: {{ item.quantity }}</p>
+                        <p>Storage: {{ item.saleItemStorageSize ? item.saleItemStorageSize + "GB" : '-' }}</p>
+                        <p>Color: {{ item.saleItemColor || '-' }}</p>
                       </div>
                     </div>
                   </div>

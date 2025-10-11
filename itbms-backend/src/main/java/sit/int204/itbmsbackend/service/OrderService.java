@@ -228,7 +228,12 @@ public class OrderService {
             OrderItemResponse itemResponse = new OrderItemResponse();
             itemResponse.setSaleItemId(item.getSaleItem().getId());
             itemResponse.setSaleItemName(item.getSaleItem().getModel());
+            itemResponse.setSaleItemBrand(item.getSaleItem().getBrand().getName());
+            itemResponse.setSaleItemColor(item.getSaleItem().getColor());
+            itemResponse.setSaleItemStorageSize(item.getSaleItem().getStorageGb());
+            itemResponse.setSaleItemDescription(item.getSaleItem().getDescription());
             itemResponse.setQuantity(item.getQuantity());
+            itemResponse.setSubTotalPrice(item.getSubtotal());
             itemResponse.setPriceAtPurchase(item.getPriceAtPurchase());
             SaleItemImage firstImage = item.getSaleItem().getSaleItemImages().stream().findFirst().orElse(null);
             itemResponse.setSaleItemImage(firstImage.getImageName());

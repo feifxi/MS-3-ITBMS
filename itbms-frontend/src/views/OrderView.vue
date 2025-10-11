@@ -475,10 +475,15 @@ watch(
           v-for="order in orders"
           :key="order.id"
           :to="{ name: 'orderDetail', params: { id: order.orderId } }"
-          class="block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] overflow-hidden border-2 border-purple-100 hover:border-purple-300"
+          class="relative block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] border-2 border-purple-100 hover:border-purple-300"
         >
+          <div 
+            v-if="(new Date() - new Date(order.orderDate)) <= 24 * 60 * 60 * 1000" 
+            class="absolute -left-3 -top-3 p-2 font-bold bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            New
+          </div>
           <div
-            class="flex flex-col sm:flex-row items-start gap-4 p-6 bg-gradient-to-r from-purple-50/50 to-pink-50/50"
+            class=" flex flex-col sm:flex-row items-start gap-4 p-6 bg-gradient-to-r from-purple-50/50 to-pink-50/50"
           >
             <!-- Order Info -->
             <div

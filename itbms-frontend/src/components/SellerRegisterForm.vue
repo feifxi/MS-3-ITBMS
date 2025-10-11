@@ -5,6 +5,7 @@ import { registerUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import placeHolder from "@/assets/placeholder.svg";
+import { Eye, EyeOff } from "lucide-vue-next";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
@@ -237,6 +238,9 @@ const navigateToLogin = () => {
   router.push({ name: "login" });
 }
 
+const showPassword = ref(false);
+const togglePassword = () => (showPassword.value = !showPassword.value);
+
 watch(userData, () => {
   showErrorToForm();
   // Disabled save button
@@ -322,15 +326,27 @@ watch(userData, () => {
                 <span class="text-red-500 text-xl">*</span>
                 Password
               </label>
-              <input
-                name="password"
-                type="text"
-                class="itbms-password input"
-                placeholder="Password..."
-                v-model="userData.password"
-                @focusin="handleFocusIn"
-                @focusout="handleFocusOut"
-              />
+              <div class="relative">
+                <input
+                  name="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  class="itbms-password input"
+                  placeholder="Password..."
+                  v-model="userData.password"
+                  @focusin="handleFocusIn"
+                  @focusout="handleFocusOut"
+                />
+                <button
+                  type="button"
+                  @click="togglePassword"
+                  class="absolute right-2 top-2 text-gray-500 cursor-pointer"
+                >
+                  <component
+                    :is="showPassword ? EyeOff : Eye"
+                    class="w-5 h-5"
+                  />
+                </button>
+              </div>
               <p class="itbms-message text-red-500 pl-2">
                 {{ errorFormMessage["password"] }}
               </p>
@@ -440,7 +456,10 @@ watch(userData, () => {
 
             <!-- National ID Card Image Upload -->
             <div class="flex flex-col gap-1">
-              <label>National ID Card Images</label>
+              <label>
+                <span class="text-red-500 text-xl">*</span>
+                National ID Card Images
+              </label>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
               <div class="flex flex-col gap-2 relative">
                 <span 

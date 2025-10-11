@@ -168,6 +168,10 @@ const redirectIfNotSeller = () => {
   }
 };
 
+const goToSellerOrder = () => {
+  sessionStorage.setItem('lastVisitedTabOrderView', 'SELLER')
+}
+
 onMounted(async () => {
   redirectIfNotSeller();
   await fetchSaleItems();
@@ -297,6 +301,17 @@ watch(
               >
                 <ArrowDownWideNarrow />
               </button>
+            </div>
+
+            <div class="ml-auto flex items-center mr-5">
+              <RouterLink :to="{ name: 'order' }" @click="goToSellerOrder">
+              <button class="relative cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                <span v-if="true" class=" min-w-5 min-h-5 cursor-pointer absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {{ 12 }}
+                </span>
+              </button>
+            </RouterLink>
             </div>
           </div>
         </div>

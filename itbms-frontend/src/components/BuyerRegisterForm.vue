@@ -5,6 +5,7 @@ import { fetchWithAuth, registerUser } from "../api";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { useAuthStore } from "@/stores/auth";
+import { Eye, EyeOff } from "lucide-vue-next";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
@@ -42,17 +43,23 @@ const fieldIntegrity = {
   },
   email: {
     checkConstraint: (data) => {
-      return 0 < data.length && data.length <= 50 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data);
+      return (
+        0 < data.length &&
+        data.length <= 50 &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data)
+      );
     },
     errorMessage: "Invalid email.",
   },
   password: {
     checkConstraint: (data) => {
       if (typeof data !== "string") return false;
-      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,14}$/;
+      const regex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,14}$/;
       return regex.test(data);
     },
-    errorMessage: "Password must be 8-14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
+    errorMessage:
+      "Password must be 8-14 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character.",
   },
 };
 
@@ -94,7 +101,7 @@ const submitForm = async (e) => {
   try {
     // add userdata
     const formData = new FormData();
-    formData.append('userType', "BUYER");
+    formData.append("userType", "BUYER");
     for (const field in userData) {
       if (userData[field] !== "" && userData[field] != null) {
         formData.append(field, userData[field]);
@@ -105,18 +112,20 @@ const submitForm = async (e) => {
     // });
     const res = await registerUser(formData);
     const result = await res.json();
-    console.log(result);
+    // console.log(result);
     if (res.ok) {
-      statusMessageStore.setStatusMessage("The user account has been successfully registered.");
+      statusMessageStore.setStatusMessage(
+        "The user account has been successfully registered."
+      );
       router.push({ name: "login" });
-    } 
-    else if (res.status === 409) {
-      statusMessageStore.setStatusMessage("User with this email already exists.", false);
-    } 
-    else if (res.status === 400) {
+    } else if (res.status === 409) {
+      statusMessageStore.setStatusMessage(
+        "User with this email already exists.",
+        false
+      );
+    } else if (res.status === 400) {
       statusMessageStore.setStatusMessage(result.message, false);
-    } 
-    else {
+    } else {
       throw new Error("Something went wrong");
     }
   } catch (err) {
@@ -145,20 +154,19 @@ const navigateToLogin = () => {
   router.push({ name: "login" });
 };
 
-
 // ========= Testing Zone ===========
-const auth = useAuthStore()
-const isTesing = ref(false)
+const auth = useAuthStore();
+const isTesing = ref(false);
 
 const testFunc = () => {
-  loadProfile()
+  loadProfile();
   // auth.logout()
-}
+};
 
 const testFunc2 = () => {
-  console.log(auth.user)
-  console.log(auth.accessToken)
-}
+  console.log(auth.user);
+  console.log(auth.accessToken);
+};
 
 // example of using fetch with auth
 const loadProfile = async () => {
@@ -168,17 +176,18 @@ const loadProfile = async () => {
       throw new Error("Failed to load profile");
     }
     const profile = await res.json();
-    console.log("Profile:", profile);
+    // console.log("Profile:", profile);
   } catch (err) {
     if (err.message === "Session expired, please log in again.") {
       // await auth.logout()
-      router.push({ name: "login" })
+      router.push({ name: "login" });
     }
     console.error("Auth error:", err.message);
   }
-}
+};
 
-
+const showPassword = ref(false);
+const togglePassword = () => (showPassword.value = !showPassword.value);
 
 watch(userData, () => {
   showErrorToForm();
@@ -186,12 +195,14 @@ watch(userData, () => {
   validateAllField();
   // console.log(userData)
 });
-
 </script>
 
 <template>
   <div>
-    <div v-if="isLoading" class="text-center text-blue-500 animate-pulse text-3xl font-bold">
+    <div
+      v-if="isLoading"
+      class="text-center text-blue-500 animate-pulse text-3xl font-bold"
+    >
       Loading...
     </div>
 
@@ -272,15 +283,27 @@ watch(userData, () => {
                 <span class="text-red-500 text-xl">*</span>
                 Password
               </label>
-              <input
-                name="password"
-                type="text"
-                class="itbms-password input"
-                placeholder="Password..."
-                v-model="userData.password"
-                @focusin="handleFocusIn"
-                @focusout="handleFocusOut"
-              />
+              <div class="relative">
+                <input
+                  name="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  class="itbms-password input"
+                  placeholder="Password..."
+                  v-model="userData.password"
+                  @focusin="handleFocusIn"
+                  @focusout="handleFocusOut"
+                />
+                <button
+                  type="button"
+                  @click="togglePassword"
+                  class="absolute right-2 top-2 text-gray-500 cursor-pointer"
+                >
+                  <component
+                    :is="showPassword ? EyeOff : Eye"
+                    class="w-5 h-5"
+                  />
+                </button>
+              </div>
               <p class="itbms-message text-red-500 pl-2">
                 {{ errorFormMessage["password"] }}
               </p>
@@ -302,28 +325,6 @@ watch(userData, () => {
               >
                 already have an account?
               </button>
-
-              <!-- Testing Button -->
-              <div v-if="isTesing" class="flex flex-col gap-4">
-                <Button
-                :onclick="testFunc"
-                variant="primary"
-                class-name="itbms-save-button px-10 shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
-                type="button"
-              >
-                {{ "Test" }}
-              </Button>
-
-                <Button
-                  :onclick="testFunc2"
-                  variant="primary"
-                  class-name="itbms-save-button px-10 shadow-lg drop-shadow-[0_1px_1px_rgba(0,0,0,1)]"
-                  type="button"
-                >
-                  {{ "Test2" }}
-                </Button>
-              </div>
-
             </div>
           </form>
         </div>

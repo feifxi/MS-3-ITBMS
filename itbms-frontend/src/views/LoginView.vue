@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import Button from "@/components/Button.vue";
 import { useStatusMessageStore } from "@/stores/statusMessage";
 import { useAuthStore } from "@/stores/auth";
+import { Eye, EyeOff } from "lucide-vue-next";
 
 const router = useRouter();
 const statusMessageStore = useStatusMessageStore();
@@ -26,7 +27,11 @@ const errorFormMessage = reactive({
 const fieldIntegrity = {
   email: {
     checkConstraint: (data) => {
-      return 0 < data.length && data.length <= 40 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data);
+      return (
+        0 < data.length &&
+        data.length <= 40 &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data)
+      );
     },
     errorMessage: "Invalid email.",
   },
@@ -74,14 +79,17 @@ const submitForm = async (e) => {
   e.preventDefault();
   isSubmitting.value = true;
   try {
-    const { success, userType } = await authStore.login(userData.email, userData.password)
+    const { success, userType } = await authStore.login(
+      userData.email,
+      userData.password
+    );
     if (success) {
       if (userType === "SELLER") {
         router.push({ name: "SaleItemList" });
       } else {
         router.push({ name: "SaleItemGallery" });
       }
-    } 
+    }
   } catch (err) {
     console.log(err);
     router.push({ name: "SaleItemGallery" });
@@ -106,6 +114,9 @@ const showErrorToForm = () => {
 const navigateToRegister = () => {
   router.push({ name: "register" });
 };
+
+const showPassword = ref(false);
+const togglePassword = () => (showPassword.value = !showPassword.value);
 
 watch(userData, () => {
   showErrorToForm();
@@ -133,7 +144,9 @@ watch(userData, () => {
           :class="'shadow-md flex-1 max-lg:hidden'"
         />
 
-        <div class="flex-1 flex flex-col bg-white max-lg:rounded-xl max-lg:shadow-lg p-6">
+        <div
+          class="flex-1 flex flex-col bg-white max-lg:rounded-xl max-lg:shadow-lg p-6"
+        >
           <div class="flex-1 p-3 flex flex-col">
             <h2 class="text-5xl font-bold text-center mt-10">Sign in</h2>
             <!-- User Data Form -->
@@ -162,15 +175,27 @@ watch(userData, () => {
                   <span class="text-red-500 text-xl">*</span>
                   Password
                 </label>
-                <input
-                  name="password"
-                  type="text"
-                  class="itbms-password input"
-                  placeholder="Password..."
-                  v-model="userData.password"
-                  @focusin="handleFocusIn"
-                  @focusout="handleFocusOut"
-                />
+                <div class="relative">
+                  <input
+                    name="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="itbms-password input"
+                    placeholder="Password..."
+                    v-model="userData.password"
+                    @focusin="handleFocusIn"
+                    @focusout="handleFocusOut"
+                  />
+                  <button
+                    type="button"
+                    @click="togglePassword"
+                    class="absolute right-2 top-2 text-gray-500 cursor-pointer"
+                  >
+                    <component
+                      :is="showPassword ? EyeOff : Eye"
+                      class="w-5 h-5"
+                    />
+                  </button>
+                </div>
                 <p class="itbms-message text-red-500 pl-2">
                   {{ errorFormMessage["password"] }}
                 </p>

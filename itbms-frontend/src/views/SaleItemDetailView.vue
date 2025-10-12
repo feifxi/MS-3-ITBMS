@@ -87,6 +87,12 @@ const handleCloseDialog = () => {
   showLoginSuggestDialog.value = false;
 };
 
+const goToSignin = async () => {
+  handleCloseDialog();
+  showLoginSuggestDialog.value = false
+  router.push({ name: "login" });
+};
+
 onMounted(async () => {
   await fetchItem();
 });
